@@ -107,10 +107,40 @@ input[type=file]{display:none}
 .ti{width:72px;height:72px;border-radius:20px;display:grid;place-items:center;margin-bottom:6px}.tl{font-size:19px;font-weight:600}.ts{font-size:13px;color:var(--tx2)}
 .lb-go{background:var(--card);border-radius:12px;margin-top:12px}
 [hidden]{display:none!important}
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 60px);transform:translate(-50%,-30px) scale(.96);opacity:0;pointer-events:none;transition:transform .35s cubic-bezier(.2,.9,.3,1.15),opacity .25s;z-index:60;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 32px);padding:10px 16px 10px 10px;border-radius:18px;background:color-mix(in srgb,var(--card) 86%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);box-shadow:0 10px 30px rgba(0,0,0,.22),0 0 0 .5px color-mix(in srgb,var(--tx) 12%,transparent);color:var(--tx);cursor:pointer}
+.toast.on{transform:translate(-50%,0) scale(1);opacity:1;pointer-events:auto}.toast i{flex:none;width:26px;height:26px;border-radius:13px;background:var(--grn);color:#fff;display:grid;place-items:center;font-style:normal;font-size:14px;font-weight:700}
+.toast b{display:block;font-size:15px;font-weight:600}.toast small{display:block;font-size:13px;color:var(--tx2);margin-top:1px;white-space:nowrap}
+.lbat{margin:-4px 10px 14px;text-align:center;font-size:12px;color:var(--tx2)}.lbms{text-align:center;margin-top:8px}
+@keyframes flash{0%{color:var(--grn)}100%{color:var(--tx2)}}.lbat.fl,.lbms.fl{animation:flash 1.6s ease-out}
+.ract{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 12px}.rbt{display:flex;align-items:center;gap:10px;border:0;background:var(--card);color:var(--tx);font:inherit;text-align:left;border-radius:14px;padding:10px 12px;cursor:pointer;min-width:0}.rbt:active{background:var(--sel)}.rbt .t{font-weight:600;font-size:16px}.rbt .s{font-size:12px;margin-top:0}.ri{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center}
+#hb .ib{display:none}#hb.back .ih{display:none}#hb.back .ib{display:block}
+.tile{position:relative}.tile.w{grid-column:1/-1;min-height:112px}.tb{position:absolute;top:10px;right:12px;min-width:26px;height:26px;border-radius:13px;background:var(--org);color:#fff;font-size:14px;font-weight:700;display:grid;place-items:center;padding:0 7px}.tb.ok{background:var(--grn)}
+.acc{background:var(--card);border-radius:14px;margin-top:12px;overflow:hidden}
+.ach{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;color:inherit;font:inherit;text-align:left;padding:14px 16px;cursor:pointer}.ach:active{background:var(--sel)}
+.ach .t{font-weight:600}.ach .s{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ach::after{content:"";flex:none;width:9px;height:9px;border-right:2.5px solid var(--tx2);border-bottom:2.5px solid var(--tx2);transform:translateY(-2px) rotate(45deg);transition:transform .25s;margin-right:4px}
+.acc.open .ach::after{transform:translateY(2px) rotate(-135deg)}
+.acb{display:grid;grid-template-rows:0fr;transition:grid-template-rows .32s ease}.acc.open .acb{grid-template-rows:1fr}.acb>div{overflow:hidden;min-height:0}
+.acb .hd{margin:14px 16px 6px}.acb .grp{background:var(--sel);margin:0 10px;border-radius:10px}.acb .row:active{background:color-mix(in srgb,var(--tx) 8%,transparent)}.acb .ft{margin:7px 16px 0}
+.lbsv{display:block;width:calc(100% - 20px);margin:16px 10px 12px;border:0;border-radius:12px;background:var(--ac);color:#fff;font:inherit;font-weight:600;padding:13px;cursor:pointer}.lbsv:active{opacity:.8}
+.seg{display:flex;background:var(--card);border-radius:10px;padding:3px;gap:3px;margin-top:6px}.seg button{flex:1;border:0;border-radius:8px;padding:8px;background:none;color:var(--tx2);font:inherit;font-size:15px;font-weight:600;cursor:pointer}.seg button.on{background:var(--sel);color:var(--tx)}
+.lbk{border-radius:12px}.llh{display:grid;grid-template-columns:56px 1fr auto;gap:0 12px;font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--tx2);padding:8px 14px 6px 0;border-bottom:1px solid var(--sep);font-weight:600}.llh span:first-child{text-align:center}
+.ll{display:grid;grid-template-columns:52px 1fr;border-left:4px solid var(--org)}.ll.ok{border-left-color:var(--grn)}.ll+.ll{border-top:.5px solid var(--sep)}
+.lld{display:flex;flex-direction:column;align-items:center;padding:13px 0 10px;border-right:1px dashed var(--sep);font-variant-numeric:tabular-nums;line-height:1.15}.lld b{font-size:22px}.lld span{font-size:11px;font-weight:700;color:var(--tx2);letter-spacing:.5px}.lld i{font-style:normal;font-size:11px;color:var(--tx2);text-transform:capitalize}
+.llm{padding:10px 12px 12px;min-width:0}.llr{display:flex;align-items:center;gap:8px}.lap{display:flex;flex-direction:column;line-height:1.15;min-width:0}.lap b{font-size:18px;letter-spacing:.5px}.lap small{font-size:13px;color:var(--tx2);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lar{color:var(--tx2);font-size:15px}
+.lbt{margin-left:auto;font-weight:700;font-size:18px;font-variant-numeric:tabular-nums}.llx{font-size:13px;color:var(--tx2);margin:4px 0 8px}.llx select{font:inherit;font-size:13px;border:0;border-radius:6px;background:var(--sel);color:var(--tx);padding:3px 6px}
+.ll .sg{margin:0 0 8px}.ll .sg button{padding:7px;cursor:pointer}.sg.need button{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--org) 70%,transparent)}
+.llf{display:grid;grid-template-columns:1fr 1fr 70px;gap:6px}.llf.one{grid-template-columns:1fr;margin-top:8px}
+.lfi{display:flex;flex-direction:column;background:var(--sel);border-radius:8px;padding:5px 8px 4px;min-width:0;box-shadow:inset 0 0 0 1.5px transparent}.lfi.need{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--org) 70%,transparent)}
+.lfi span{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--tx2);font-weight:600}.lfi input{border:0;background:none;padding:2px 0 0;font:inherit;font-size:16px;color:var(--tx);width:100%;min-width:0;font-variant-numeric:tabular-nums;outline:none}.lfi input::placeholder{color:color-mix(in srgb,var(--tx2) 70%,transparent)}.lfi:focus-within{box-shadow:inset 0 0 0 1.5px var(--ac)}
+.lchip{margin-top:8px;border:0;background:color-mix(in srgb,var(--ac) 16%,transparent);color:var(--ac);font:inherit;font-size:14px;font-weight:600;border-radius:999px;padding:6px 12px;cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lchip small{font-weight:400;opacity:.8}
+.llt{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--tx2);margin-top:8px}.llt.mute{font-style:italic}
+.lbgo2{display:block;width:100%;margin-top:18px;border:0;border-radius:14px;background:var(--grn);color:#fff;font:inherit;font-size:18px;font-weight:700;padding:16px;cursor:pointer}.lbgo2:active{opacity:.85}
+
 </style>
 </head>
 <body>
-<header class="top"><button id="mb" class="mb" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><button id="hb" class="mb" aria-label="Home" hidden><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11 12 4l8.5 7M6 9.5V20h12V9.5"/></svg></button><h1><button id="ttl" class="tt" tabindex="-1">Rotate</button></h1><button id="sm" class="mb" aria-label="Menu" aria-expanded="false" hidden><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="8" cy="12" r=".6" fill="currentColor"/><circle cx="12" cy="12" r=".6" fill="currentColor"/><circle cx="16" cy="12" r=".6" fill="currentColor"/></svg></button><span class="sp" id="sp"></span></header>
+<header class="top"><button id="mb" class="mb" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><button id="hb" class="mb" aria-label="Home" hidden><svg class="ib" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg><svg class="ih" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11 12 4l8.5 7M6 9.5V20h12V9.5"/></svg></button><h1><button id="ttl" class="tt" tabindex="-1">Rotate</button></h1><button id="sm" class="mb" aria-label="Menu" aria-expanded="false" hidden><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="8" cy="12" r=".6" fill="currentColor"/><circle cx="12" cy="12" r=".6" fill="currentColor"/><circle cx="16" cy="12" r=".6" fill="currentColor"/></svg></button><span class="sp" id="sp"></span></header>
 <main>
 <section id="p-home">
 <div class="hero"><img id="lg2" alt="" width="96" height="96"><h2>Rotate</h2></div>
@@ -145,11 +175,11 @@ input[type=file]{display:none}
 <div id="bkm" class="ft"></div>
 </section>
 <section id="p-roster" hidden>
-<div class="grp dd" id="dd" hidden>
- <label class="row chev" for="pdf" style="cursor:pointer"><span class="ic" style="background:var(--blue)">PDF</span><span class="bd"><span class="t">Import</span><span class="s">Load the duty plan PDF</span></span></label>
- <button class="row chev" id="share"><span class="ic" style="background:var(--grn)">↑</span><span class="bd"><span class="t">Share</span><span class="s">Create the month PDF</span></span></button>
+<div class="ract" id="dd">
+ <label class="rbt" for="pdf"><span class="ri" style="background:var(--blue)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></span><span class="bd"><span class="t">Import</span><span class="s">Duty plan PDF</span></span></label>
+ <button class="rbt" id="share"><span class="ri" style="background:var(--grn)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M7 9l5-5 5 5M5 14v6h14v-6"/></svg></span><span class="bd"><span class="t">Share</span><span class="s">Month PDF</span></span></button>
 </div>
-<input id="pdf" type="file" accept="application/pdf">
+<input id="pdf" type="file" accept="application/pdf" multiple>
 <div id="msg"></div>
 
 <div class="grp">
@@ -161,13 +191,6 @@ input[type=file]{display:none}
 <p class="ft">Times are local to each airport, as in the PDF. Data stays on this device.</p>
 </section>
 <section id="p-log" hidden>
-<div class="grp dd" id="ddl" hidden>
- <button class="row chev cur" data-t="c"><span class="ic" style="background:var(--org)">!</span><span class="bd"><span class="t">Missing data <b id="lbn" style="color:var(--org)"></b></span><span class="s">PF/PM, registration, PIC name</span></span></button>
- <button class="row chev" data-t="a"><span class="ic" style="background:var(--blue)">A</span><span class="bd"><span class="t">Autoload</span><span class="s">How hours are recorded</span></span></button>
- <button class="row chev" data-t="m"><span class="ic" style="background:var(--pur)">S</span><span class="bd"><span class="t">Sim</span><span class="s">Type, device ID and session length</span></span></button>
- <button class="row chev" data-t="s"><span class="ic" style="background:#8e8e93">⚙</span><span class="bd"><span class="t">Settings</span><span class="s">Previous logbook totals</span></span></button>
- <button class="row chev" data-t="p" id="lbpdf"><span class="ic" style="background:var(--grn)">↑</span><span class="bd"><span class="t">Create logbook</span><span class="s">Period and PDF in the Jeppesen layout</span></span></button>
-</div>
 <div id="lbx"></div><div id="lbm" class="ft"></div>
 </section>
 </main>
@@ -193,6 +216,11 @@ async function getDl(){let d=null;try{d=window.claude?await window.claude.use("d
   const u=URL.createObjectURL(data),a=document.createElement("a");a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}}}
 let LANG="en";try{LANG=localStorage.getItem("rot_lang")=="it"?"it":"en"}catch(e){}
 const LOC=()=>LANG=="it"?"it-IT":"en-US";
+const tt=(en,it)=>LANG=="it"?it:en;
+function toast(t,s){let el=document.getElementById("toast");if(!el){el=document.createElement("div");el.id="toast";el.className="toast";el.setAttribute("role","status");el.onclick=()=>el.classList.remove("on");document.body.appendChild(el)}
+ el.innerHTML="<i>✓</i><span><b></b><small></small></span>";el.querySelector("b").textContent=t;const sm=el.querySelector("small");sm.textContent=s||"";sm.hidden=!s;
+ el.classList.remove("on");void el.offsetWidth;el.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("on"),3200)}
+const fmtAt=ms=>new Date(ms).toLocaleString(LOC(),{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let days={},sel=null,view=new Date();view.setDate(1);
 
@@ -253,20 +281,25 @@ async function pdfLines(buf){
 
 function ingest(res,label,ls){
  const ks=Object.keys(res.days).sort();
- if(!ks.length){if(ls){const q=document.createElement("pre");q.style.cssText="font-size:11px;white-space:pre-wrap";q.textContent=ls.length+" lines read:\n"+ls.slice(0,18).join("\n");setTimeout(()=>$("#msg").appendChild(q))}$("#msg").textContent="No duties recognised. Check that it is the “Individual duty plan” PDF.";return}
+ if(!ks.length){if(ls){const q=document.createElement("pre");q.style.cssText="font-size:11px;white-space:pre-wrap";q.textContent=ls.length+" lines read:\n"+ls.slice(0,18).join("\n");setTimeout(()=>$("#msg").appendChild(q))}$("#msg").textContent="No duties recognised. Check that it is the “Individual duty plan” PDF.";return 0}
  Object.assign(days,res.days);save();
  const mt=loadMeta(),P=res.per;if(res.name)mt.name=res.name;if(res.idn)mt.id=res.idn;
  if(P&&P.d==1&&P.m2===P.m&&P.y2===P.y&&P.d2===new Date(P.y,P.m+1,0).getDate()&&res.sum.ft)mt.sums[P.y+"-"+p2(P.m+1)]=res.sum;
  saveMeta(mt);
  const [y,m,d]=ks[0].split("-").map(Number);view=new Date(y,m-1,1);sel=null;
- $("#msg").textContent=label+": "+ks.length+" days imported.";render();
+ const P2=res.per,cnt={};ks.forEach(k=>{const x=k.slice(0,7);cnt[x]=(cnt[x]||0)+1});const mk=P2&&P2.y!=null&&P2.m!=null?P2.y+"-"+p2(P2.m+1):Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0];
+ const mn=new Date(+mk.slice(0,4),+mk.slice(5,7)-1,1).toLocaleDateString(LOC(),{month:"long",year:"numeric"});
+ $("#msg").textContent="";toast(tt("Roster imported","Roster importato"),mn[0].toUpperCase()+mn.slice(1)+" · "+ks.length+" "+tt("days","giorni"));render();return ks.length;
 }
 
 $("#pdf").addEventListener("change",async e=>{
- const f=e.target.files[0];if(!f)return;
+ const fs=[...e.target.files];if(!fs.length)return;
  $("#msg").textContent="Reading the PDF…";
- try{const ls=await pdfLines(await f.arrayBuffer());ingest(parseLines(ls),f.name,ls)}
- catch(err){$("#msg").textContent="Could not read this PDF."}
+ let ok=0,bad=0,dd=0;
+ for(const f of fs.sort((a,b)=>a.name.localeCompare(b.name))){
+  try{const ls=await pdfLines(await f.arrayBuffer()),n=ingest(parseLines(ls),f.name,ls);if(n){ok++;dd+=n}else bad++}
+  catch(err){bad++;if(fs.length==1)$("#msg").textContent="Could not read this PDF."}}
+ if(fs.length>1){if(ok)toast(tt("Rosters imported","Roster importati"),ok+"/"+fs.length+" "+tt("files","file")+" · "+dd+" "+tt("days","giorni"));$("#msg").textContent=bad?bad+" "+tt("file(s) could not be read.","file non letti."):""}
  e.target.value="";
 });
 
@@ -512,7 +545,7 @@ CCS SVMI 10.6012 -66.9913 America/Caracas
 HAV MUHA 22.9892 -82.4091 America/Havana
 PUJ MDPC 18.5674 -68.3634 America/Santo_Domingo`;
 const AIR={};{let z="Europe/Rome";for(const l of AIRT.split("\n")){const a=l.trim().split(/\s+/);if(a[4])z=a[4];AIR[a[0]]=[a[1],+a[2],+a[3],z]}}
-const ACT={"330":"A330-202","332":"A330-202","339":"A330-941"};
+const ACT={"221":"BD-500-1A10","BCS1":"BD-500-1A10","223":"BD-500-1A11","BCS3":"BD-500-1A11","319":"A319-111","320":"A320-216","32N":"A320-271N","32Q":"A321-271NX","330":"A330-202","332":"A330-202","339":"A330-941","359":"A350-941"};
 const pm=s=>{const m=String(s).replace(/[.\s]/g,"").match(/^(\d+):(\d{1,2})$/);return m&&+m[2]<60?+m[1]*60+ +m[2]:null};
 const th=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,",");
 const fm=n=>th(Math.floor(n/60))+":"+p2(n%60);
@@ -549,7 +582,7 @@ async function lbBuild(rows,S,name){
   sum.push(cu);const pv=Object.assign({},base),tt={};for(const k in base)tt[k]=base[k]+cu[k];const V=[cu,pv,tt];
   const A=doc.addPage([W,HH]);sheet(A,0);
   ch.forEach((r,i)=>{if(r.sim)return;const rt=LB[0]+LB[1]*i,y=rt+3.5;
-   T(A,r.d,57,rt+3.4,8);T(A,r.dp,116,y,8.5,{al:"c"});T(A,r.dt,150.5,y,8.5,{al:"c"});T(A,r.ap,185,y,8.5,{al:"c"});T(A,r.at,219.5,y,8.5,{al:"c"});T(A,r.ac,281,y,8.5,{al:"c"});T(A,r.reg,361,y,8.5,{al:"c"});
+   T(A,r.d,57,rt+3.4,8);T(A,r.dp,116,y,8.5,{al:"c"});T(A,r.dt,150.5,y,8.5,{al:"c"});T(A,r.ap,185,y,8.5,{al:"c"});T(A,r.at,219.5,y,8.5,{al:"c"});T(A,r.ac,281,y,8.5,{al:"c",mw:54});T(A,r.reg,361,y,8.5,{al:"c"});
    if(r.se)T(A,fm(r.se),408,y+.5,7.5,{al:"c"});if(r.me)T(A,fm(r.me),430.5,y+.5,7.5,{al:"c"});
    hm(A,r.mp,521.25,y+.2,8.5);hm(A,r.tt,578.25,y+.2,8.5);T(A,r.pn,602,y,8.5,{mw:92});
    const c=(v,x)=>T(A,"1",x,y+.2,8.5,{al:"c"});if(r.to=="D")c(1,709.5);if(r.to=="N")c(1,732);if(r.ld=="D")c(1,754.5);if(r.ld=="N")c(1,777)});
@@ -571,9 +604,9 @@ async function lbBuild(rows,S,name){
 const LBD={start:"2026-11-09",name:"Riccardo Locatelli",sim:"FFS D (EU-UKFR632)",se:"224:15",me:"",mp:"3541:50",tot:"3766:05",night:"1107:14",ifr:"3561:34",pic:"826:50",cop:"2846:11",dual:"93:04",ins:"",tod:"1329",ton:"366",ldd:"1245",ldn:"455"};
 const LBA={nc:"6",cls:"MP",ifr:true,fn:"COP",ac:"AUTO",mix:false,more:""};
 const LBM={tipo:"FFS D",code:"EU-UKFR632",dur:""};
-const LBF=["A330-941","A330-202","A350-900","A320-216","A320-271N","A321-272N","B737-800"];
+const LBFL=[["BD-500-1A10","A220-100 · roster 221"],["BD-500-1A11","A220-300 · roster 223"],["A319-111","A319 · roster 319"],["A320-216","A320 · roster 320"],["A320-271N","A320neo · roster 32N"],["A321-271NX","A321neo · roster 32Q"],["A321-271N","A321neo (without ACF)"],["A330-202","A330-200 · roster 330/332"],["A330-941","A330-900neo · roster 339"],["A350-941","A350-900 · roster 359"]],LBF=LBFL.map(x=>x[0]),LBFN=Object.fromEntries(LBFL);
 function lbFleet(A){return[...new Set(LBF.concat(String(A.more||"").split(",").map(x=>x.trim().toUpperCase()).filter(Boolean)))]}
-let lbTab="c";
+let lbTab="";
 const lbEsc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function lbFlights(){
  const out=[],miss=new Set();
@@ -597,70 +630,129 @@ function lbRows(){
  return{rows,S,A,M,miss:fl.miss}}
 const lbCk=on=>"<span class='v' style='color:var(--ac);font-weight:700'>"+(on?"✓":"")+"</span>";
 function lbOpt(a,v,t,on,sub){return"<button class='row nl' data-a='"+a+"' data-v='"+v+"'><span class='bd'><span class='t'>"+t+"</span>"+(sub?"<span class='s'>"+sub+"</span>":"")+"</span>"+lbCk(on)+"</button>"}
-function lbCard(r,mt){const f=r.f,E=(mt.lb||{})[f.k]||{},A=lbCfg().A,ok=r.role;
- return"<div class='lf' data-k='"+lbEsc(f.k)+"'><div class='lh'><b>"+lbEsc(f.from)+" → "+lbEsc(f.to)+"</b><span>"+lbEsc(f.fn)+"</span></div>"
- +"<div class='s'>"+r.d+" · UTC "+r.dt+"–"+r.at+" · "+fm(r.mp||r.se||r.me)+"</div>"
- +(A.mix?"<select data-f='ac'>"+lbFleet(A).map(t=>"<option"+(t==r.ac?" selected":"")+">"+lbEsc(t)+"</option>").join("")+"</select>":"<div class='s'>"+lbEsc(r.ac)+"</div>")+"<div class='sg'><button data-r='PF' class='"+(r.role=="PF"?"on":"")+"'>PF</button><button data-r='PM' class='"+(r.role=="PM"?"on":"")+"'>PM</button></div>"
- +"<div class='ig'><input data-f='reg' placeholder='Reg. (I-ITYE)' value='"+lbEsc(r.reg)+"' autocapitalize='characters'>"+(A.fn=="PIC"?"<input disabled value='PIC: SELF'>":"<input data-f='pic' placeholder='PIC name' value='"+lbEsc(E.pic||"")+"'>")
- +"<input data-f='night' placeholder='Night "+fm(r.auto)+" (auto)' value='"+lbEsc(E.night||"")+"' inputmode='numeric'></div>"
- +"<div class='s'>Remarks: <b>"+lbEsc(r.rem)+"</b> · Takeoff "+(ok?(r.to=="N"?"night":"day"):"—")+" · Landing "+(ok?(r.ld=="N"?"night":"day"):"—")+" · Night "+fm(r.night)+"</div></div>"}
-function lbRender(){
- const el=$("#lbx"),{rows,S,A,M,miss}=lbRows(),mt=loadMeta(),fl=rows.filter(r=>!r.sim),todo=fl.filter(r=>!r.done),nn=$("#lbn");if(nn)nn.textContent=todo.length?todo.length:"";
- ["c","a","m","s","p"].forEach(t=>{const b=document.querySelector("#ddl [data-t="+t+"]");if(b)b.classList.toggle("cur",t==lbTab)});
- let h="";
- if(lbTab=="c"){
-  h+="<div class='hd'>To complete"+(todo.length?" · "+todo.length:"")+"</div>";
-  if(!fl.length)h+="<div class='grp'><div class='em'>No flights since "+lbEsc(S.start)+".<br>Import the roster from the Roster menu.</div></div>";
-  else if(!todo.length)h+="<div class='grp'><div class='em'>All complete ✓</div></div>";
-  else h+="<div class='grp'>"+todo.map(r=>lbCard(r,mt)).join("")+"</div>";
-  const dn=fl.filter(r=>r.done);
-  if(dn.length)h+="<div class='hd'>Completed · "+dn.length+"</div><div class='grp'>"+dn.map(r=>lbCard(r,mt)).join("")+"</div>";
-  const sm=rows.filter(r=>r.sim);if(sm.length)h+="<div class='hd'>Simulator</div><div class='grp'>"+sm.map(r=>"<div class='row nl'><span class='ic' style='background:var(--pur)'>S</span><span class='bd'><span class='t'>"+r.sd+"</span><span class='s'>"+lbEsc(r.st)+"</span></span></div>").join("")+"</div>";
-  if(miss&&miss.length)h+="<p class='ft'>Airports not in table (flights excluded): "+miss.map(lbEsc).join(", ")+"</p>";
-  h+="<p class='ft'>PF/PM determines day/night takeoff and landing. Night time is estimated (sun below −6°): type hh:mm to correct it.</p>"}
- if(lbTab=="a"){
-  h+="<div class='hd'>Aircraft type</div><div class='grp'>"+lbOpt("ac","AUTO","From roster",A.ac=="AUTO","330 = A330-202, 339 = A330-941")+lbFleet(A).map(t=>lbOpt("ac",t,t,A.ac==t)).join("")+"<label class='row nl'><span class='bd'>Other types (comma)</span><input class='sv' data-a2='more' placeholder='e.g. A350-900' value='"+lbEsc(A.more)+"'></label></div>"
+let lbOpen=null,lbFil=null;
+const LBK=["prev","auto","sim"],LBTI={s:"Settings",c:"Missing data",p:"Generate"};
+function lbHead(){if(PG!="log")return;$("#ttl").textContent=lbTab?LBTI[lbTab]:"Logbook";const h=$("#hb");h.classList.toggle("back",!!lbTab);h.setAttribute("aria-label",lbTab?"Back":"Home")}
+function lbGo(t){lbTab=t;if(t=="s"){const ok=loadMeta().lbOk||{};lbOpen=LBK.find(x=>!ok[x])||null}if(t=="c")lbFil=null;lbRender();window.scrollTo(0,0)}
+function lbCtx(){const{rows,S,A,M,miss}=lbRows(),mt=loadMeta(),L=mt.lb||{},fl=rows.filter(r=>!r.sim),byK={};
+ rows.forEach(r=>byK[r.sim?r.k:r.f.k]=r);
+ const need=r=>r.sim?!r.sdur:!r.done;
+ return{rows,S,A,M,L,miss,fl,byK,need,todo:rows.filter(need),ok:mt.lbOk||{},flr:lbFlights().filter(x=>!x.sim)}}
+function lbPrev(f,flr){const i=flr.findIndex(x=>x.k==f.k);if(i<1)return null;const p=flr[i-1];return p.to==f.from&&f.t0-p.t1<5*864e5?p:null}
+const lbD0=s=>String(s||"").split("-").reverse().join("-");
+function lbDc(t0){const d=new Date(t0),o={timeZone:"UTC"};
+ return"<div class='lld'><b>"+d.getUTCDate()+"</b><span>"+d.toLocaleDateString(LOC(),Object.assign({month:"short"},o)).replace(".","").toUpperCase()+"</span><i>"+d.toLocaleDateString(LOC(),Object.assign({weekday:"short"},o)).replace(".","")+"</i></div>"}
+function lbLine(r,c){
+ if(r.sim){const SE=c.L[r.k]||{};
+  return"<div class='ll sim"+(r.sdur?" ok":"")+"' data-sk='"+lbEsc(r.k)+"'>"+lbDc(r.t0)+"<div class='llm'><div class='llr'><span class='lap'><b>SIM</b><small>"+lbEsc(r.st)+"</small></span><span class='lbt'>"+(r.sdur?fm(r.sdur):"—")+"</span></div>"
+  +"<div class='llf one'><label class='lfi"+(r.sdur?"":" need")+"'><span>Duration</span><input data-sd='1' inputmode='numeric' placeholder='"+lbEsc(c.M.dur||"4:00")+"' value='"+lbEsc(SE.dur||"")+"' autocomplete='off'></label></div></div></div>"}
+ const f=r.f,E=c.L[f.k]||{},A=c.A,pv=lbPrev(f,c.flr),P=pv?(c.L[pv.k]||{}):{},pic=A.fn!="PIC";
+ const cp=[!r.reg&&P.reg,pic&&!E.pic&&P.pic].filter(Boolean);
+ return"<div class='ll"+(r.done?" ok":"")+"' data-k='"+lbEsc(f.k)+"'>"+lbDc(f.t0)
+ +"<div class='llm'><div class='llr'><span class='lap'><b>"+lbEsc(f.from)+"</b><small>"+r.dt+"</small></span><span class='lar'>→</span><span class='lap'><b>"+lbEsc(f.to)+"</b><small>"+r.at+"</small></span><span class='lbt'>"+fm(r.tt)+"</span></div>"
+ +"<div class='llx'>"+lbEsc(f.fn)+" · "+(A.mix?"<select data-f='ac'>"+lbFleet(A).map(t=>"<option"+(t==r.ac?" selected":"")+">"+lbEsc(t)+"</option>").join("")+"</select>":lbEsc(r.ac))+"</div>"
+ +"<div class='sg"+(r.role?"":" need")+"'><button data-r='PF' class='"+(r.role=="PF"?"on":"")+"'>PF</button><button data-r='PM' class='"+(r.role=="PM"?"on":"")+"'>PM</button></div>"
+ +"<div class='llf'><label class='lfi"+(r.reg?"":" need")+"'><span>Registration</span><input data-f='reg' placeholder='I-ABCD' value='"+lbEsc(r.reg)+"' autocapitalize='characters' autocomplete='off' spellcheck='false'></label>"
+ +(pic?"<label class='lfi"+(E.pic?"":" need")+"'><span>PIC name</span><input data-f='pic' list='lbpics' placeholder='Surname' value='"+lbEsc(E.pic||"")+"' autocapitalize='characters' autocomplete='off' spellcheck='false'></label>":"<label class='lfi'><span>PIC</span><input disabled value='SELF'></label>")
+ +"<label class='lfi nt'><span>Night</span><input data-f='night' inputmode='numeric' placeholder='"+fm(r.auto)+"' value='"+lbEsc(E.night||"")+"' autocomplete='off'></label></div>"
+ +(cp.length?"<button class='lchip' data-cp='"+lbEsc(pv.k)+"'>↺ "+lbEsc(cp.join(" · "))+" <small>("+lbEsc(pv.fn)+")</small></button>":"")
+ +(r.role?"<div class='llt'><span>"+(r.to=="N"?"☾":"☀︎")+" T/O</span><span>"+(r.ld=="N"?"☾":"☀︎")+" LDG</span><span>Night "+fm(r.night)+"</span></div>":"<div class='llt mute'>Choose PF or PM to log takeoff and landing</div>")
+ +"</div></div>"}
+const LBI={gear:"<svg viewBox='0 0 24 24' width='36' height='36' fill='none' stroke='#fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3.2'/><path d='M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7'/></svg>",
+ pen:"<svg viewBox='0 0 24 24' width='36' height='36' fill='none' stroke='#fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 6h9M4 11h6M4 16h4'/><path d='M14.5 19.5 20 14l-2-2-5.5 5.5-.5 2.5z'/></svg>",
+ doc:"<svg viewBox='0 0 24 24' width='36' height='36' fill='none' stroke='#fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M6 3h8l4 4v14H6z'/><path d='M14 3v4h4M12 10v7M9 14l3 3 3-3'/></svg>"};
+function lbHub(c){const tt=c.fl.reduce((a,r)=>a+r.tt,0),pv=pm(c.S.tot)||0,set=LBK.filter(k=>c.ok[k]).length,n=c.todo.length;
+ const tile=(t,col,ic,l,b,w)=>"<button class='tile"+(w?" w":"")+"' data-lt='"+t+"'>"+b+"<span class='ti' style='background:"+col+"'>"+ic+"</span><span class='tl'>"+l+"</span></button>";
+ return"<div class='sh'><span>Total flight time</span><b>"+fm(pv+tt)+"</b><div class='sc'><i>"+c.fl.length+"</i> flights since "+lbD0(c.S.start)+"<i>"+fm(tt)+"</i> in this period</div></div>"
+ +"<div class='tiles'>"+tile("s","#8e8e93",LBI.gear,"Settings",set<3?"<span class='tb'>"+(3-set)+"</span>":"<span class='tb ok'>✓</span>")
+ +tile("c","var(--org)",LBI.pen,"Missing data",n?"<span class='tb'>"+n+"</span>":"<span class='tb ok'>✓</span>")
+ +tile("p","var(--grn)",LBI.doc,"Generate logbook","",1)+"</div>"}
+function lbSum(k,c){const{S,A,M}=c;
+ if(k=="prev")return S.tot?"TOT "+S.tot+(S.night?" · Night "+S.night:""):"Not set";
+ if(k=="auto")return[A.ac=="AUTO"?"Type from roster":A.ac,A.cls=="MP"?"Multi-pilot":A.cls=="SE"?"Single-pilot SE":"Single-pilot ME",A.ifr?"IFR":"",{PIC:"PIC",COP:"Co-pilot",DUAL:"Dual",INS:"Instructor"}[A.fn],A.nc=="6"?"Civil twilight":A.nc=="12"?"Nautical twilight":"Sunset–sunrise"].filter(Boolean).join(" · ");
+ return lbEsc(M.tipo+(M.code?" ("+M.code+")":""))+(M.dur?" · "+lbEsc(M.dur):"")}
+function lbAccHead(k,i,t,c){const ok=c.ok[k];return"<button class='ach'><span class='ic' style='background:"+(ok?"var(--grn)":"#8e8e93")+"'>"+(ok?"✓":i)+"</span><span class='bd'><span class='t'>"+t+"</span><span class='s'>"+lbSum(k,c)+"</span></span></button>"}
+function lbSet(c){const{S,A,M}=c,f=(k,l,ph)=>"<label class='row nl'><span class='bd'>"+l+"</span><input class='sv' data-s='"+k+"' value='"+lbEsc(S[k])+"'"+(ph?" placeholder='"+ph+"'":"")+" autocomplete='off'></label>";
+ const sec=(k,i,t,body)=>"<div class='acc"+(lbOpen==k?" open":"")+"' data-acc='"+k+"'>"+lbAccHead(k,i,t,c)+"<div class='acb'><div>"+body+"<button class='lbsv' data-save='"+k+"'>Save</button><p class='lbat' data-at='"+k+"'>"+lbAtTxt(k)+"</p></div></div></div>";
+ return"<p class='ft' style='margin-top:4px'>Fill in each section and tap Save. Saved sections close and the next one opens.</p>"
+ +sec("prev",1,"Previous logbook",
+  "<div class='hd'>Pilot</div><div class='grp'>"+f("name","Name on signature")+"</div>"
+  +"<div class='hd'>Totals from previous logbook</div><div class='grp'>"+f("se","Single pilot SE","0:00")+f("me","Single pilot ME","0:00")+f("mp","Multi-pilot","0:00")+f("tot","Total time of flight","0:00")+f("night","Night","0:00")+f("ifr","IFR","0:00")+f("pic","Pilot in command","0:00")+f("cop","Co-pilot","0:00")+f("dual","Dual","0:00")+f("ins","Instructor","0:00")+"</div>"
+  +"<div class='hd'>Takeoffs and landings</div><div class='grp'>"+f("tod","Takeoffs day","0")+f("ton","Takeoffs night","0")+f("ldd","Landings day","0")+f("ldn","Landings night","0")+"</div>"
+  +"<p class='ft'>These are the totals up to the day before the first flight logged here.</p>")
+ +sec("auto",2,"Autoload",
+  "<div class='hd'>Aircraft type</div><div class='grp'>"+lbOpt("ac","AUTO","From roster",A.ac=="AUTO","Each flight gets the type from its roster code")+lbFleet(A).map(t=>lbOpt("ac",t,t,A.ac==t,LBFN[t]||"")).join("")+"<label class='row nl'><span class='bd'>Other types (comma)</span><input class='sv' data-a2='more' placeholder='e.g. A321-211' value='"+lbEsc(A.more)+"'></label></div>"
   +"<div class='hd'>Mixfleet</div><div class='grp'>"+lbOpt("mix","1","Mixfleet",A.mix,"In Missing data you can change the aircraft for each flight")+"</div>"
   +"<div class='hd'>Night criterion</div><div class='grp'>"+lbOpt("nc","6","End/start of civil twilight (EASA)",A.nc=="6","Sun 6° below the horizon")+lbOpt("nc","0.83","Sunset – sunrise",A.nc=="0.83","Sun 0.83° below the horizon")+lbOpt("nc","12","Nautical twilight",A.nc=="12","Sun 12° below the horizon")+"</div>"
   +"<div class='hd'>Flight time</div><div class='grp'>"+lbOpt("cls","MP","Multi-pilot (MP)",A.cls=="MP")+lbOpt("cls","SE","Single-pilot SE",A.cls=="SE")+lbOpt("cls","ME","Single-pilot ME",A.cls=="ME")+"</div>"
   +"<div class='hd'>Conditions</div><div class='grp'>"+lbOpt("ifr","1","IFR",A.ifr,"Also log hours as IFR")+"</div>"
   +"<div class='hd'>Operational function</div><div class='grp'>"+lbOpt("fn","PIC","PIC",A.fn=="PIC","PIC name filled automatically: SELF")+lbOpt("fn","COP","Co-pilot (SIC)",A.fn=="COP")+lbOpt("fn","DUAL","Dual",A.fn=="DUAL")+lbOpt("fn","INS","Instructor",A.fn=="INS")+"</div>"
-  +"<p class='ft'>These choices apply automatically to all imported flights. Total time and takeoffs/landings are always calculated.</p>"}
- if(lbTab=="p"){
-  const fl2=rows.filter(r=>!r.sim),tt=fl2.reduce((a,r)=>a+r.tt,0),td=new Date(),tod=td.getFullYear()+"-"+p2(td.getMonth()+1)+"-"+p2(td.getDate());
-  h+="<div class='hd'>Period</div><div class='grp'><label class='row nl'><span class='bd'>From</span><input type='date' class='sv' data-s='start' value='"+lbEsc(S.start)+"' max='"+tod+"'></label><div class='row nl'><span class='bd'>Up to today</span><span class='v'>"+tod.split("-").reverse().join("-")+"</span></div></div>"
-  +"<p class='ft'>"+fl2.length+" flights"+(rows.length>fl2.length?" and "+(rows.length-fl2.length)+" sim":"")+" · "+fm(tt)+" flight time"+(todo.length?" · <b style='color:var(--org)'>"+todo.length+" with missing data</b>":"")+". Previous totals in Settings must run up to the day before this date.</p>"
-  +"<button class='row lb-go' id='lbgen'><span class='bd'><span class='t' style='color:var(--ac);text-align:center'>Generate logbook (PDF)</span></span></button>"}
- if(lbTab=="m"){
-  const sm=rows.filter(r=>r.sim);
-  h+="<div class='hd'>Simulator</div><div class='grp'><label class='row nl'><span class='bd'>Type</span><input class='sv' data-m='tipo' value='"+lbEsc(M.tipo)+"'></label><label class='row nl'><span class='bd'>Device ID</span><input class='sv' data-m='code' value='"+lbEsc(M.code)+"'></label><label class='row nl'><span class='bd'>Standard duration</span><input class='sv' data-m='dur' placeholder='e.g. 4:00' value='"+lbEsc(M.dur)+"'></label></div>"
-  +"<p class='ft'>In the logbook it will read: <b>"+lbEsc(M.tipo+(M.code?" ("+M.code+")":""))+"</b></p>"
-  +"<div class='hd'>Sessions from roster"+(sm.length?" · "+sm.length:"")+"</div>"+(sm.length?"<div class='grp'>"+sm.map(r=>"<label class='row nl' data-sk='"+lbEsc(r.k)+"'><span class='bd'><span class='t'>"+r.sd+"</span><span class='s'>"+lbEsc(r.st)+"</span></span><input class='sv' data-sd='1' placeholder='"+lbEsc(M.dur||"duration")+"' value='"+lbEsc(((mt.lb||{})[r.k]||{}).dur||"")+"'></label>").join("")+"</div>":"<div class='grp'><div class='em'>No sim sessions since "+lbEsc(S.start)+".</div></div>")
-  +"<p class='ft'>A single session's duration, if entered, replaces the standard one.</p>"}
- if(lbTab=="s"){
-  const f=(k,l)=>"<label class='row nl'><span class='bd'>"+l+"</span><input class='sv' data-s='"+k+"' value='"+lbEsc(S[k])+"'></label>";
-  h+="<div class='hd'>Pilot</div><div class='grp'>"+f("name","Name on signature")+"<div class='row nl'><span class='bd'>Logbook period</span><span class='v'>in Create logbook</span></div>"+"</div>"
-  +"<div class='hd'>Totals from previous logbook</div><div class='grp'>"+f("se","Single pilot SE")+f("me","Single pilot ME")+f("mp","Multi-pilot")+f("tot","Total time of flight")+f("night","Night")+f("ifr","IFR")+f("pic","Pilot in command")+f("cop","Co-pilot")+f("dual","Dual")+f("ins","Instructor")+"</div>"
-  +"<div class='hd'>Takeoffs and landings</div><div class='grp'>"+f("tod","Takeoffs day")+f("ton","Takeoffs night")+f("ldd","Landings day")+f("ldn","Landings night")+"</div>"
-  +"<p class='ft'>Fill in once: values stay saved on this device. These are the totals up to the day before the first flight logged here.</p>"}
- el.innerHTML=h}
+  +"<p class='ft'>These choices apply automatically to all imported flights. Total time and takeoffs/landings are always calculated.</p>")
+ +sec("sim",3,"Simulator",
+  "<div class='hd'>Simulator</div><div class='grp'><label class='row nl'><span class='bd'>Type</span><input class='sv' data-m='tipo' value='"+lbEsc(M.tipo)+"' autocomplete='off'></label><label class='row nl'><span class='bd'>Device ID</span><input class='sv' data-m='code' value='"+lbEsc(M.code)+"' autocomplete='off'></label><label class='row nl'><span class='bd'>Standard duration</span><input class='sv' data-m='dur' placeholder='e.g. 4:00' value='"+lbEsc(M.dur)+"' inputmode='numeric' autocomplete='off'></label></div>"
+  +"<p class='ft'>Each session's duration can be changed in Missing data.</p>")}
+function lbMonth(t0){const s=new Date(t0).toLocaleDateString(LOC(),{month:"long",year:"numeric",timeZone:"UTC"});return s[0].toUpperCase()+s.slice(1)}
+function lbMiss(c){const n=c.todo.length,fil=lbFil||(n?"todo":"all"),list=fil=="todo"?c.todo:c.rows;
+ let h="<div class='seg'><button data-fil='todo' class='"+(fil=="todo"?"on":"")+"'>To complete · "+n+"</button><button data-fil='all' class='"+(fil=="all"?"on":"")+"'>All · "+c.rows.length+"</button></div><p class='ft lbms' id='lbms'>"+lbMsTxt()+"</p>";
+ if(!c.rows.length)h+="<div class='grp' style='margin-top:14px'><div class='em'>No flights since "+lbEsc(lbD0(c.S.start))+".<br>Import the roster from the Roster menu.</div></div>";
+ else if(!list.length)h+="<div class='grp' style='margin-top:14px'><div class='em'>All complete ✓</div></div>";
+ else{const g=[];list.forEach(r=>{const m=lbMonth(r.t0);if(!g.length||g[g.length-1][0]!=m)g.push([m,[]]);g[g.length-1][1].push(r)});
+  h+=g.map(([m,rs])=>"<div class='hd'>"+m+"</div><div class='grp lbk'><div class='llh'><span>Date</span><span>Route · UTC</span><span>Block</span></div>"+rs.map(r=>lbLine(r,c)).join("")+"</div>").join("")}
+ const pics=[...new Set(Object.values(c.L).map(e=>e&&e.pic).filter(Boolean))].sort();
+ h+="<datalist id='lbpics'>"+pics.map(p=>"<option value='"+lbEsc(p)+"'>").join("")+"</datalist>";
+ if(c.miss&&c.miss.length)h+="<p class='ft'>Airports not in table (flights excluded): "+c.miss.map(lbEsc).join(", ")+"</p>";
+ return h+"<p class='ft'>Registration: type only the 4 letters, I- is added automatically. Night is calculated (sun below −6°): type hh:mm only to correct it.</p><p class='ft'>Flights from "+lbEsc(lbD0(c.S.start))+". Change the start date in Generate logbook.</p>"}
+function lbGen(c){const{S}=c,td=new Date(),tod=td.getFullYear()+"-"+p2(td.getMonth()+1)+"-"+p2(td.getDate()),tt=c.fl.reduce((a,r)=>a+r.tt,0),nt=c.fl.reduce((a,r)=>a+r.night,0),sm=c.rows.filter(r=>r.sim),smt=sm.reduce((a,r)=>a+r.sdur,0),n=c.todo.length;
+ const st=(v,l)=>"<div class='stt'><b>"+v+"</b><span>"+l+"</span></div>",rv=(l,v)=>"<div class='row nl'><span class='bd'>"+l+"</span><span class='v'>"+v+"</span></div>";
+ return"<div class='hd'>Period</div><div class='grp'><label class='row nl'><span class='bd'>From</span><input type='date' class='sv' data-s='start' value='"+lbEsc(S.start)+"' max='"+tod+"'></label>"+rv("To","Today · "+lbD0(tod))+"</div>"
+ +"<div class='hd'>In this period</div><div class='st2'>"+st(c.fl.length,"Flights")+st(fm(tt),"Flight time")+st(fm(nt),"Night")+st(sm.length+" · "+fm(smt),"Simulator")+"</div>"
+ +"<div class='hd'>Totals at the end</div><div class='grp'>"+rv("Total time of flight",fm((pm(S.tot)||0)+tt))+rv("Night",fm((pm(S.night)||0)+nt))+"</div>"
+ +(n?"<div class='grp' style='margin-top:16px'><button class='row chev' data-lt='c'><span class='ic' style='background:var(--org)'>!</span><span class='bd'><span class='t'>"+n+" with missing data</span><span class='s'>Complete them before generating</span></span></button></div>":"")
+ +"<button class='lbgo2' id='lbgen'>Generate logbook (PDF)</button>"
+ +"<p class='ft'>Previous totals in Settings must run up to the day before this date.</p>"}
+function lbAtTxt(k){const a=(loadMeta().lbAt||{})[k];return a?"✓ "+tt("Last saved","Ultimo salvataggio")+" · "+fmtAt(a):tt("Not saved yet","Non ancora salvato")}
+function lbAtUi(k){const e=k&&document.querySelector("#lbx .lbat[data-at="+k+"]");if(!e)return;e.textContent=lbAtTxt(k);e.classList.remove("fl");void e.offsetWidth;e.classList.add("fl")}
+function lbMsTxt(){const a=(loadMeta().lbAt||{}).miss;return a?"✓ "+tt("Saved","Salvato")+" · "+fmtAt(a):tt("Changes are saved automatically","Le modifiche si salvano da sole")}
+function lbRender(){const el=$("#lbx");$("#lbm").textContent="";lbHead();const c=lbCtx();
+ el.innerHTML=!lbTab?lbHub(c):lbTab=="s"?lbSet(c):lbTab=="c"?lbMiss(c):lbGen(c)}
+function lbAccCls(){document.querySelectorAll("#lbx .acc").forEach(a=>a.classList.toggle("open",a.dataset.acc==lbOpen))}
+function lbAccSum(){const c=lbCtx(),T={prev:"Previous logbook",auto:"Autoload",sim:"Simulator"};LBK.forEach((k,i)=>{const a=document.querySelector("#lbx .acc[data-acc="+k+"] .ach");if(a){const t=document.createElement("div");t.innerHTML=lbAccHead(k,i+1,T[k],c);a.replaceWith(t.firstChild)}})}
+function lbSoft(){const c=lbCtx(),ae=document.activeElement;
+ document.querySelectorAll("#lbx .ll").forEach(el=>{const r=c.byK[el.dataset.k||el.dataset.sk];if(!r)return;
+  const t=document.createElement("div");t.innerHTML=lbLine(r,c);const n=t.firstChild;
+  if(!el.contains(ae)){el.replaceWith(n);return}
+  el.className=n.className;const m=el.querySelector(".llm"),nm=n.querySelector(".llm");
+  [".llr",".sg",".llt"].forEach(s=>{const a=el.querySelector(s),b=n.querySelector(s);if(a&&b&&!a.contains(ae))a.replaceWith(b)});
+  const ch=el.querySelector(".lchip"),nch=n.querySelector(".lchip");if(ch&&!nch)ch.remove();else if(ch&&nch)ch.replaceWith(nch);else if(!ch&&nch)m.insertBefore(nch,el.querySelector(".llt"));
+  const L1=el.querySelectorAll(".lfi"),L2=n.querySelectorAll(".lfi");L1.forEach((l,i)=>{const q=L2[i];if(!q)return;l.className=q.className;const a=l.querySelector("input"),b=q.querySelector("input");if(a&&b&&a!==ae){a.value=b.value;a.placeholder=b.placeholder}})});
+ const n=c.todo.length,b=document.querySelectorAll("#lbx [data-fil]");if(b[0])b[0].textContent="To complete · "+n;if(b[1])b[1].textContent="All · "+c.rows.length;const ms=document.getElementById("lbms");if(ms){ms.textContent=lbMsTxt();ms.classList.remove("fl");void ms.offsetWidth;ms.classList.add("fl")}}
 function lbSave(fn){const m=loadMeta();fn(m);saveMeta(m)}
 function lbNext(f){const fl=lbFlights().filter(x=>!x.sim),i=fl.findIndex(x=>x.k==f.k),n=fl[i+1];return n&&n.from==f.to&&n.t0-f.t1<5*864e5?n:null}
-$("#lbx").addEventListener("change",e=>{const t=e.target,c=t.closest(".lf");
- if(t.dataset.s){lbSave(m=>{(m.lbS=m.lbS||{})[t.dataset.s]=t.value.trim()});lbRender();return}
- if(t.dataset.m){lbSave(m=>{(m.lbM=m.lbM||{})[t.dataset.m]=t.value.trim()});lbRender();return}
- if(t.dataset.sd){const k=t.closest("[data-sk]").dataset.sk;lbSave(m=>{m.lb=m.lb||{};(m.lb[k]=m.lb[k]||{}).dur=t.value.trim()});lbRender();return}
- if(t.dataset.a2){lbSave(m=>{(m.lbA=m.lbA||{})[t.dataset.a2]=t.value.trim()});lbRender();return}
- if(c&&t.dataset.f){const k=c.dataset.k,v=t.value.trim(),fl=lbFlights().find(x=>x.k==k);
-  lbSave(m=>{m.lb=m.lb||{};const E=m.lb[k]=m.lb[k]||{};E[t.dataset.f]=v;
-   if(fl&&(t.dataset.f=="reg"||t.dataset.f=="pic")){const n=lbNext(fl);if(n){const N=m.lb[n.k]=m.lb[n.k]||{};if(!N[t.dataset.f])N[t.dataset.f]=v}}});
-  lbRender()}});
-$("#lbx").addEventListener("click",e=>{const o=e.target.closest("[data-a]"),b=e.target.closest(".sg button"),c=e.target.closest(".lf");
- if(o){lbSave(m=>{const A=m.lbA=m.lbA||{};if(o.dataset.a=="ifr")A.ifr=!Object.assign({},LBA,A).ifr;else if(o.dataset.a=="mix")A.mix=!Object.assign({},LBA,A).mix;else A[o.dataset.a]=o.dataset.v});lbRender();return}
- if(b&&c){const k=c.dataset.k;lbSave(m=>{m.lb=m.lb||{};const E=m.lb[k]=m.lb[k]||{};E.role=E.role==b.dataset.r?"":b.dataset.r});lbRender()}});
-$("#ddl").addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(b){lbTab=b.dataset.t;lbRender();setTimeout(()=>ddo(false),150);return}
- });
-$("#lbx").addEventListener("click",e=>{if(e.target.closest("#lbgen"))lbPdf()});
+$("#lbx").addEventListener("change",e=>{const t=e.target;
+ const sec=t.closest(".acc")?t.closest(".acc").dataset.acc:null,st=m=>{if(sec)(m.lbAt=m.lbAt||{})[sec]=Date.now()};
+ if(t.dataset.s){const v=t.value.trim();lbSave(m=>{(m.lbS=m.lbS||{})[t.dataset.s]=v;st(m)});if(t.dataset.s=="start")lbRender();else{lbAccSum();lbAtUi(sec)}return}
+ if(t.dataset.m){const v=t.value.trim();lbSave(m=>{(m.lbM=m.lbM||{})[t.dataset.m]=v;st(m)});lbAccSum();lbAtUi(sec);return}
+ if(t.dataset.a2){const v=t.value.trim();lbSave(m=>{(m.lbA=m.lbA||{})[t.dataset.a2]=v;st(m)});lbRender();return}
+ if(t.dataset.sd){const k=t.closest("[data-sk]").dataset.sk,v=t.value.trim();lbSave(m=>{m.lb=m.lb||{};(m.lb[k]=m.lb[k]||{}).dur=v;(m.lbAt=m.lbAt||{}).miss=Date.now()});setTimeout(lbSoft,60);return}
+ const c=t.closest(".ll");if(c&&t.dataset.f){const k=c.dataset.k,F=t.dataset.f;let v=t.value.trim();
+  if(F=="reg"){v=v.toUpperCase().replace(/\s+/g,"");if(/^[A-Z]{4}$/.test(v))v="I-"+v;t.value=v}
+  if(F=="pic"){v=v.replace(/\s+/g," ").toUpperCase();t.value=v}
+  const fl=lbFlights().find(x=>x.k==k);
+  lbSave(m=>{m.lb=m.lb||{};const E=m.lb[k]=m.lb[k]||{};E[F]=v;(m.lbAt=m.lbAt||{}).miss=Date.now();
+   if(fl&&(F=="reg"||F=="pic")&&v){const n=lbNext(fl);if(n){const N=m.lb[n.k]=m.lb[n.k]||{};if(!N[F])N[F]=v}}});
+  setTimeout(lbSoft,60)}});
+$("#lbx").addEventListener("click",e=>{const T=e.target;
+ const lt=T.closest("[data-lt]");if(lt){lbGo(lt.dataset.lt);return}
+ const fi=T.closest("[data-fil]");if(fi){lbFil=fi.dataset.fil;lbRender();return}
+ const ah=T.closest(".ach");if(ah){const k=ah.parentNode.dataset.acc;lbOpen=lbOpen==k?null:k;lbAccCls();return}
+ const sv=T.closest("[data-save]");if(sv){const k=sv.dataset.save;lbSave(m=>{(m.lbOk=m.lbOk||{})[k]=1;(m.lbAt=m.lbAt||{})[k]=Date.now()});lbAccSum();lbAtUi(k);
+  const ok=loadMeta().lbOk||{},nx=LBK.find(x=>!ok[x])||null;lbOpen=nx;
+  requestAnimationFrame(()=>{lbAccCls();setTimeout(()=>{const el=nx&&document.querySelector("#lbx .acc[data-acc="+nx+"]");if(el)el.scrollIntoView({behavior:"smooth",block:"start"});else window.scrollTo({top:0,behavior:"smooth"})},340)});return}
+ const o=T.closest("[data-a]");if(o){lbSave(m=>{(m.lbAt=m.lbAt||{}).auto=Date.now();const A=m.lbA=m.lbA||{};if(o.dataset.a=="ifr")A.ifr=!Object.assign({},LBA,A).ifr;else if(o.dataset.a=="mix")A.mix=!Object.assign({},LBA,A).mix;else A[o.dataset.a]=o.dataset.v});lbRender();return}
+ const c=T.closest(".ll"),b=T.closest(".sg button");
+ if(b&&c){const k=c.dataset.k;lbSave(m=>{m.lb=m.lb||{};const E=m.lb[k]=m.lb[k]||{};E.role=E.role==b.dataset.r?"":b.dataset.r;(m.lbAt=m.lbAt||{}).miss=Date.now()});lbSoft();return}
+ const cp=T.closest(".lchip");if(cp&&c){const k=c.dataset.k,pk=cp.dataset.cp;lbSave(m=>{m.lb=m.lb||{};const P=m.lb[pk]||{},E=m.lb[k]=m.lb[k]||{};if(!E.reg&&P.reg)E.reg=P.reg;if(!E.pic&&P.pic)E.pic=P.pic;(m.lbAt=m.lbAt||{}).miss=Date.now()});lbSoft();return}
+ if(T.closest("#lbgen"))lbPdf()});
 async function lbPdf(){
  const msg=$("#lbm");msg.textContent="";
  try{const dl=await getDl();
@@ -768,12 +860,12 @@ let bkc=0;$("#bkd").onclick=()=>{if(!bkc){bkc=1;$("#bkds").textContent="Tap agai
  (async()=>{await syncWipe();try{localStorage.removeItem("turni_v1");localStorage.removeItem("turni_meta_v1");localStorage.removeItem("turni_ts")}catch(e){}location.reload()})()};
 const PGS={home:"Rotate",roster:"Roster",log:"Logbook",stats:"Stats",acc:"Account",set:"Settings",dati:"Data & backup"},dr=$("#dr"),bk=$("#bk"),mb=$("#mb");
 function menu(o){const was=dr.classList.contains("open");dr.classList.toggle("open",o);bk.hidden=!o;dr.inert=!o;mb.setAttribute("aria-expanded",o);if(o)(dr.querySelector(".cur")||dr.querySelector(".row")).focus();else if(was)mb.focus()}
-let PG="home";function go(p){PG=p;for(const k in PGS)$("#p-"+k).hidden=k!=p;$("#ttl").textContent=p=="home"?"":PGS[p];mb.hidden=p!="home";$("#hb").hidden=p=="home";if(p=="acc")accLoad();if(p=="set")langUi();if(p=="stats")stRender();const hs=p=="roster"||p=="log";$("#sm").hidden=!hs;$("#sp").hidden=hs;ddo(false);dr.querySelectorAll(".row").forEach(b=>b.classList.toggle("cur",b.dataset.p==p));if(p=="log")lbRender();menu(false)}
-function ddo(o){$("#dd").hidden=true;$("#ddl").hidden=true;if(o)($("#p-roster").hidden?$("#ddl"):$("#dd")).hidden=false;$("#sm").setAttribute("aria-expanded",o)}
-$("#sm").onclick=e=>{e.stopPropagation();ddo($("#dd").hidden&&$("#ddl").hidden)};
+let PG="home";function go(p){PG=p;for(const k in PGS)$("#p-"+k).hidden=k!=p;$("#ttl").textContent=p=="home"?"":PGS[p];mb.hidden=p!="home";$("#hb").hidden=p=="home";if(p=="acc")accLoad();if(p=="set")langUi();if(p=="stats")stRender();$("#hb").classList.remove("back");$("#hb").setAttribute("aria-label","Home");const hs=false;$("#sm").hidden=!hs;$("#sp").hidden=hs;ddo(false);dr.querySelectorAll(".row").forEach(b=>b.classList.toggle("cur",b.dataset.p==p));if(p=="log"){lbTab="";lbRender()}menu(false)}
+function ddo(o){$("#sm").setAttribute("aria-expanded",false)}
+$("#sm").onclick=e=>{e.stopPropagation();ddo($("#dd").hidden)};
 document.addEventListener("click",e=>{if(!e.target.closest(".dd,#sm"))ddo(false)});
-$("#dd").addEventListener("click",e=>{if(e.target.closest("label,#share,.la"))setTimeout(()=>ddo(false),200)});
-$("#hb").onclick=()=>go("home");
+
+$("#hb").onclick=()=>{if(PG=="log"&&lbTab){lbGo("");return}go("home")};
 mb.onclick=()=>menu(!dr.classList.contains("open"));bk.onclick=()=>menu(false);
 document.addEventListener("keydown",e=>{if(e.key=="Escape"&&dr.classList.contains("open"))menu(false)});
 dr.querySelectorAll(".row").forEach(b=>b.onclick=()=>go(b.dataset.p));
@@ -816,8 +908,8 @@ syncUi();syncInit();
 
 
 /* ===== Language ===== */
-const IT_E={"Google Drive backup":"Backup su Google Drive","Not connected":"Non collegato","Connected":"Collegato","Backup pending":"Backup in sospeso","Backup error":"Errore di backup","Connect Google Drive":"Collega Google Drive","Back up now":"Esegui backup ora","Restore from Drive":"Ripristina da Drive","Replaces the data on this device":"Sostituisce i dati su questo dispositivo","Disconnect":"Scollega","Keeps a copy of your duties and logbook in your own Drive":"Tiene una copia di turni e logbook nel tuo Drive","Backed up to your Drive":"Salvato nel tuo Drive","Tap “Back up now” to save to Drive":"Tocca “Esegui backup ora” per salvare su Drive","Drive backup pending · tap to save":"Backup su Drive in sospeso · tocca per salvare","Open menu":"Apri il menu","Pilot":"Pilota","Name":"Nome","Crew ID":"Matricola","First Last":"Nome Cognome","Account sync":"Sincronizzazione account","Sync now":"Sincronizza ora","Export backup":"Esporta backup","Duties, logbook and settings in one file":"Turni, logbook e impostazioni in un file","Restore backup":"Ripristina backup","Load a file exported from Rotate":"Carica un file esportato da Rotate","Data":"Dati","Delete all data":"Cancella tutti i dati","Remove duties and logbook from this device":"Elimina turni e logbook da questo dispositivo","Tap again to confirm":"Tocca ancora per confermare","Load the duty plan PDF":"Carica il PDF dei turni","Create the month PDF":"Crea il PDF del mese","Previous month":"Mese precedente","Next month":"Mese successivo","PF/PM, registration, PIC name":"PF/PM, marche, nome PIC","How hours are recorded":"Come registrare le ore","Type, device ID and session length":"Tipo, matricola e durata sessioni","Previous logbook totals":"Totali del vecchio logbook","Create logbook":"Crea logbook","Period and PDF in the Jeppesen layout":"Periodo e PDF come il modello Jeppesen","Data & backup":"Dati e backup","Settings":"Impostazioni","Language":"Lingua","Monthly rest":"Riposo mensile","Day off duty":"Giornata libera da servizio","Contractual vacation":"Ferie contrattuali","Rest":"Riposo","IML cosmic medical visit":"Visita IML cosmica","Sim recurrent training type B":"Sim recurrent training tipo B","Sim OPC (6-monthly)":"Sim OPC semestrale","Off":"Libero","Leave":"Ferie","Med":"IML","Return":"Rientro","Details":"Dettaglio","Layover rest · ":"Riposo in layover · ","Hotel pickup":"Pickup hotel","Report at airport":"Presentazione in aeroporto","Report":"Presentazione","End of duty":"Fine servizio","Simulator":"Simulatore","Day off.":"Giorno libero.","Flight":"Volo","Duty":"Servizio","Extended FDP":"FDP esteso","Active":"Attiva","Not active":"Non attiva","Sync error":"Errore di sincronizzazione","Edit":"Modifica","Save":"Salva","Registration (e.g. I-ITYE)":"Marche (es. I-ITYE)","Reg. (I-ITYE)":"Marche (es. I-ITYE)","PIC name":"Nome PIC","All complete ✓":"Tutto completo ✓","Aircraft type":"Tipo di aeromobile","From roster":"Da roster","Other types (comma)":"Altri tipi (virgola)","Night criterion":"Criterio notte","End/start of civil twilight (EASA)":"Fine/inizio crepuscolo civile (EASA)","Sun 6° below the horizon":"Sole a 6° sotto l'orizzonte","Sunset – sunrise":"Tramonto – alba","Sun 0.83° below the horizon":"Sole a 0,83° sotto l'orizzonte","Nautical twilight":"Crepuscolo nautico","Sun 12° below the horizon":"Sole a 12° sotto l'orizzonte","Flight time":"Ore di volo","Conditions":"Condizioni","Also log hours as IFR":"Registra le ore anche come IFR","Operational function":"Funzione a bordo","PIC name filled automatically: SELF":"Nome PIC compilato in automatico: SELF","Period":"Periodo","From":"Dal","Up to today":"Fino a oggi","Generate logbook (PDF)":"Genera logbook (PDF)","Type":"Tipo","Device ID":"Matricola sim","Standard duration":"Durata standard","Name on signature":"Nome in firma","Logbook period":"Periodo del logbook","in Create logbook":"nella voce Crea logbook","Totals from previous logbook":"Totali dal vecchio logbook","Takeoffs and landings":"Decolli e atterraggi","Takeoffs day":"Decolli giorno","Takeoffs night":"Decolli notte","Landings day":"Atterraggi giorno","Landings night":"Atterraggi notte","Single pilot SE":"Single pilot SE","Total flight time":"Ore di volo totali","Flight time limits":"Limiti di tempo di volo","28 days":"28 giorni","Calendar year":"Anno solare","12 months":"12 mesi","Routes flown":"Rotte percorse","Hours per month":"Ore per mese","Takeoffs D / N":"Decolli D / N","Landings D / N":"Atterraggi D / N","Career totals":"Totali carriera","Most frequent destinations":"Destinazioni più frequenti","Fleet":"Flotta","Simulator":"Simulatore","Backup":"Backup","Language":"Lingua","English":"English","Italiano":"Italiano","Import":"Import","Share":"Share","Missing data":"Dati mancanti","Autoload":"Autoload","Night":"Notte","Total time of flight":"Totale ore di volo","Pilot in command":"Pilot in command","Landing":"Atterraggio"};
-const IT_S=[["Rotate can only access its own hidden folder in your Drive, never your other files.","Rotate può accedere solo alla propria cartella nascosta nel tuo Drive, mai agli altri file."],["Google Drive connected.","Google Drive collegato."],["Could not connect to Google Drive.","Impossibile collegare Google Drive."],["Backup saved to Drive.","Backup salvato su Drive."],["Could not back up to Drive.","Impossibile salvare il backup su Drive."],["Backup restored from Drive.","Backup ripristinato da Drive."],["Could not restore from Drive.","Impossibile ripristinare da Drive."],["No backup found on Drive.","Nessun backup trovato su Drive."],["Disconnected from Google Drive.","Google Drive scollegato."],["Last backup at ","Ultimo backup alle "],["Name and crew ID appear on the duty plan PDF. They stay on this device.","Nome e matricola compaiono nel PDF del calendario. Restano su questo dispositivo."],["Times are local to each airport, as in the PDF. Data stays on this device.","Gli orari sono quelli locali di ciascun aeroporto, come nel PDF. I dati restano su questo dispositivo."],["Changes the language of the app. PDFs are always created in English.","Cambia la lingua dell'app. I PDF vengono sempre creati in inglese."],["No duties recognised. Check that it is the “Individual duty plan” PDF.","Nessun turno riconosciuto. Controlla che sia il PDF “Individual duty plan”."],[" lines read:"," righe lette:"],[" days imported."," giorni importati."],["Reading the PDF…","Lettura del PDF…"],["Could not read this PDF.","Non riesco a leggere questo PDF."],["Import the duty plan PDF, then tap a day.","Importa il PDF dei turni, poi tocca un giorno."],["No duty recorded for this day.","Nessun turno registrato per questo giorno."],["Minutes between pickup and report","Minuti tra pickup e presentazione"],[" min before"," min prima"],[" · meal"," · pasto"],["Sharing is not available in this view.","La condivisione non è disponibile in questa visualizzazione."],["Cannot create the PDF: library not loaded.","Impossibile creare il PDF: libreria non caricata."],["Could not create the PDF.","Non riesco a creare il PDF."],["Edit link for ","Modifica il link di "],["Link for ","Link per "],["No upcoming report.","Nessuna presentazione in programma."],["To complete","Da completare"],["No flights since ","Nessun volo dal "],["Import the roster from the Roster menu.","Importa il roster dal menu Roster."],["Completed · ","Completati · "],["Airports not in table (flights excluded): ","Aeroporti non in tabella (voli esclusi): "],["PF/PM determines day/night takeoff and landing. Night time is estimated (sun below −6°): type hh:mm to correct it.","PF/PM determina decollo e atterraggio giorno/notte. La notte è stimata (sole sotto −6°): per correggerla scrivi hh:mm."],["In Missing data you can change the aircraft for each flight","Nei dati mancanti puoi cambiare aeromobile per ogni volo"],["These choices apply automatically to all imported flights. Total time and takeoffs/landings are always calculated.","Queste scelte si applicano in automatico a tutti i voli importati. Totale e decolli/atterraggi vengono sempre calcolati."],[" flights and "," voli e "],[" flights"," voli"],[" flight time"," di volo"],[" with missing data"," con dati mancanti"],[". Previous totals in Settings must run up to the day before this date.",". I totali precedenti nei Settings devono arrivare fino al giorno prima di questa data."],["In the logbook it will read: ","Nel logbook comparirà: "],["Sessions from roster","Sessioni dal roster"],["No sim sessions since ","Nessuna sessione sim dal "],["A single session's duration, if entered, replaces the standard one.","La durata di una singola sessione, se la scrivi, vale al posto di quella standard."],["Fill in once: values stay saved on this device. These are the totals up to the day before the first flight logged here.","Si compila una sola volta: i valori restano salvati su questo dispositivo. Sono i totali fino al giorno prima del primo volo registrato qui."],["PDF library not loaded.","Libreria PDF non caricata."],["No flights to include.","Nessun volo da inserire."],[" page(s) generated (2 sheets each)."," pagina/e (2 fogli ciascuna) generata/e."],["flights in rosters","voli nei roster"],["airports","aeroporti"],["From imported roster flights. EASA limits: 100 h / 28 days, 900 h / calendar year, 1000 h / 12 months.","Dai voli dei roster importati. Limiti EASA: 100 h / 28 giorni, 900 h / anno solare, 1000 h / 12 mesi."],[" routes · "," rotte · "],["Import a roster to see your routes","Importa un roster per vedere le rotte"],[" flight"," volo"],["Backup is not available in this view.","Backup non disponibile in questa visualizzazione."],["Could not create the backup.","Non riesco a creare il backup."],["Backup created.","Backup creato."],["Backup restored.","Backup ripristinato."],["Invalid file.","File non valido."],["Available when you open Rotate from claude.ai while signed in","Disponibile aprendo Rotate da claude.ai con l'accesso effettuato"],["Last saved at ","Ultimo salvataggio alle "],["Data saved to your account","Dati salvati sul tuo account"],["Takeoff ","Decollo "],["Landing ","Atterraggio "],["Night ","Notte "],["Remarks:","Remarks:"],[" (auto)"," (auto)"]];
+const IT_E={"Generate":"Genera","Generate logbook":"Genera logbook","Previous logbook":"Logbook precedente","Registration":"Marche","Surname":"COGNOME","Duration":"Durata","Date":"Data","Route · UTC":"Tratta · UTC","Block":"Blocco","In this period":"In questo periodo","Totals at the end":"Totali a fine periodo","To":"Al","Flights":"Voli","Complete them before generating":"Completali prima di generare","Back":"Indietro","Not set":"Non impostato","Choose PF or PM to log takeoff and landing":"Scegli PF o PM per registrare decollo e atterraggio","Type":"Tipo","Flight time":"Ore di volo","Google Drive backup":"Backup su Google Drive","Not connected":"Non collegato","Connected":"Collegato","Backup pending":"Backup in sospeso","Backup error":"Errore di backup","Connect Google Drive":"Collega Google Drive","Back up now":"Esegui backup ora","Restore from Drive":"Ripristina da Drive","Replaces the data on this device":"Sostituisce i dati su questo dispositivo","Disconnect":"Scollega","Keeps a copy of your duties and logbook in your own Drive":"Tiene una copia di turni e logbook nel tuo Drive","Backed up to your Drive":"Salvato nel tuo Drive","Tap “Back up now” to save to Drive":"Tocca “Esegui backup ora” per salvare su Drive","Drive backup pending · tap to save":"Backup su Drive in sospeso · tocca per salvare","Open menu":"Apri il menu","Pilot":"Pilota","Name":"Nome","Crew ID":"Matricola","First Last":"Nome Cognome","Account sync":"Sincronizzazione account","Sync now":"Sincronizza ora","Export backup":"Esporta backup","Duties, logbook and settings in one file":"Turni, logbook e impostazioni in un file","Restore backup":"Ripristina backup","Load a file exported from Rotate":"Carica un file esportato da Rotate","Data":"Dati","Delete all data":"Cancella tutti i dati","Remove duties and logbook from this device":"Elimina turni e logbook da questo dispositivo","Tap again to confirm":"Tocca ancora per confermare","Load the duty plan PDF":"Carica il PDF dei turni","Create the month PDF":"Crea il PDF del mese","Previous month":"Mese precedente","Next month":"Mese successivo","PF/PM, registration, PIC name":"PF/PM, marche, nome PIC","How hours are recorded":"Come registrare le ore","Type, device ID and session length":"Tipo, matricola e durata sessioni","Previous logbook totals":"Totali del vecchio logbook","Create logbook":"Crea logbook","Period and PDF in the Jeppesen layout":"Periodo e PDF come il modello Jeppesen","Data & backup":"Dati e backup","Settings":"Impostazioni","Language":"Lingua","Monthly rest":"Riposo mensile","Day off duty":"Giornata libera da servizio","Contractual vacation":"Ferie contrattuali","Rest":"Riposo","IML cosmic medical visit":"Visita IML cosmica","Sim recurrent training type B":"Sim recurrent training tipo B","Sim OPC (6-monthly)":"Sim OPC semestrale","Off":"Libero","Leave":"Ferie","Med":"IML","Return":"Rientro","Details":"Dettaglio","Layover rest · ":"Riposo in layover · ","Hotel pickup":"Pickup hotel","Report at airport":"Presentazione in aeroporto","Report":"Presentazione","End of duty":"Fine servizio","Simulator":"Simulatore","Day off.":"Giorno libero.","Flight":"Volo","Duty":"Servizio","Extended FDP":"FDP esteso","Active":"Attiva","Not active":"Non attiva","Sync error":"Errore di sincronizzazione","Edit":"Modifica","Save":"Salva","Registration (e.g. I-ITYE)":"Marche (es. I-ITYE)","Reg. (I-ITYE)":"Marche (es. I-ITYE)","PIC name":"Nome PIC","All complete ✓":"Tutto completo ✓","Aircraft type":"Tipo di aeromobile","From roster":"Da roster","Other types (comma)":"Altri tipi (virgola)","Night criterion":"Criterio notte","End/start of civil twilight (EASA)":"Fine/inizio crepuscolo civile (EASA)","Sun 6° below the horizon":"Sole a 6° sotto l'orizzonte","Sunset – sunrise":"Tramonto – alba","Sun 0.83° below the horizon":"Sole a 0,83° sotto l'orizzonte","Nautical twilight":"Crepuscolo nautico","Sun 12° below the horizon":"Sole a 12° sotto l'orizzonte","Flight time":"Ore di volo","Conditions":"Condizioni","Also log hours as IFR":"Registra le ore anche come IFR","Operational function":"Funzione a bordo","PIC name filled automatically: SELF":"Nome PIC compilato in automatico: SELF","Period":"Periodo","From":"Dal","Up to today":"Fino a oggi","Generate logbook (PDF)":"Genera logbook (PDF)","Type":"Tipo","Device ID":"Matricola sim","Standard duration":"Durata standard","Name on signature":"Nome in firma","Logbook period":"Periodo del logbook","in Create logbook":"nella voce Crea logbook","Totals from previous logbook":"Totali dal vecchio logbook","Takeoffs and landings":"Decolli e atterraggi","Takeoffs day":"Decolli giorno","Takeoffs night":"Decolli notte","Landings day":"Atterraggi giorno","Landings night":"Atterraggi notte","Single pilot SE":"Single pilot SE","Total flight time":"Ore di volo totali","Flight time limits":"Limiti di tempo di volo","28 days":"28 giorni","Calendar year":"Anno solare","12 months":"12 mesi","Routes flown":"Rotte percorse","Hours per month":"Ore per mese","Takeoffs D / N":"Decolli D / N","Landings D / N":"Atterraggi D / N","Career totals":"Totali carriera","Most frequent destinations":"Destinazioni più frequenti","Fleet":"Flotta","Simulator":"Simulatore","Backup":"Backup","Language":"Lingua","English":"English","Italiano":"Italiano","Import":"Import","Share":"Share","Missing data":"Dati mancanti","Autoload":"Autoload","Night":"Notte","Total time of flight":"Totale ore di volo","Pilot in command":"Pilot in command","Landing":"Atterraggio"};
+const IT_S=[["Duty plan PDF","PDF dei turni"],["Month PDF","PDF del mese"],["Each flight gets the type from its roster code","Ogni volo prende il tipo dal suo codice nel roster"],[" · roster "," · roster "],["(without ACF)","(senza ACF)"],[" flights since "," voli dal "],[" in this period"," in questo periodo"],["Today · ","Oggi · "],["All · ","Tutti · "],["Type from roster","Tipo da roster"],["Civil twilight","Crepuscolo civile"],["Nautical twilight","Crepuscolo nautico"],["Sunset–sunrise","Tramonto–alba"],["Fill in each section and tap Save. Saved sections close and the next one opens.","Compila ogni sezione e tocca Salva. Le sezioni salvate si chiudono e si apre la successiva."],["These are the totals up to the day before the first flight logged here.","Sono i totali fino al giorno prima del primo volo registrato qui."],["Each session's duration can be changed in Missing data.","La durata di ogni sessione si può cambiare in Dati mancanti."],["Registration: type only the 4 letters, I- is added automatically. Night is calculated (sun below −6°): type hh:mm only to correct it.","Marche: scrivi solo le 4 lettere, I- viene aggiunto da solo. La notte è calcolata (sole sotto −6°): scrivi hh:mm solo per correggerla."],["Flights from ","Voli dal "],[". Change the start date in Generate logbook.",". Cambia la data di inizio in Genera logbook."],[" files imported · "," file importati · "],[" could not be read"," non letti"],["Rotate can only access its own hidden folder in your Drive, never your other files.","Rotate può accedere solo alla propria cartella nascosta nel tuo Drive, mai agli altri file."],["Google Drive connected.","Google Drive collegato."],["Could not connect to Google Drive.","Impossibile collegare Google Drive."],["Backup saved to Drive.","Backup salvato su Drive."],["Could not back up to Drive.","Impossibile salvare il backup su Drive."],["Backup restored from Drive.","Backup ripristinato da Drive."],["Could not restore from Drive.","Impossibile ripristinare da Drive."],["No backup found on Drive.","Nessun backup trovato su Drive."],["Disconnected from Google Drive.","Google Drive scollegato."],["Last backup at ","Ultimo backup alle "],["Name and crew ID appear on the duty plan PDF. They stay on this device.","Nome e matricola compaiono nel PDF del calendario. Restano su questo dispositivo."],["Times are local to each airport, as in the PDF. Data stays on this device.","Gli orari sono quelli locali di ciascun aeroporto, come nel PDF. I dati restano su questo dispositivo."],["Changes the language of the app. PDFs are always created in English.","Cambia la lingua dell'app. I PDF vengono sempre creati in inglese."],["No duties recognised. Check that it is the “Individual duty plan” PDF.","Nessun turno riconosciuto. Controlla che sia il PDF “Individual duty plan”."],[" lines read:"," righe lette:"],[" days imported."," giorni importati."],["Reading the PDF…","Lettura del PDF…"],["Could not read this PDF.","Non riesco a leggere questo PDF."],["Import the duty plan PDF, then tap a day.","Importa il PDF dei turni, poi tocca un giorno."],["No duty recorded for this day.","Nessun turno registrato per questo giorno."],["Minutes between pickup and report","Minuti tra pickup e presentazione"],[" min before"," min prima"],[" · meal"," · pasto"],["Sharing is not available in this view.","La condivisione non è disponibile in questa visualizzazione."],["Cannot create the PDF: library not loaded.","Impossibile creare il PDF: libreria non caricata."],["Could not create the PDF.","Non riesco a creare il PDF."],["Edit link for ","Modifica il link di "],["Link for ","Link per "],["No upcoming report.","Nessuna presentazione in programma."],["To complete","Da completare"],["No flights since ","Nessun volo dal "],["Import the roster from the Roster menu.","Importa il roster dal menu Roster."],["Completed · ","Completati · "],["Airports not in table (flights excluded): ","Aeroporti non in tabella (voli esclusi): "],["PF/PM determines day/night takeoff and landing. Night time is estimated (sun below −6°): type hh:mm to correct it.","PF/PM determina decollo e atterraggio giorno/notte. La notte è stimata (sole sotto −6°): per correggerla scrivi hh:mm."],["In Missing data you can change the aircraft for each flight","Nei dati mancanti puoi cambiare aeromobile per ogni volo"],["These choices apply automatically to all imported flights. Total time and takeoffs/landings are always calculated.","Queste scelte si applicano in automatico a tutti i voli importati. Totale e decolli/atterraggi vengono sempre calcolati."],[" flights and "," voli e "],[" flights"," voli"],[" flight time"," di volo"],[" with missing data"," con dati mancanti"],[". Previous totals in Settings must run up to the day before this date.",". I totali precedenti nei Settings devono arrivare fino al giorno prima di questa data."],["In the logbook it will read: ","Nel logbook comparirà: "],["Sessions from roster","Sessioni dal roster"],["No sim sessions since ","Nessuna sessione sim dal "],["A single session's duration, if entered, replaces the standard one.","La durata di una singola sessione, se la scrivi, vale al posto di quella standard."],["Fill in once: values stay saved on this device. These are the totals up to the day before the first flight logged here.","Si compila una sola volta: i valori restano salvati su questo dispositivo. Sono i totali fino al giorno prima del primo volo registrato qui."],["PDF library not loaded.","Libreria PDF non caricata."],["No flights to include.","Nessun volo da inserire."],[" page(s) generated (2 sheets each)."," pagina/e (2 fogli ciascuna) generata/e."],["flights in rosters","voli nei roster"],["airports","aeroporti"],["From imported roster flights. EASA limits: 100 h / 28 days, 900 h / calendar year, 1000 h / 12 months.","Dai voli dei roster importati. Limiti EASA: 100 h / 28 giorni, 900 h / anno solare, 1000 h / 12 mesi."],[" routes · "," rotte · "],["Import a roster to see your routes","Importa un roster per vedere le rotte"],[" flight"," volo"],["Backup is not available in this view.","Backup non disponibile in questa visualizzazione."],["Could not create the backup.","Non riesco a creare il backup."],["Backup created.","Backup creato."],["Backup restored.","Backup ripristinato."],["Invalid file.","File non valido."],["Available when you open Rotate from claude.ai while signed in","Disponibile aprendo Rotate da claude.ai con l'accesso effettuato"],["Last saved at ","Ultimo salvataggio alle "],["Data saved to your account","Dati salvati sul tuo account"],["Takeoff ","Decollo "],["Landing ","Atterraggio "],["Night ","Notte "],["Remarks:","Remarks:"],[" (auto)"," (auto)"]];
 IT_S.sort((x,y)=>y[0].length-x[0].length);
 const IT_W=["L","M","M","G","V","S","D"],EN_W=["M","T","W","T","F","S","S"],ORG=new WeakMap();
 function trT(t){if(LANG!="it")return t;const k=t.trim();if(!k)return t;if(IT_E[k]!==undefined)return t.replace(k,IT_E[k]);let o=t;for(const[a,b]of IT_S)if(o.includes(a))o=o.split(a).join(b);return o}
