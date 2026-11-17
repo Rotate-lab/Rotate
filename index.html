@@ -123,7 +123,8 @@ input[type=file]{display:none}
 .rcb{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--tx2);font-weight:500}.rcb .sem{width:10px;height:10px;box-shadow:none!important}
 .rcs{background:var(--card);border-radius:16px;padding:20px 16px 18px;text-align:center;margin-top:8px}.rcs .sem{display:inline-block;width:18px;height:18px;vertical-align:middle;margin-right:10px}.rcs b{font-size:22px;letter-spacing:.3px;vertical-align:middle}.rcs p{margin:10px 0 0;color:var(--tx2);font-size:15px}
 .rcv{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--tx2);text-align:right;white-space:nowrap}.rcv.ok{color:var(--grn)}.rcv.no{color:var(--red)}.rcv.wa{color:var(--org)}
-.rce .lld{flex:none}.rce .bd{min-width:0}.rce .t{font-weight:600}.rce .s{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rce.x{opacity:.45}.rcd{border:0;background:none;color:var(--red);font:inherit;font-size:20px;padding:0 0 0 10px;cursor:pointer}
+.rce .lld{flex:none}.rce .bd{min-width:0}.rce .t{font-weight:600}.rce .s{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rce.x{opacity:.45}.rcpf{flex:none;display:flex;gap:6px}.rcpf button{border:0;border-radius:9px;background:var(--sel);color:var(--tx);font:inherit;font-size:14px;font-weight:700;padding:8px 12px;cursor:pointer}.rcpf button:active{background:var(--ac);color:#fff}.rce:has(.rcpf){box-shadow:inset 3px 0 0 var(--org)}
+.rcd{border:0;background:none;color:var(--red);font:inherit;font-size:20px;padding:0 0 0 10px;cursor:pointer}
 .rcn{flex:none;font-size:13px;font-weight:600;color:var(--tx2);text-align:right;line-height:1.35;font-variant-numeric:tabular-nums}.rcn i{font-style:normal;display:block;font-weight:500}
 .rcf input.sv,.rcf select.sv{max-width:62%}.rcf input[type=date].sv{-webkit-appearance:none;appearance:none;min-height:1.4em;text-align:right;font:inherit;color:var(--tx2);border:0;background:none}
 .netr{display:flex;justify-content:center;align-items:center;gap:26px;flex-wrap:wrap;margin:0 0 6px}.netr .netc{margin:0}.nb{border:0;background:none;color:inherit;font:inherit;padding:0;cursor:pointer}.nb:active{opacity:.6}.sem.mid{background:#ffcc00;box-shadow:0 0 0 4px color-mix(in srgb,#ffcc00 25%,transparent),0 0 10px #ffcc00}
@@ -335,8 +336,8 @@ a.row{text-decoration:none;color:inherit}
 </nav>
 
 <script>
-const VER="Beta 70";
-const BUILD="202611172025";
+const VER="Beta 71";
+const BUILD="202611172034";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME)}
 themeApply();
@@ -973,15 +974,15 @@ function rcEvents(){const mt=loadMeta(),L=mt.lb||{},R=mt.rc||{},sim=R.sim||{},ev
   if(f.t1>now)return;const ro=(L[f.k]||{}).role||"";ev.push({k:f.k,d:f.ds,ty:"fl",lab:f.from+" – "+f.to,fn:f.fn,role:ro,to:ro=="PF"?1:0,ld:ro=="PF"?1:0})});
  (R.man||[]).forEach((m,i)=>ev.push({k:"m"+i,i,d:m.d,ty:"man",t:m.t,lab:m.n||"",to:+m.to||0,ld:+m.ld||0}));
  ev.sort((a,b)=>a.d<b.d?1:a.d>b.d?-1:0);return ev}
-function rcCalc(){const ev=rcEvents(),T=rcIso(new Date()),lim=rcAdd(T,-90);let to=0,ld=0,nr=0;const tl=[],ll=[];
- ev.forEach(e=>{if(e.d>T)return;if(e.d>=lim){to+=e.to;ld+=e.ld;if(e.ty=="fl"&&!e.role)nr++}for(let i=0;i<e.to;i++)tl.push(e.d);for(let i=0;i<e.ld;i++)ll.push(e.d)});
+function rcCalc(){const ev=rcEvents(),T=rcIso(new Date()),lim=rcAdd(T,-90);let to=0,ld=0,nr=0;const tl=[],ll=[],nrl=[];
+ ev.forEach(e=>{if(e.d>T)return;if(e.d>=lim){to+=e.to;ld+=e.ld;if(e.ty=="fl"&&!e.role){nr++;nrl.push(e.fn+" · "+rcFmt(e.d,{day:"numeric",month:"short"}))}}for(let i=0;i<e.to;i++)tl.push(e.d);for(let i=0;i<e.ld;i++)ll.push(e.d)});
  tl.sort().reverse();ll.sort().reverse();
  const vt=Math.min(3,to),vl=Math.min(3,ld),ok=vt>=3&&vl>=3,et=vt>=3?rcAdd(tl[2],90):null,el=vl>=3?rcAdd(ll[2],90):null,nx=ok?(et<el?et:el):null,left=nx?rcDiff(nx,T):null;
  const st=!ok?"off":left<=20?"mid":"on";
  const need=vt<3?tt("You need ","Servono ")+(3-vt)+" TO"+(vl<3?tt(" and "," e ")+(3-vl)+" LDG":""):vl<3?tt("You need ","Servono ")+(3-vl)+" LDG":et<el?tt("Make at least 1 takeoff before the expiry","Fai almeno 1 TO entro la scadenza"):el<et?tt("Make at least 1 landing before the expiry","Fai almeno 1 LDG entro la scadenza"):tt("Make at least 1 takeoff and 1 landing before the expiry","Fai almeno 1 TO e 1 LDG entro la scadenza");
  const msg=!ok?tt("3 valid takeoffs and 3 valid landings not found","Non risultano 3 TO e 3 LDG validi"):left<=20?tt("In "+left+" days you will no longer be current","Tra "+left+" giorni non sarai current"):tt("No urgency","Nessuna urgenza");
  const ttl=!ok?tt("RECENCY TO RESTORE","RECENCY DA RIPRISTINARE"):left<=20?tt("EXPIRING SOON","IN SCADENZA"):"CURRENT";
- return{ev,T,lim,vt,vl,et,el,nx,left,st,need,msg,ttl,nr}}
+ return{ev,T,lim,vt,vl,et,el,nx,left,st,need,msg,ttl,nr,nrl}}
 function rcUp(){const e=document.getElementById("rcb");if(!e)return;const c=rcCalc();
  e.innerHTML='<span class="sem '+c.st+'"></span><span>'+esc(c.st=="off"?tt("Not current","Non current"):(c.st=="mid"?tt("Expiring","In scadenza"):"Current")+" · "+tt(c.left+" days",c.left+" giorni"))+'</span>'}
 let rcTy="sec";
@@ -989,13 +990,14 @@ function rcRender(){const c=rcCalc(),R=(t,v,cl,s)=>'<div class="row nl"><span cl
  let h='<div class="rcs"><span class="sem '+c.st+'"></span><b>'+c.ttl+'</b><p>'+esc(c.msg)+'</p></div>';
  h+='<div class="grp" style="margin-top:16px">'+R(tt("Valid takeoffs","Decolli validi"),c.vt+" / 3",c.vt>=3?"ok":"no")+R(tt("Valid landings","Atterraggi validi"),c.vl+" / 3",c.vl>=3?"ok":"no")
   +R(tt("Next expiry","Prossima scadenza"),c.nx?rcFmt(c.nx):"—")+R(tt("Days left","Giorni rimanenti"),c.left!=null?c.left:"—",c.st=="mid"?"wa":c.st=="on"?"ok":"")+R(tt("What you need","Cosa serve"),"","",esc(c.need))+'</div>';
- if(c.nr)h+='<p class="ft" style="color:var(--org)">'+tt(c.nr+" flight(s) in the last 90 days without PF/PM: set it in Logbook › Missing data.",c.nr+" volo/i negli ultimi 90 giorni senza PF/PM: impostalo in Logbook › Dati mancanti.")+'</p>';
+ if(c.nr)h+='<p class="ft" style="color:var(--org)">'+esc(c.nrl.join(", "))+(c.nr==1?tt(" has no PF/PM: choose it below in the list."," non ha PF/PM: sceglilo qui sotto nell'elenco."):tt(" have no PF/PM: choose it below in the list."," non hanno PF/PM: sceglilo qui sotto nell'elenco."))+'</p>';
  const win=c.ev.filter(e=>e.d<=c.T&&e.d>=c.lim),old=c.ev.filter(e=>e.d<c.lim&&(e.to||e.ld)).slice(0,3);
  const row=(e,x)=>{const lbl=e.ty=="sim"?tt("Simulator","Simulatore"):e.ty=="man"?(e.lab||tt(RCT[e.t]?RCT[e.t][0]:"Manual",RCT[e.t]?RCT[e.t][1]:"Manuale")):e.lab;
-  const sub=e.ty=="fl"?e.fn+" · "+(e.role||tt("PF/PM not set","PF/PM mancante")):e.ty=="sim"?(e.on?tt("Counts 3 TO + 3 LDG","Vale 3 TO + 3 LDG"):tt("Turn on to count 3 TO + 3 LDG","Attiva per contare 3 TO + 3 LDG")):tt("Added by you","Inserito da te")+(e.lab&&RCT[e.t]?" · "+tt(RCT[e.t][0],RCT[e.t][1]):"");
+  const sub=e.ty=="fl"?e.fn+" · "+(e.role||tt("PF or PM?","PF o PM?")):e.ty=="sim"?(e.on?tt("Counts 3 TO + 3 LDG","Vale 3 TO + 3 LDG"):tt("Turn on to count 3 TO + 3 LDG","Attiva per contare 3 TO + 3 LDG")):tt("Added by you","Inserito da te")+(e.lab&&RCT[e.t]?" · "+tt(RCT[e.t][0],RCT[e.t][1]):"");
   const[y,m,d]=e.d.split("-").map(Number);
   return'<div class="row nl rce'+(x?" x":"")+'">'+lbDc(Date.UTC(y,m-1,d,12))+'<span class="bd"><span class="t">'+esc(lbl)+'</span><span class="s">'+esc(sub)+'</span></span>'
    +(e.ty=="sim"?'<button class="tg-b" data-rs="'+esc(e.k)+'" aria-pressed="'+e.on+'" aria-label="'+tt("Count for recency","Conta per la recency")+'"><span class="tg'+(e.on?" tgon":"")+'"></span></button>'
+   :e.ty=="fl"&&!e.role?'<span class="rcpf"><button data-rr="'+esc(e.k)+'" data-v="PF">PF</button><button data-rr="'+esc(e.k)+'" data-v="PM">PM</button></span>'
    :'<span class="rcn">'+e.to+' TO · '+e.ld+' LDG<i>'+tt("exp. ","scad. ")+rcFmt(rcAdd(e.d,90),{day:"numeric",month:"short"})+'</i></span>')
    +(e.ty=="man"?'<button class="rcd" data-rd="'+e.i+'" aria-label="'+tt("Delete","Elimina")+'">✕</button>':'')+'</div>'};
  h+='<div class="hd">'+tt("Last 90 days","Ultimi 90 giorni")+'</div><div class="grp">'+(win.map(e=>row(e)).join("")||'<div class="row nl"><span class="bd"><span class="s">'+tt("No flights or events in the last 90 days.","Nessun volo o evento negli ultimi 90 giorni.")+'</span></span></div>')+'</div>';
@@ -1011,6 +1013,7 @@ function rcRender(){const c=rcCalc(),R=(t,v,cl,s)=>'<div class="row nl"><span cl
   +'<p class="ft">'+tt("Rule: 3 takeoffs and 3 landings in the last 90 days. Each flight as PF counts 1 TO + 1 LDG, as PM it does not count. Turn on a simulator session to count it as 3 TO + 3 LDG.","Regola: 3 decolli e 3 atterraggi negli ultimi 90 giorni. Ogni volo da PF vale 1 TO + 1 LDG, da PM non conta. Attiva una sessione al simulatore per contarla come 3 TO + 3 LDG.")+'</p>';
  const X=$("#rcx");X.innerHTML=h;
  X.querySelectorAll("[data-rs]").forEach(b=>b.onclick=()=>{const m=loadMeta();m.rc=m.rc||{};m.rc.sim=m.rc.sim||{};if(m.rc.sim[b.dataset.rs])delete m.rc.sim[b.dataset.rs];else m.rc.sim[b.dataset.rs]=1;saveMeta(m);rcRender();toast(tt("Recency updated","Recency aggiornata"))});
+ X.querySelectorAll("[data-rr]").forEach(b=>b.onclick=()=>{const m=loadMeta();m.lb=m.lb||{};m.lb[b.dataset.rr]=Object.assign(m.lb[b.dataset.rr]||{},{role:b.dataset.v});saveMeta(m);rcRender();toast(b.dataset.v+" "+tt("saved","salvato"))});
  X.querySelectorAll("[data-rd]").forEach(b=>b.onclick=()=>{const m=loadMeta();(m.rc.man||[]).splice(+b.dataset.rd,1);saveMeta(m);rcRender();toast(tt("Event deleted","Evento eliminato"))});
  $("#rcY").onchange=e=>{rcTy=e.target.value;$("#rcT").value=RCT[rcTy][2];$("#rcL").value=RCT[rcTy][3]};
  $("#rcA").onclick=()=>{const d=$("#rcD").value,to=Math.max(0,Math.min(9,parseInt($("#rcT").value,10)||0)),ld=Math.max(0,Math.min(9,parseInt($("#rcL").value,10)||0));
@@ -1382,6 +1385,7 @@ function drUi(){const m=loadMeta(),n=(m.name||"").trim(),ini=n?n.split(/\s+/).ma
 
 /* ===== Changelog ===== */
 const CHLOG=[
+ ["Beta 71","17/11/2026",["Recency: choose PF/PM directly for flights before the logbook start date"],["Recency: scegli PF/PM direttamente per i voli prima dell'inizio del logbook"]],
  ["Beta 70","17/11/2026",["Crew rest: editable rest start and end, Share PDF"],["Riposi crew: inizio e fine modificabili, Condividi PDF"]],
  ["Beta 69","17/11/2026",["New Crew rest calculator on the home page, with timeline and roster flights"],["Nuovo calcolatore Riposi crew nella home, con timeline e voli del roster"]],
  ["Beta 68","17/11/2026",["Recency on the home page next to CrewLink, Stats below; System status includes Recency"],["Recency in home accanto a CrewLink, Stats sotto; Stato sistema include la Recency"]],
