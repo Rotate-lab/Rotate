@@ -304,8 +304,8 @@ a.row{text-decoration:none;color:inherit}
 </nav>
 
 <script>
-const VER="Beta 64";
-const BUILD="202611171916";
+const VER="Beta 65";
+const BUILD="202611171948";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME)}
 themeApply();
@@ -442,8 +442,11 @@ const pill=D=>{if(D&&D.lay)return'<i class="w"><b>Layover</b><u class="pm bd2">'
  else if(ht){t="Hotel";x='<u>'+ht.ap+'</u>'}
  else return"";
  return'<i'+(c?' class="s'+cls+'" style="--pc:'+c+'"':"")+(ti2>1?' data-n="'+ti2+'"':'')+'><b'+(ti?' class="bi"':'')+'>'+t+ti+'</b>'+x+'</i>'};
-function fitCells(){document.querySelectorAll("#gd .c i b,#gd .c i u:not(.pm)").forEach(e=>{e.style.fontSize="";e.style.letterSpacing="";if(e.scrollWidth<=e.clientWidth)return;let fs=parseFloat(getComputedStyle(e).fontSize);
+function fitCells(root){(root&&root.querySelectorAll?root:document.getElementById("gd")).querySelectorAll(".c i b,.c i u:not(.pm)").forEach(e=>{e.style.fontSize="";e.style.letterSpacing="";if(e.scrollWidth<=e.clientWidth)return;let fs=parseFloat(getComputedStyle(e).fontSize);
  e.style.letterSpacing="-.35px";while(e.scrollWidth>e.clientWidth&&fs>6.5){fs-=.5;e.style.fontSize=fs+"px"}})}
+function cellBtn(y,m,d,tk,plain){const k=key(y,m,d),D=days[k],ph=pill(D),pc=(ph.match(/--pc:([^"]+)"/)||[])[1];
+ const fl=/class="s fl"/.test(ph),wh=/class="s wh"/.test(ph),rt=/class="s rt"/.test(ph),nl=(ph.match(/data-n="(\d+)"/)||[])[1];
+ return'<button class="c'+(pc?" k":"")+(wh?" wh":"")+(rt?" rt":"")+(/class="w"/.test(ph)?" lw":"")+(!plain&&k==tk?" td":"")+(!plain&&k==sel?" on":"")+'"'+(pc?' style="--pc:'+pc+'"':'')+' data-k="'+k+'"><span class="tp"><span class="n">'+d+'</span>'+(fl?IC.plane+(nl?'<span class="lc">'+nl+'</span>':''):"")+'</span>'+ph+'</button>'}
 let fitT=0;window.addEventListener("resize",()=>{clearTimeout(fitT);fitT=setTimeout(fitCells,120)});
 function markLay(){let away=null;for(const k of Object.keys(days).sort()){const D=days[k];delete D.lay;const fl=D.ev.filter(e=>e.t=="fl");if(fl.length){const l=fl[fl.length-1].to;away=l=="FCO"?null:l}else if(away&&D.ev.every(e=>e.t=="ht"||(e.t=="gr"&&e.c=="X")))D.lay=away}}
 function render(){markLay();
@@ -452,10 +455,7 @@ function render(){markLay();
  const off=(new Date(y,m,1).getDay()+6)%7,n=new Date(y,m+1,0).getDate(),t=new Date(),tk=key(t.getFullYear(),t.getMonth(),t.getDate());
  let h="";for(let i=0;i<off;i++)h+="<span></span>";
  for(let d=1;d<=n;d++){
-  const k=key(y,m,d),D=days[k];
-  const ph=pill(D),pc=(ph.match(/--pc:([^"]+)"/)||[])[1];
-  const fl=/class="s fl"/.test(ph),wh=/class="s wh"/.test(ph),rt=/class="s rt"/.test(ph),nl=(ph.match(/data-n="(\d+)"/)||[])[1];
-  const bt='<button class="c'+(pc?" k":"")+(wh?" wh":"")+(rt?" rt":"")+(/class="w"/.test(ph)?" lw":"")+(k==tk?" td":"")+(k==sel?" on":"")+'"'+(pc?' style="--pc:'+pc+'"':'')+' data-k="'+k+'"><span class="tp"><span class="n">'+d+'</span>'+(fl?IC.plane+(nl?'<span class="lc">'+nl+'</span>':''):"")+'</span>'+ph+'</button>';
+  const k=key(y,m,d),bt=cellBtn(y,m,d,tk);
   h+=bt;
   if(sel&&sel.slice(0,7)==k.slice(0,7)&&((off+d-1)%7==6||d==n)&&Math.floor((off+ +sel.slice(8)-1)/7)==Math.floor((off+d-1)/7))h+='<div class="pnl"><div class="pt" id="dh"></div><div class="pg" id="dt"></div><div class="f" id="fs"></div></div>';
  }
@@ -490,89 +490,93 @@ function detail(){
  f.innerHTML=["FT","DT","RT"].filter(k=>D[k]).map(k=>"<span>"+L[k]+" "+D[k]+"</span>").join("")+(D.extd?"<span>Extended FDP</span>":"");
 }
 
-const pdfInfo=D=>{if(!D)return null;if(D.lay)return{k:"w",t:"Layover",a:D.lay,ic:"bed"};
- const E=D.ev,fl=E.filter(e=>e.t=="fl"),ci=E.find(e=>e.t=="ci"),br=E.find(e=>e.t=="br"),sm=E.find(e=>e.t=="sm"),g=E.find(e=>e.t=="gr"),co=E.find(e=>e.t=="co"),ht=E.find(e=>e.t=="ht"),pr=E.find(e=>e.t=="pr");
- const nf=f=>(f.dh?"DH ":"")+f.fn,se=g&&g.s?g.s+" - "+g.e:"";
- if(fl.length)return{k:"blue",t:fl[0].to,fn:fl.length>2?nf(fl[0])+" +"+(fl.length-1):fl.map(nf).join(" / "),a:ci?"Report "+ci.h:pr?"Report "+pr.h:"Dep. "+fl[0].dep,pl:1,nl:fl.length};
- if(sm)return{k:"blue",t:"Sim",fn:sm.c||sm.ac,a:br?"Report "+br.h:sm.s+" - "+sm.e};
- if(g){const k=gKind(g.c);
-  if(k=="med")return{k:"red",t:"IML",fn:"Medical",a:se};
-  if(k=="leave")return{k:"lgrn",t:"Vacation",palm:1};
-  if(k=="trn")return{k:"ind",t:g.c=="ARO"?"RT class":"e-Learning",a:se,ti:"pc"};
-  if(k=="gd")return{k:"pur",t:"ISV",fn:"Ground duty",a:se,ti:"brief"};
-  if(k=="sby")return{k:"org",t:"Standby",a:se,ti:"phone"};
-  if(k=="rsv")return{k:"yel",t:"Reserve",a:se,ti:"phone"};
-  if(k=="sick")return{k:"pink",t:"Sick",ic:"cross"};
-  if(k=="off")return{k:"grn",t:"Day off",ic:"home"};
-  return{k:"grn",t:"Rest",ic:"bed",a:ht?ht.ap:""}}
- if(co)return{k:"rt",t:"Return",a:"End "+co.h};
- if(ht)return{k:"w",t:"Hotel",a:ht.ap};
- return null};
+/* Month PDF: replica of the Roster grid (dark), measured from a hidden copy of the real cells */
+function pdfGrid(y0,m0,PXW){
+ const off=(new Date(y0,m0,1).getDay()+6)%7,n=new Date(y0,m0+1,0).getDate();let h="";
+ for(let i=0;i<off;i++)h+="<span></span>";for(let d=1;d<=n;d++)h+=cellBtn(y0,m0,d,"",1);
+ const box=document.createElement("div");box.className="gd";box.setAttribute("aria-hidden","true");
+ box.style.cssText="position:fixed;left:-30000px;top:0;width:"+PXW+"px;padding:0;margin:0;pointer-events:none;--bg:#000;--card:#1c1c1e;--tx:#fff;--tx2:#98989f;--sep:#38383a;--empty:#262628;--ac:#0a84ff;--blue:#6ea3e6;--lb:#9cc9e8;--grn:#6dbb84;--lgrn:#a3cf93;--org:#dba45c;--yel:#d6c26e;--red:#dd7068;--pink:#d9849b;--pur:#a890d4;--ind:#8f93dd;--tint:20%;color:#fff";
+ box.innerHTML=h;document.body.appendChild(box);
+ try{
+  fitCells(box);
+  const pr=document.createElement("i");pr.style.cssText="position:absolute;display:none";box.appendChild(pr);
+  const PC=v=>{if(!v||v=="none")return null;let m=v.match(/color\(srgb\s+([\d.e-]+)\s+([\d.e-]+)\s+([\d.e-]+)(?:\s*\/\s*([\d.]+%?))?\)/);
+   if(m)return{c:[+m[1]*255,+m[2]*255,+m[3]*255].map(Math.round),a:m[4]==null?1:parseFloat(m[4])/(/%/.test(m[4])?100:1)};
+   m=v.match(/rgba?\(([^)]+)\)/);if(m){const q=m[1].split(/[\s,\/]+/).filter(Boolean).map(parseFloat);return{c:q.slice(0,3).map(Math.round),a:q.length>3?q[3]:1}}
+   pr.style.color="";pr.style.color=v;const w=getComputedStyle(pr).color;return w!=v?PC(w):null};
+  const cols=v=>(String(v).match(/color\([^)]*\)|rgba?\([^)]*\)/g)||[]).map(PC).filter(Boolean);
+  const B=box.getBoundingClientRect(),R=r=>({x:r.left-B.left,y:r.top-B.top,w:r.width,h:r.height});
+  const cells=[];
+  box.querySelectorAll(".c").forEach(c=>{const cs=getComputedStyle(c),bf=getComputedStyle(c,"::before"),cr=c.getBoundingClientRect();
+   const o={r:R(cr),rad:parseFloat(cs.borderTopLeftRadius)||0,bg:PC(cs.backgroundColor),bgi:cols(cs.backgroundImage),sh:cs.boxShadow&&cs.boxShadow!="none"?cols(cs.boxShadow)[0]:null,
+    bar:bf.content&&bf.content!="none"?{w:parseFloat(bf.width)||3,c:PC(bf.backgroundColor),g:cols(bf.backgroundImage)}:null,tx:[],ic:[]};
+   const tw=document.createTreeWalker(c,NodeFilter.SHOW_TEXT);let t;
+   while(t=tw.nextNode()){const s=t.nodeValue.trim();if(!s)continue;const el=t.parentElement;if(el.closest("svg"))continue;
+    const rg=document.createRange();rg.selectNodeContents(t);const rr=rg.getBoundingClientRect();if(!rr.width||rr.top>=cr.bottom-2)continue;
+    const es=getComputedStyle(el),clip=el.getBoundingClientRect();
+    o.tx.push({s,r:R(rr),fs:parseFloat(es.fontSize),b:(parseInt(es.fontWeight)||400)>=600,c:PC(es.color),mx:Math.min(clip.right,cr.right-2)-rr.left})}
+   c.querySelectorAll("svg").forEach(sv=>{const sr=sv.getBoundingClientRect();if(!sr.width||sr.top>=cr.bottom-2)return;
+    const vb=sv.viewBox&&sv.viewBox.baseVal&&sv.viewBox.baseVal.width?sv.viewBox.baseVal:{width:24,height:24},ps=[];
+    sv.querySelectorAll("path,circle").forEach(e=>{if(e.tagName=="circle"){const cx=+e.getAttribute("cx"),cy=+e.getAttribute("cy"),r=+e.getAttribute("r");ps.push("M"+(cx-r)+" "+cy+"a"+r+" "+r+" 0 1 0 "+2*r+" 0a"+r+" "+r+" 0 1 0 "+(-2*r)+" 0z")}
+     else ps.push(/rotate/.test(e.getAttribute("transform")||"")?PLANE45:e.getAttribute("d"))});
+    o.ic.push({r:R(sr),k:sr.width/vb.width,c:PC(getComputedStyle(sv).color),d:ps})});
+   cells.push(o)});
+  return{cells,W:B.width,H:B.height}
+ }finally{box.remove()}}
+const PLANE45="M15.54 21.19L16.95 19.78L14.83 10.59L18.72 6.7A1.5 1.5 45 0 0 16.6 4.58L12.71 8.46L3.51 6.34L2.1 7.76L9.53 11.65L5.64 15.54L3.16 15.18L2.1 16.24L5.28 18.01L7.05 21.19L8.11 20.13L7.76 17.66L11.65 13.77Z";
 async function buildPdf(){
  markLay();
  const{PDFDocument,StandardFonts,rgb}=PDFLib,doc=await PDFDocument.create(),MM=72/25.4,PH=297;
- const pg=doc.addPage([210*MM,PH*MM]),F=await doc.embedFont(StandardFonts.Helvetica),B=await doc.embedFont(StandardFonts.HelveticaBold);
+ const pg=doc.addPage([210*MM,PH*MM]),F=await doc.embedFont(StandardFonts.Helvetica),Bd=await doc.embedFont(StandardFonts.HelveticaBold);
  const C=a=>rgb(a[0]/255,a[1]/255,a[2]/255),tw=(s,f,z)=>f.widthOfTextAtSize(String(s),z)/MM;
  const T=(s,x,y,z,f,c,al)=>{s=String(s);const X=al=="r"?x-tw(s,f,z):al=="c"?x-tw(s,f,z)/2:x;pg.drawText(s,{x:X*MM,y:(PH-y)*MM,size:z,font:f,color:C(c)})};
- const fit=(s,f,z,max)=>{while(z>5&&tw(s,f,z)>max)z-=.5;return z};
- const RR=(x,y,w,h,r,o)=>{const[a,b,c,d]=Array.isArray(r)?r:[r,r,r,r],q=v=>(v*MM).toFixed(2),k=.5523;
-  pg.drawSvgPath("M "+q(a)+" 0 H "+q(w-b)+" C "+q(w-b+b*k)+" 0 "+q(w)+" "+q(b-b*k)+" "+q(w)+" "+q(b)+" V "+q(h-c)+" C "+q(w)+" "+q(h-c+c*k)+" "+q(w-c+c*k)+" "+q(h)+" "+q(w-c)+" "+q(h)+" H "+q(d)+" C "+q(d-d*k)+" "+q(h)+" 0 "+q(h-d+d*k)+" 0 "+q(h-d)+" V "+q(a)+" C 0 "+q(a-a*k)+" "+q(a-a*k)+" 0 "+q(a)+" 0 Z",
-   {x:x*MM,y:(PH-y)*MM,color:o.fill?C(o.fill):undefined,borderColor:o.stroke?C(o.stroke):undefined,borderWidth:o.stroke?(o.lw||.6):0})};
- const IP={bed:"M2 5h2.2v8.2H22V20h-2.2v-2.4H4.2V20H2zM10 8.2h7.8a4.2 4.2 0 0 1 4.2 4.2v.6H10zM4.9 10.4a2.2 2.2 0 1 0 4.4 0a2.2 2.2 0 1 0-4.4 0z",
-  home:"M12 3 2 11.5h3V21h5.2v-5.6h3.6V21H19v-9.5h3z",
-  phone:"M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z",
-  pc:"M4.5 4h15A1.5 1.5 0 0 1 21 5.5V16H3V5.5A1.5 1.5 0 0 1 4.5 4zM5 6v8h14V6zM1 17.2h22v.8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2z",
-  brief:"M9 3h6a2 2 0 0 1 2 2v1.5h3A2 2 0 0 1 22 8.5V19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.5a2 2 0 0 1 2-2h3V5a2 2 0 0 1 2-2zm0 2v1.5h6V5z",
-  plane:"M15.54 21.19L16.95 19.78L14.83 10.59L18.72 6.7A1.5 1.5 45 0 0 16.6 4.58L12.71 8.46L3.51 6.34L2.1 7.76L9.53 11.65L5.64 15.54L3.16 15.18L2.1 16.24L5.28 18.01L7.05 21.19L8.11 20.13L7.76 17.66L11.65 13.77Z",
-  cross:"M8.5 2.5h7v6h6v7h-6v6h-7v-6h-6v-7h6z"};
- const ICO=(n,x,y,sz,col)=>pg.drawSvgPath(IP[n],{x:x*MM,y:(PH-y)*MM,scale:sz*MM/24,color:C(col)});
- const ink=[250,250,252],ink2=[232,232,238],g2=[150,150,158],g3=[104,104,112],sub=[150,150,158],card=[31,31,34],emp=[26,26,29],sep=[60,60,64],M=14,W=182;
- pg.drawRectangle({x:0,y:0,width:210*MM,height:PH*MM,color:C([16,16,18])});
- const mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
- const STY={};for(const[k,a]of Object.entries({blue:[110,163,230],grn:[109,187,132],lgrn:[163,207,147],org:[219,164,92],yel:[214,194,110],pur:[168,144,212],ind:[143,147,221],mint:[109,187,132],red:[221,112,104],pink:[217,132,155]}))STY[k]={a,t:mix(card,a,.2),d:mix(a,[255,255,255],.45),s:mix(a,[255,255,255],.15)};
- const y0=view.getFullYear(),m0=view.getMonth(),n=new Date(y0,m0+1,0).getDate(),off=(new Date(y0,m0,1).getDay()+6)%7,mt=loadMeta();
- const nm=view.toLocaleDateString("en-US",{month:"long",year:"numeric"}),TT=nm[0].toUpperCase()+nm.slice(1);
- doc.setTitle("My Duty Plan "+view.toLocaleDateString("en-US",{month:"short"})+" "+view.getFullYear());
- const HT="My Duty Plan "+view.toLocaleDateString("en-US",{month:"short"})+" "+y0;
- T(HT,105,26,fit(HT,B,26,W),B,ink,"c");
- if(mt.name){const w1=tw(mt.name,F,11),id="Crew ID "+(mt.id||""),w2=mt.id?tw(id,F,11)+5:0,x0=105-(w1+w2)/2;T(mt.name,x0,34,11,F,g2);if(mt.id)T(id,x0+w1+5,34,11,F,g3)}
+ const fit=(s,f,z,max)=>{while(z>4&&tw(s,f,z)>max)z-=.25;return z};
+ const q=v=>(v*MM).toFixed(2);
+ /* rounded rect as polygon (mm), optional clip to half-plane a*x+b*y<=c */
+ const rrP=(w,h,r)=>{r=Math.min(r,w/2,h/2);const P=[],arc=(cx,cy,a0)=>{for(let i=0;i<=8;i++){const a=(a0+i*90/8)*Math.PI/180;P.push([cx+r*Math.cos(a),cy+r*Math.sin(a)])}};
+  arc(w-r,r,-90);arc(w-r,h-r,0);arc(r,h-r,90);arc(r,r,180);return P};
+ const clipP=(P,f)=>{const out=[];for(let i=0;i<P.length;i++){const A=P[i],B=P[(i+1)%P.length],fa=f(A),fb=f(B);if(fa<=0)out.push(A);if(fa*fb<0){const t=fa/(fa-fb);out.push([A[0]+(B[0]-A[0])*t,A[1]+(B[1]-A[1])*t])}}return out};
+ const poly=(P,x,y,col,st,lw)=>{if(P.length<3)return;pg.drawSvgPath("M"+P.map(p=>q(p[0])+" "+q(p[1])).join("L")+"Z",{x:x*MM,y:(PH-y)*MM,color:col?C(col):undefined,borderColor:st?C(st):undefined,borderWidth:st?lw:0})};
+ const RR=(x,y,w,h,r,col,st,lw)=>poly(rrP(w,h,r),x,y,col,st,lw);
+ const bgc=[0,0,0],card=[28,28,30],ink=[255,255,255],g2=[152,152,159],g3=[110,110,116],sep=[56,56,58],M=14,W=182;
+ const blend=(o,under)=>o?o.c.map((v,i)=>Math.round(v*o.a+under[i]*(1-o.a))):under;
+ pg.drawRectangle({x:0,y:0,width:210*MM,height:PH*MM,color:C(bgc)});
+ const y0=view.getFullYear(),m0=view.getMonth(),n=new Date(y0,m0+1,0).getDate(),mt=loadMeta();
+ const nm=view.toLocaleDateString("en-US",{month:"long",year:"numeric"});
+ doc.setTitle("My Duty Plan "+view.toLocaleDateString("en-US",{month:"short"})+" "+y0);
+ /* header */
+ T("MY DUTY PLAN",105,15,8.5,Bd,g2,"c");
+ T(nm,105,25,fit(nm,Bd,24,W),Bd,ink,"c");
+ if(mt.name){const id=mt.id?"Crew ID "+mt.id:"",w1=tw(mt.name,F,10),w2=id?tw(id,F,10)+4:0,x0=105-(w1+w2)/2;T(mt.name,x0,32,10,F,g2);if(id)T(id,x0+w1+4,32,10,F,g3)}
  let fd=0,lay=0,lib=0,fer=0,sby=0,rsv=0,sk=0,gdd=0,trd=0;
  for(let d=1;d<=n;d++){const D=days[key(y0,m0,d)];if(!D)continue;const has=c=>D.ev.some(e=>e.t=="gr"&&e.c==c);
   if(D.ev.some(e=>e.t=="fl"))fd++;else if(D.lay)lay++;else if(has("FEN")||has("FEF"))fer++;else if(has("ISV"))gdd++;else if(D.ev.some(e=>e.t=="gr"&&TRNC.has(e.c)))trd++;else if(D.ev.some(e=>e.t=="gr"&&SBYC.has(e.c)))sby++;else if(D.ev.some(e=>e.t=="gr"&&RSVC.has(e.c)))rsv++;else if(D.ev.some(e=>e.t=="gr"&&SICKC.has(e.c)))sk++;else if(D.ev.some(e=>e.t=="gr"&&e.c!="VCN"))lib++}
  const su=mt.sums[y0+"-"+p2(m0+1)],st=[];
- if(su&&su.ft)st.push([su.ft,"Total flight time"]);if(su&&su.dt)st.push([su.dt,"Total duty time"]);
- st.push([fd,"Flight days"],[lay,"Layover days"],[lib,"Days off"]);if(sby)st.push([sby,"Standby days"]);if(rsv)st.push([rsv,"Reserve days"]);if(sk)st.push([sk,"Sick days"]);if(gdd)st.push([gdd,"Ground duty"]);if(trd)st.push([trd,"Training days"]);if(fer)st.push([fer,"Vacation days"]);
- const sy=40,sh=16,sw=W/st.length;
- RR(M,sy,W,sh,5,{fill:card,stroke:sep,lw:.4});
- st.forEach(([v,l],i)=>{const x=M+i*sw;if(i)pg.drawLine({start:{x:x*MM,y:(PH-sy-3.5)*MM},end:{x:x*MM,y:(PH-sy-sh+3.5)*MM},thickness:.5,color:C(sep)});
-  T(v,x+sw/2,sy+8,13,B,ink,"c");T(l,x+sw/2,sy+12.6,fit(l,F,7.5,sw-3),F,g2,"c")});
- const gap=1.8,cw=(W-6*gap)/7,G0=68,rows=Math.ceil((off+n)/7),ch=Math.min(40,(274-G0-(rows-1)*gap)/rows);
- ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].forEach((l,i)=>T(l,M+i*(cw+gap)+3,G0-2.8,8.5,B,i>4?g3:g2));
- for(let d=1;d<=n;d++){
-  const i=off+d-1,x=M+(i%7)*(cw+gap),y=G0+Math.floor(i/7)*(ch+gap),I=pdfInfo(days[key(y0,m0,d)]),r=5.2;
-  if(!I){RR(x,y,cw,ch,r,{fill:emp});T(d,x+3.4,y+6.6,9.5,B,g3);continue}
-  let dc=ink,mc=ink,sc=sub;
-  if(I.k=="w"){RR(x,y,cw,ch,r,{fill:[22,22,25],stroke:[82,82,90],lw:.7});dc=g2;mc=ink2}
-  else if(I.k=="rt"){const S=STY.blue,G=STY.lgrn,q=v=>(v*MM).toFixed(2),kk=.5523;RR(x,y,cw,ch,r,{fill:S.t,stroke:S.a,lw:.8});
-   pg.drawSvgPath("M "+q(cw)+" "+q(r)+" V "+q(ch-r)+" C "+q(cw)+" "+q(ch-r+r*kk)+" "+q(cw-r+r*kk)+" "+q(ch)+" "+q(cw-r)+" "+q(ch)+" H "+q(r)+" Z",{x:x*MM,y:(PH-y)*MM,color:C(G.t),borderColor:C(G.a),borderWidth:.8});dc=S.d;mc=ink;sc=G.d}
-  else if(I.k=="wht"){RR(x,y,cw,ch,r,{fill:[244,244,246]});dc=[60,60,67];mc=[28,28,30];sc=[60,60,67]}
-    else{const S=STY[I.k];RR(x,y,cw,ch,r,{fill:S.t,stroke:S.a,lw:.8});dc=S.d;mc=ink;sc=S.d}
-  const tx=x+3.4;
-  T(d,tx,y+6.6,9.5,B,dc);
-  const LB=[156,201,232],ac=STY[I.k]?STY[I.k].a:g2;
-  if(I.pl){ICO("plane",tx+tw(d,B,9.5)+1.1,y+3.3,3.5,LB);if(I.nl>1)T(I.nl,x+cw-2.8,y+6.6,8,B,LB,"r")}
-  const mx=cw-3.4-2.4,tz=fit(I.t,B,13,mx);
-  T(I.t,tx,y+15,tz,B,mc);
-  if(I.ti)ICO(I.ti,x+cw-2.6-4,y+2.9,4,ac);
-  let ly=y+20.6;
-  if(I.ic){ICO(I.ic,tx-.3,y+17,I.ic=="cross"?4.6:5,I.ic=="cross"?[221,112,104]:I.k=="w"?g2:ac);ly=y+26.6}
-  if(I.fn){T(I.fn,tx,ly,fit(I.fn,B,8.5,mx),B,I.k=="w"?g2:ink2);ly+=5}
-  if(I.a)T(I.a,tx,ly,fit(I.a,F,8,mx),F,sc);
-  if(I.palm){const P=["M7 5 Q3 1 0 4 Q4 3 7 5 Z","M7 5 Q11 1 14 4 Q10 3 7 5 Z","M7 5 Q2 4 1 9 Q4 6 7 5 Z","M7 5 Q12 4 13 9 Q10 6 7 5 Z","M7 5 Q6 0 9 0 Q7.5 2 7 5 Z","M6.3 5 Q8.2 10 6 14.5 L7.7 14.5 Q9.6 10 7.6 5 Z"],sc2=1.25;
-   P.forEach(d=>pg.drawSvgPath(d.replace(/[\d.]+/g,v=>(+v*sc2).toFixed(2)),{x:tx*MM,y:(PH-y-19)*MM,color:C(STY.lgrn.a)}))}
+ if(su&&su.ft)st.push([su.ft,"Flight time"]);if(su&&su.dt)st.push([su.dt,"Duty time"]);
+ st.push([fd,"Flight days"],[lay,"Layovers"],[lib,"Days off"]);if(sby)st.push([sby,"Standby"]);if(rsv)st.push([rsv,"Reserve"]);if(sk)st.push([sk,"Sick"]);if(gdd)st.push([gdd,"Ground duty"]);if(trd)st.push([trd,"Training"]);if(fer)st.push([fer,"Vacation"]);
+ const sy=37,sh=14,sw=W/st.length;
+ RR(M,sy,W,sh,3.5,card);
+ st.forEach(([v,l],i)=>{const x=M+i*sw;if(i)pg.drawLine({start:{x:x*MM,y:(PH-sy-3)*MM},end:{x:x*MM,y:(PH-sy-sh+3)*MM},thickness:.5,color:C(sep)});
+  T(v,x+sw/2,sy+6.8,fit(String(v),Bd,12,sw-3),Bd,ink,"c");T(l,x+sw/2,sy+11,fit(l,F,7,sw-3),F,g2,"c")});
+ /* calendar card, cells copied from the Roster layout */
+ const G=pdfGrid(y0,m0,372),G0=67,CB=282,s=Math.min(W/(G.W+12),(CB-G0-6)/(6*76+15)),gw=G.W*s,gx=105-gw/2,pad=6*s;
+ RR(gx-pad,G0-11,gw+2*pad,G.H*s+11+pad,12*s,card);
+ ["M","T","W","T","F","S","S"].forEach((l,i)=>T(l,gx+i*(gw+3*s)/7+6*s,G0-3.2,12*s*MM*.92,Bd,g2));
+ for(const c of G.cells){
+  const x=gx+c.r.x*s,y=G0+c.r.y*s,w=c.r.w*s,h=c.r.h*s,r=c.rad*s,base=rrP(w,h,r);
+  if(c.bgi.length>=2){const A=blend(c.bgi[0],card),Z=blend(c.bgi[c.bgi.length-1],card);poly(base,x,y,A);
+   const cx=w/2,cy=h/2;poly(clipP(base,p=>-((p[0]-cx)+(p[1]-cy))),x,y,Z)}
+  else poly(base,x,y,blend(c.bg,bgc));
+  if(c.sh)poly(rrP(w-.3,h-.3,Math.max(0,r-.15)),x+.15,y+.15,null,blend(c.sh,card),.75*s*MM);
+  if(c.bar){const bw=c.bar.w*s,bp=clipP(base,p=>p[0]-bw);
+   if(c.bar.g.length>=2){poly(clipP(bp,p=>p[1]-h/2),x,y,blend(c.bar.g[0],card));poly(clipP(bp,p=>h/2-p[1]),x,y,blend(c.bar.g[c.bar.g.length-1],card))}
+   else if(c.bar.c)poly(bp,x,y,blend(c.bar.c,card))}
+  for(const t of c.tx){const f=t.b?Bd:F,mx=Math.max(1,t.mx*s);let z=fit(t.s,f,t.fs*s*MM,mx);
+   const bl=G0+(t.r.y+t.r.h/2)*s+z/MM*.36;T(t.s,gx+t.r.x*s,bl,z,f,blend(t.c,ink))}
+  for(const ic of c.ic){const col=blend(ic.c,ink);for(const d of ic.d)pg.drawSvgPath(d,{x:(gx+ic.r.x*s)*MM,y:(PH-G0-ic.r.y*s)*MM,scale:ic.k*s*MM,color:C(col)})}
  }
- T("Local times at each airport.",M,289,7.5,F,g3);
- const t=new Date();T("Created "+p2(t.getDate())+"/"+p2(t.getMonth()+1)+"/"+t.getFullYear(),M+W,289,7.5,F,g3,"r");
+ T("Local times at each airport.",M,290,7.5,F,g3);
+ const t=new Date();T("Created with Rotate · "+p2(t.getDate())+"/"+p2(t.getMonth()+1)+"/"+t.getFullYear(),M+W,290,7.5,F,g3,"r");
  return doc.save();
 }
 async function sharePdf(){
@@ -1195,6 +1199,7 @@ function drUi(){const m=loadMeta(),n=(m.name||"").trim(),ini=n?n.split(/\s+/).ma
 
 /* ===== Changelog ===== */
 const CHLOG=[
+ ["Beta 65","17/11/2026",["Month PDF now looks exactly like the Roster calendar"],["Il PDF del mese ora è identico al calendario di Roster"]],
  ["Beta 64","17/11/2026",["If Safari does not open, Download duty plan falls back to the CrewLink window"],["Se Safari non si apre, Scarica duty plan ripiega sulla finestra CrewLink"]],
  ["Beta 63","17/11/2026",["Download duty plan opens CrewLink in Safari on iPhone"],["Su iPhone Scarica duty plan apre CrewLink in Safari"]],
  ["Beta 62","17/11/2026",["Download duty plan now opens CrewLink as a normal link"],["Scarica duty plan ora apre CrewLink come un normale link"]],
