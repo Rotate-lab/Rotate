@@ -514,8 +514,8 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 </nav>
 
 <script>
-const VER="Beta 84";
-const BUILD="202611181052";
+const VER="Beta 86";
+const BUILD="202611181123";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME);try{bgColors();bgDraw(performance.now())}catch(e){}}
 themeApply();
@@ -1348,7 +1348,7 @@ function rcRender(){const c=rcCalc(),R=(t,v,cl,s)=>'<div class="row nl"><span cl
 }
 /* ===== CREW REST: same rules as "Turni di riposo" (start TO+30 min, end LDG-1 h, split equally) ===== */
 const RSC=["#1F5BD6","#2E9A64","#E39B2D","#8E5BD8","#D9577A","#2BA59A","#C9A028","#6E62E0","#D64545","#4A90E2","#9C6B3F","#5A6B85"];
-function rsGet(){const m=loadMeta(),r=m.rest||{};const N=(v,d)=>{v=parseInt(v,10);return isNaN(v)||v<0?d:v};return{n:Math.min(20,Math.max(1,parseInt(r.n,10)||3)),dep:r.dep||"08:00",arr:r.arr||"20:00",lab:r.lab||"",ft:r.ft||"",rf:r.rf||null,so:N(r.so,30),eo:N(r.eo,60)}}
+function rsGet(){const m=loadMeta(),r=m.rest||{};const N=(v,d)=>{v=parseInt(v,10);return isNaN(v)||v<0?d:v};return{n:Math.min(20,Math.max(3,parseInt(r.n,10)||3)),dep:r.dep||"08:00",arr:r.arr||"20:00",lab:r.lab||"",ft:r.ft||"",rf:r.rf||null,so:N(r.so,30),eo:N(r.eo,60)}}
 function rsSet(o){const m=loadMeta();m.rest=Object.assign(rsGet(),o);try{localStorage.setItem("turni_meta_v1",JSON.stringify(m))}catch(e){}}
 const rsM=t=>{const a=String(t||"").split(":").map(Number);return isNaN(a[0])||isNaN(a[1])?null:a[0]*60+a[1]};
 const rsT=x=>{const f=Math.floor(x+1e-6),d=Math.floor(f/1440),r=(f%1440+1440)%1440;return p2(Math.floor(r/60))+":"+p2(r%60)+(d>0?" (+1)":"")};
@@ -1356,12 +1356,13 @@ const rsO=m=>m%60?(m>=60?Math.floor(m/60)+" h "+m%60+"′":m+"′"):m/60+" h";
 const rsD=x=>{const f=Math.floor(x+1e-6);return Math.floor(f/60)+":"+p2(f%60)};
 function rsCalc(R){const D=rsM(R.dep);let A=rsM(R.arr);if(D==null||A==null)return{err:tt("Enter takeoff and landing times","Inserisci orario di decollo e atterraggio")};
  if(A<=D)A+=1440;const st=D+R.so,en=A-R.eo,tot=en-st;if(tot<=0)return{err:tt("Times not valid: no time left for rest","Orari non validi: non resta tempo per i riposi")};
- const per=tot/R.n,crew=[];for(let i=0;i<R.n;i++)crew.push({i,s:st+i*per,e:st+(i+1)*per});return{D,A,st,en,tot,per,crew}}
+ const g=R.n<=3?R.n:2,sz=Math.ceil(R.n/g),per=tot/g,crew=[],slots=[];for(let j=0;j<g;j++)slots.push({g:j,s:st+j*per,e:st+(j+1)*per,m:[]});
+ for(let i=0;i<R.n;i++){const j=R.n<=3?i:Math.min(g-1,Math.floor(i/sz)),sl=slots[j];sl.m.push(i);crew.push({i,g:j,s:sl.s,e:sl.e})}return{D,A,st,en,tot,per,crew,slots,g}}
 function rsFlights(){let fl=[];try{fl=lbFlights().filter(f=>!f.sim)}catch(e){}const now=Date.now();
  const up=fl.filter(f=>f.t1>now-36e5*12).slice(0,12),past=fl.filter(f=>f.t1<=now-36e5*12).slice(-4);return up.length?up:past}
 function rsRender(){const R=rsGet(),c=rsCalc(R),X=$("#rsx"),U=t=>{const d=new Date(t);return p2(d.getUTCHours())+":"+p2(d.getUTCMinutes())};
  const fl=rsFlights();
- let h='<div class="rsh"><div class="rsk"><span class="l">'+tt("Crew members","Crew member")+'</span><div class="rsst"><button id="rsMi" aria-label="−"'+(R.n<=1?" disabled":"")+'>−</button><b id="rsN">'+R.n+'</b><button id="rsPl" aria-label="+"'+(R.n>=20?" disabled":"")+'>+</button></div></div>'
+ let h='<div class="rsh"><div class="rsk"><span class="l">'+tt("Crew members","Crew member")+'</span><div class="rsst"><button id="rsMi" aria-label="−"'+(R.n<=3?" disabled":"")+'>−</button><b id="rsN">'+R.n+'</b><button id="rsPl" aria-label="+"'+(R.n>=20?" disabled":"")+'>+</button></div></div>'
   +'<div class="rst"><label><span>'+IC.plane.replace('class="ico pl"','width="13" height="13" style="transform:rotate(-45deg)"')+tt("Takeoff","Decollo")+'</span><input id="rsDp" inputmode="numeric" maxlength="5" placeholder="08:00" autocomplete="off" value="'+R.dep+'"></label>'
   +'<label><span>'+IC.plane.replace('class="ico pl"','width="13" height="13" style="transform:rotate(45deg)"')+tt("Landing","Atterraggio")+'</span><input id="rsAr" inputmode="numeric" maxlength="5" placeholder="20:00" autocomplete="off" value="'+R.arr+'"></label></div>'
   +(fl.length?'<select class="rsp" id="rsF"><option value="">'+tt("Fill from a roster flight (UTC)…","Prendi da un volo del roster (UTC)…")+'</option>'+fl.map((f,i)=>{const d=new Date(f.t0);return'<option value="'+i+'"'+(R.lab==f.k?" selected":"")+'>'+d.getUTCDate()+" "+d.toLocaleDateString(LOC(),{month:"short",timeZone:"UTC"})+" · "+f.fn+" "+f.from+"–"+f.to+" · "+U(f.t0)+"–"+U(f.t1)+'Z</option>'}).join("")+'</select>':'')
@@ -1372,13 +1373,13 @@ function rsRender(){const R=rsGet(),c=rsCalc(R),X=$("#rsx"),U=t=>{const d=new Da
   h+='<div class="rsg"><label class="rse"><input id="rsS" inputmode="numeric" maxlength="5" autocomplete="off" value="'+rsT(c.st).slice(0,5)+'"><span>'+tt("Rest starts","Inizio riposi")+'<br><i>TO +'+rsO(R.so)+'</i></span></label><label class="rse"><input id="rsE" inputmode="numeric" maxlength="5" autocomplete="off" value="'+rsT(c.en).slice(0,5)+'"><span>'+tt("Rest ends","Fine riposi")+'<br><i>LDG −'+rsO(R.eo)+'</i></span></label><div><b>'+rsD(c.tot)+'</b><span>'+tt("Total available","Tempo disponibile")+'</span></div></div>'
    +(R.so!=30||R.eo!=60?'<button class="rsrst" id="rsRs">'+tt("Reset to 30 min after takeoff and 1 h before landing","Ripristina 30 min dopo il decollo e 1 h prima dell'atterraggio")+'</button>':'<p class="rshint">'+tt("Tap rest start or end to change it","Tocca inizio o fine riposi per modificarli")+'</p>');
   const L=c.A-c.D,P=x=>((x-c.D)/L*100).toFixed(2)+"%",sm=c.per/L*100;
-  h+='<div class="rtl"><div class="rtb"><i style="width:'+P(c.st)+';background:none"></i>'+c.crew.map(k=>'<i style="width:'+(c.per/L*100).toFixed(3)+'%;background:'+RSC[k.i%RSC.length]+'">'+(sm>5?(sm>9?"C":"")+(k.i+1):"")+'</i>').join("")+'</div>'
+  h+='<div class="rtl"><div class="rtb"><i style="width:'+P(c.st)+';background:none"></i>'+c.slots.map(k=>'<i style="width:'+(c.per/L*100).toFixed(3)+'%;background:'+RSC[k.g%RSC.length]+'">'+(sm>9?k.m.map(x=>"C"+(x+1)).join(" "):sm>5?k.m.map(x=>x+1).join(" "):"")+'</i>').join("")+'</div>'
    +'<div class="rtx"><span style="left:0"><b>'+rsT(c.D)+'</b>'+tt("Takeoff","Decollo")+'</span><span style="left:100%"><b>'+rsT(c.A)+'</b>'+tt("Landing","Atterraggio")+'</span></div>'
    +'<div class="lg"><em>'+tt("No rest: "+rsO(R.so)+" after takeoff, "+rsO(R.eo)+" before landing","Niente riposi: "+rsO(R.so)+" dopo il decollo, "+rsO(R.eo)+" prima dell'atterraggio")+'</em></div></div>';
-  h+='<div class="hd">'+tt("Rest schedule","Turni di riposo")+'</div><div class="grp">'+c.crew.map(k=>'<div class="row nl rsr"><span class="rsn" style="background:'+RSC[k.i%RSC.length]+'">'+(k.i+1)+'</span><span class="bd"><span class="t">Crew '+(k.i+1)+'</span><span class="s">'+rsD(c.per)+' h</span></span><span class="tm">'+rsT(k.s)+' – '+rsT(k.e)+'</span></div>').join("")+'</div>'
+  h+='<div class="hd">'+tt("Rest schedule","Turni di riposo")+'</div><div class="grp">'+c.crew.map(k=>'<div class="row nl rsr"><span class="rsn" style="background:'+RSC[k.g%RSC.length]+'">'+(k.i+1)+'</span><span class="bd"><span class="t">Crew '+(k.i+1)+'</span><span class="s">'+rsD(c.per)+' h</span></span><span class="tm">'+rsT(k.s)+' – '+rsT(k.e)+'</span></div>').join("")+'</div>'
   +'<button class="lbgo2 rssh" id="rsPdf"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M7 9l5-5 5 5M5 14v6h14v-6"/></svg>'+tt("Share PDF","Condividi PDF")+'</button><p class="ft" id="rsMsg"></p>';
  }
- h+='<p class="ft">'+tt("By default rest starts 30 minutes after takeoff and ends 1 hour before landing (you can change it); the time is split equally among the crew. Flights across midnight are handled automatically, (+1) means the next day. Use takeoff and landing in the same time zone (e.g. UTC).","Di base i riposi iniziano 30 minuti dopo il decollo e finiscono 1 ora prima dell'atterraggio (puoi modificarli); il tempo è diviso in parti uguali tra i crew member. I voli che passano la mezzanotte sono gestiti in automatico, (+1) indica il giorno dopo. Usa decollo e atterraggio nello stesso fuso (es. UTC).")+'</p>';
+ h+='<p class="ft">'+tt("By default rest starts 30 minutes after takeoff and ends 1 hour before landing (you can change it); two crew members always stay at the controls; the others can rest at the same time, so with 3 crew each rests in turn and with 4 or more the crew splits in two groups. Flights across midnight are handled automatically, (+1) means the next day. Use takeoff and landing in the same time zone (e.g. UTC).","Di base i riposi iniziano 30 minuti dopo il decollo e finiscono 1 ora prima dell'atterraggio (puoi modificarli); due crew member restano sempre ai comandi; gli altri possono riposare insieme: con 3 crew riposano a turno, da 4 in su l'equipaggio si divide in due gruppi. I voli che passano la mezzanotte sono gestiti in automatico, (+1) indica il giorno dopo. Usa decollo e atterraggio nello stesso fuso (es. UTC).")+'</p>';
  X.innerHTML=h;
  const up=o=>{rsSet(o);rsRender()};
  $("#rsMi").onclick=()=>up({n:R.n-1});$("#rsPl").onclick=()=>up({n:R.n+1});
@@ -1433,7 +1434,7 @@ async function rsPdf(R,c){const{PDFDocument,StandardFonts,rgb}=PDFLib,doc=await 
  RR(X0,by,W,bh,3,SOFT);
  for(let x=X0+1.5;x<X(c.st)-1;x+=2.6)Ln(x,by+bh-1,Math.min(x+2.2,X(c.st)-.5),by+1,HAT,.45);
  for(let x=X(c.en)+1.5;x<X1-1;x+=2.6)Ln(x,by+bh-1,Math.min(x+2.2,X1-1),by+1,HAT,.45);
- c.crew.forEach(k=>{const x0=X(k.s),x1=X(k.e),col=hx(RSC[k.i%RSC.length]);Rc(x0,by,x1-x0,bh,col);if(k.i)Ln(x0,by,x0,by+bh,WH,.8);if(x1-x0>8)T("C"+(k.i+1),(x0+x1)/2,by+bh/2+1.5,9,B,WH,"c")});
+ c.slots.forEach(k=>{const x0=X(k.s),x1=X(k.e),col=hx(RSC[k.g%RSC.length]);Rc(x0,by,x1-x0,bh,col);if(k.g)Ln(x0,by,x0,by+bh,WH,.8);const lb=k.m.map(x=>"C"+(x+1)).join(" ");if(x1-x0>tw(lb,B,9)+3)T(lb,(x0+x1)/2,by+bh/2+1.5,9,B,WH,"c");else{const l2=k.m.map(x=>x+1).join(" ");if(x1-x0>tw(l2,B,9)+3)T(l2,(x0+x1)/2,by+bh/2+1.5,9,B,WH,"c")}});
  T(tt("Rest starts ","Inizio riposi ")+tz(c.st),X(c.st),by-2.2,7.5,B,INK,X(c.st)>X0+60?"c":"l");T(tt("Rest ends ","Fine riposi ")+tz(c.en),X(c.en),by-2.2,7.5,B,INK,X(c.en)<X1-60?"c":"r");
  /* hour axis */
  const hr=L/60,step=hr<=8?1:hr<=16?2:3,first=Math.ceil(c.D/60/step)*step*60;let lastX=-99;
@@ -1446,12 +1447,12 @@ async function rsPdf(R,c){const{PDFDocument,StandardFonts,rgb}=PDFLib,doc=await 
  y=ly+10;T(tt("Rest schedule","Turni di riposo"),X0,y,12.5,B,INK);y+=5;
  const rh=R.n>12?8.6:R.n>8?10:11.5,cols=[X0+16,X0+82,X0+122];
  RR(X0,y,W,8,2,SOFT);T(tt("Crew member","Crew member"),cols[0],y+5.4,8,B,SUB);T(tt("Start","Inizio"),cols[1],y+5.4,8,B,SUB);T(tt("End","Fine"),cols[2],y+5.4,8,B,SUB);T(tt("Duration","Durata"),X1-4,y+5.4,8,B,SUB,"r");y+=8;
- c.crew.forEach(k=>{const col=hx(RSC[k.i%RSC.length]),cy=y+rh/2;if(k.i%2)Rc(X0,y,W,rh,[249,251,253]);
+ c.crew.forEach(k=>{const col=hx(RSC[k.g%RSC.length]),cy=y+rh/2;if(k.i%2)Rc(X0,y,W,rh,[249,251,253]);
   pg.drawCircle({x:(X0+7)*MM,y:(PH-cy)*MM,size:3.4*MM,color:C(col)});T(String(k.i+1),X0+7,cy+1.3,8.5,B,WH,"c");
   T("Crew "+(k.i+1),cols[0],cy+1.6,11,B,INK);T(tz(k.s),cols[1],cy+1.6,11,F,INK);T(tz(k.e),cols[2],cy+1.6,11,F,INK);T(rsD(c.per)+" h",X1-4,cy+1.6,11,B,AC,"r");
   y+=rh;Ln(X0,y,X1,y,LN,.4)});
  /* rules */
- y+=8;const rules=[tt("Rest starts "+R.so+" minutes after takeoff and ends "+R.eo+" minutes before landing.","I riposi iniziano "+R.so+" minuti dopo il decollo e finiscono "+R.eo+" minuti prima dell'atterraggio."),tt("The available time is split equally among the "+R.n+" crew members.","Il tempo disponibile è diviso in parti uguali tra i "+R.n+" crew member."),z?tt("Times in UTC (Z); +1 means the next day.","Orari in UTC (Z); +1 vuol dire il giorno dopo."):tt("+1 means the next day.","+1 vuol dire il giorno dopo.")];
+ y+=8;const rules=[tt("Rest starts "+R.so+" minutes after takeoff and ends "+R.eo+" minutes before landing.","I riposi iniziano "+R.so+" minuti dopo il decollo e finiscono "+R.eo+" minuti prima dell'atterraggio."),tt("Two crew members always stay at the controls; the other "+(R.n-2)+" can rest at the same time, so the available time is shared in "+c.g+(c.g>1?" turns":" turn")+".","Due crew member restano sempre ai comandi; gli altri "+(R.n-2)+" possono riposare insieme, quindi il tempo disponibile è diviso in "+c.g+(c.g>1?" turni":" turno")+"."),z?tt("Times in UTC (Z); +1 means the next day.","Orari in UTC (Z); +1 vuol dire il giorno dopo."):tt("+1 means the next day.","+1 vuol dire il giorno dopo.")];
  const rl=rules.flatMap(r=>wrap(r,F,8.5,W-12)),rhh=10+rl.length*4.4;
  if(y+rhh<PH-18){RR(X0,y,W,rhh,3,SOFT);T(tt("How it is calculated","Come è calcolato"),X0+6,y+7,9.5,B,INK);rl.forEach((l,i)=>T(l,X0+6,y+12.5+i*4.4,8.5,F,SUB))}
  const now=new Date();Ln(X0,PH-13,X1,PH-13,LN,.4);T(tt("Created with Rotate · ","Creato con Rotate · ")+p2(now.getDate())+"/"+p2(now.getMonth()+1)+"/"+now.getFullYear(),X0,PH-8.5,7.5,F,SUB);T(tt("Estimate: always follow the commander's instructions","Stima: segui sempre le indicazioni del comandante"),X1,PH-8.5,7.5,F,SUB,"r");
@@ -1525,7 +1526,7 @@ const eur=v=>(Math.round(v*100)/100).toLocaleString(LOC(),{style:"currency",curr
 function bpIn(y,m){const ym=y+"-"+p2(m+1),ov=(loadMeta().bpm||{})[ym]||{};return Object.assign({m13:0,scatto:0,sd:0,sh:0,perm:0,pdr:"NO",eb:1,aulah:0,addh:0,simh:0,add:0},bpAuto(y,m),ov)}
 function bpSet(ym,o){const m=loadMeta();m.bpm=m.bpm||{};m.bpm[ym]=Object.assign(m.bpm[ym]||{},o);saveMeta(m)}
 let bpOpen={};
-function bpRender(){if(!bpView)bpView=new Date(view.getFullYear(),view.getMonth()+1,1);
+function bpRender(){if(!bpView){const n=new Date();bpView=new Date(n.getFullYear(),n.getMonth(),1)}
  const y=bpView.getFullYear(),m=bpView.getMonth(),A=new Date(y,m-1,1),ay=A.getFullYear(),am=A.getMonth(),ym=ay+"-"+p2(am+1),P=bpProf(),I=bpIn(ay,am),X=$("#bpx");
  const MN=(d,o)=>{const s=d.toLocaleDateString(LOC(),o||{month:"long",year:"numeric"});return s[0].toUpperCase()+s.slice(1)},pm=MN(bpView),am2=MN(A,{month:"long"}),am3=MN(A);
  let h='<div class="mh bpmh"><button id="bpPv" aria-label="‹">‹</button><div class="bpmt"><b>'+tt("Payslip ","Busta di ")+esc(MN(bpView,{month:"long"}).toLowerCase())+' '+y+'</b><span>'+tt("Flying and allowances of ","Volato e diarie di ")+esc(am3.toLowerCase())+'</span></div><button id="bpNx" aria-label="›">›</button></div>';
@@ -1677,12 +1678,12 @@ function homeRender(){{const v=$("#hVer");if(v)v.textContent=/^Beta/i.test(VER)?
  const c2=['rc',"Recency",HIC.rc,!rc?"—":rc.st=="off"?tt("Not current","Non current"):rc.left+" "+tt("days","giorni"),!rc?"":rc.st=="on"?"g":rc.st=="mid"?"o":"r",!rc?"":rc.nx?tt("current until ","current fino al ")+rcFmt(rc.nx,{day:"numeric",month:"short"}):rc.need];
  let todo=null,nfl=0;try{const cx=lbCtx();todo=cx.todo.length;nfl=cx.rows.length}catch(e){}
  const c3=['log',"Logbook",HIC.log,todo==null||!nfl?"—":todo?todo+" "+tt("to do","da fare"):tt("Complete","Completo"),todo?"o":"",todo==null||!nfl?tt("no flights yet","nessun volo"):todo?tt("missing flight data","dati mancanti"):tt("no missing data","nessun dato mancante")];
- let c4;const P=bpProf(),pm=new Date(t.getFullYear(),t.getMonth()+1,1),pmn=pm.toLocaleDateString(LOC(),{month:"long"});
+ let c4;const P=bpProf(),pm=new Date(t.getFullYear(),t.getMonth(),1),pa=new Date(t.getFullYear(),t.getMonth()-1,1),pmn=pm.toLocaleDateString(LOC(),{month:"long"});
  if(P.anz===""||P.anz==null)c4=['bp',tt("Payslip","Busta paga"),HIC.bp,tt("Set up","Imposta"),"",tt("seniority in Account","anzianità in Account")];
- else{let v=null;try{v=bpCalc(P,bpIn(t.getFullYear(),t.getMonth()),pm.getFullYear()).netto}catch(e){}
+ else{let v=null;try{v=bpCalc(P,bpIn(pa.getFullYear(),pa.getMonth()),pm.getFullYear()).netto}catch(e){}
   c4=['bp',tt("Payslip ","Busta ")+pmn.slice(0,3)+".",HIC.bp,v==null?"—":"≈ "+Math.round(v).toLocaleString(LOC())+" €","",tt("estimated net","netto stimato")]}
  const C=$("#hCards");C.innerHTML=[c1,c2,c3,c4].map(c=>'<button class="hc" data-hc="'+c[0]+'"><span>'+esc(c[1])+c[2]+'</span><b'+(c[4]?' class="'+c[4]+'"':'')+'>'+esc(c[3])+'</b><small>'+esc(c[5])+'</small></button>').join("");
- C.querySelectorAll("[data-hc]").forEach(b=>b.onclick=()=>{const g=b.dataset.hc;if(g=="bp")bpView=new Date(t.getFullYear(),t.getMonth()+1,1);if(g=="roster"){view=new Date(t.getFullYear(),t.getMonth(),1)}go(g);if(g=="roster")render()});
+ C.querySelectorAll("[data-hc]").forEach(b=>b.onclick=()=>{const g=b.dataset.hc;if(g=="bp")bpView=new Date(t.getFullYear(),t.getMonth(),1);if(g=="roster"){view=new Date(t.getFullYear(),t.getMonth(),1)}go(g);if(g=="roster")render()});
 }
 /* ===== Background: small planes flying along dotted routes ===== */
 const BG={cv:null,x:null,w:0,h:0,dpr:1,pl:[],col:"#1F5BD6",dark:false,last:0,fr:0,raf:0};
@@ -1994,6 +1995,8 @@ function drUi(){const m=loadMeta(),n=(m.name||"").trim(),ini=n?n.split(/\s+/).ma
 
 /* ===== Changelog ===== */
 const CHLOG=[
+ ["Beta 86","18/11/2026",["Payslip simulator opens by default on the payslip you receive this month (last month's flying and allowances)"],["Il simulatore di busta paga si apre di default sulla busta che ricevi questo mese (volato e indennità del mese scorso)"]],
+ ["Beta 85","18/11/2026",["In-flight rest: minimum 3 crew; two always stay at the controls and the others can rest at the same time (3 crew rest in turn, 4+ split into two groups); timeline and PDF updated"],["Riposi in volo: minimo 3 crew; due restano sempre ai comandi e gli altri possono riposare insieme (con 3 a turno, da 4 in su due gruppi); grafico e PDF aggiornati"]],
  ["Beta 84","18/11/2026",["Roster: \"More\" drop-down moved next to Month summary; payslip tile now reads \"Payslip, simulation\""],["Roster: la tendina \"Altri dati\" è accanto a Riepilogo del mese; il riquadro busta paga ora dice \"Busta paga, simulazione\""]],
  ["Beta 83","18/11/2026",["Roster: month summary shows only flight and duty hours; the payslip simulator sits beside them and the other figures open with a \"More details\" drop-down"],["Roster: il riepilogo mostra solo ore di volo e di servizio; la busta paga è accanto e gli altri dati si aprono con una tendina \"Altri dati\""]],
  ["Beta 82","18/11/2026",["Roster: Import and Share are now icon buttons next to the title; new Parsing button (to be configured)"],["Roster: Importa e Condividi ora sono icone accanto al titolo; nuovo pulsante Parsing (da configurare)"]],
