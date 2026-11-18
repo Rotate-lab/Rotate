@@ -514,8 +514,8 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 </nav>
 
 <script>
-const VER="Beta 80";
-const BUILD="202611172359";
+const VER="Beta 81";
+const BUILD="202611180940";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME);try{bgColors();bgDraw(performance.now())}catch(e){}}
 themeApply();
@@ -787,75 +787,148 @@ function pdfDay(k){const D=days[k];if(!D||((!D.ev||!D.ev.length)&&!D.lay))return
  if(ht)return{c:PDC.grey,title:tt("Hotel","Hotel"),L:[hotel]};
  return null}
 async function buildPdf(){markLay();
- const{PDFDocument,StandardFonts,rgb}=PDFLib,doc=await PDFDocument.create(),MM=72/25.4,PH=297,X0=14,X1=196,TW=X1-X0;
- const pg=doc.addPage([210*MM,PH*MM]),F=await doc.embedFont(StandardFonts.Helvetica),B=await doc.embedFont(StandardFonts.HelveticaBold);
- const NAV=[11,37,69],INK=[11,37,69],SUB=[90,107,133],WH=[255,255,255],PALE=[178,198,232],AC=[31,91,214],LN=[220,227,238];
- const san=s=>String(s==null?"":s).replace(/[^\x20-\x7E -ÿ–—‘’•]/g,"");
+ const{PDFDocument,StandardFonts,rgb,degrees}=PDFLib,doc=await PDFDocument.create(),MM=72/25.4,PW=210,PH=297,X0=12,X1=198,TW=X1-X0;
+ const pg=doc.addPage([PW*MM,PH*MM]),F=await doc.embedFont(StandardFonts.Helvetica),B=await doc.embedFont(StandardFonts.HelveticaBold);
+ const NAV=[11,37,69],INK=[14,30,56],SUB=[92,106,132],MUT=[146,156,175],WH=[255,255,255],PALE=[158,182,224],AC=[31,91,214],LN=[227,232,240],SOFT=[243,246,250],WK=[236,242,253];
+ const KC={fl:[31,91,214],lay:[31,91,214],ret:[31,91,214],sby:[232,146,28],rsv:[214,160,20],sim:[118,86,226],gd:[118,86,226],rest:[30,156,92],off:[96,190,138],leave:[18,152,146],sick:[220,72,104],med:[118,86,226],none:[214,220,230]};
+ const KT={rest:[22,118,68],off:[52,128,88],leave:[12,112,108],sby:[166,94,0],rsv:[150,104,0],sim:[92,62,190],gd:[92,62,190],sick:[178,44,74],med:[92,62,190]};
+ const san=s=>String(s==null?"":s).replace(/[^\x20-\x7E\xA0-\xFF–—‘’•…]/g,"");
  const C=a=>rgb(a[0]/255,a[1]/255,a[2]/255),tw=(s,f,z)=>f.widthOfTextAtSize(san(s),z)/MM;
- const T=(s,x,y,z,f,c,al)=>{s=san(s);const X=al=="r"?x-tw(s,f,z):al=="c"?x-tw(s,f,z)/2:x;pg.drawText(s,{x:X*MM,y:(PH-y)*MM,size:z,font:f,color:C(c)})};
- const R=(x,y,w,h,c)=>pg.drawRectangle({x:x*MM,y:(PH-y-h)*MM,width:w*MM,height:h*MM,color:C(c)});
- const Ln=(x1,y1,x2,y2,c,t)=>pg.drawLine({start:{x:x1*MM,y:(PH-y1)*MM},end:{x:x2*MM,y:(PH-y2)*MM},thickness:t||.5,color:C(c)});
+ const T=(s,x,y,z,f,c,al,op)=>{s=san(s);if(!s)return 0;const w=tw(s,f,z),X=al=="r"?x-w:al=="c"?x-w/2:x;pg.drawText(s,{x:X*MM,y:(PH-y)*MM,size:z,font:f,color:C(c),opacity:op==null?1:op});return w};
+ const TS=(s,x,y,z,f,c,sp,al)=>{s=san(s);const ch=[...s],w=ch.reduce((a,k)=>a+tw(k,f,z),0)+sp*(ch.length-1);let X=al=="r"?x-w:al=="c"?x-w/2:x;ch.forEach(k=>{T(k,X,y,z,f,c);X+=tw(k,f,z)+sp});return w};
+ const R=(x,y,w,h,c,op)=>pg.drawRectangle({x:x*MM,y:(PH-y-h)*MM,width:w*MM,height:h*MM,color:C(c),opacity:op==null?1:op});
+ const RR=(x,y,w,h,r,c,op,bc,bw)=>{const q=v=>(v*MM).toFixed(2),k=.5523;r=Math.max(0,Math.min(r,w/2,h/2));
+  pg.drawSvgPath("M "+q(r)+" 0 H "+q(w-r)+" C "+q(w-r+r*k)+" 0 "+q(w)+" "+q(r-r*k)+" "+q(w)+" "+q(r)+" V "+q(h-r)+" C "+q(w)+" "+q(h-r+r*k)+" "+q(w-r+r*k)+" "+q(h)+" "+q(w-r)+" "+q(h)+" H "+q(r)+" C "+q(r-r*k)+" "+q(h)+" 0 "+q(h-r+r*k)+" 0 "+q(h-r)+" V "+q(r)+" C 0 "+q(r-r*k)+" "+q(r-r*k)+" 0 "+q(r)+" 0 Z",
+   {x:x*MM,y:(PH-y)*MM,color:c?C(c):undefined,opacity:op==null?1:op,borderColor:bc?C(bc):undefined,borderWidth:bc?(bw||.5):undefined,borderOpacity:op==null?1:op})};
+ const Ln=(x1,y1,x2,y2,c,t,da,op)=>pg.drawLine({start:{x:x1*MM,y:(PH-y1)*MM},end:{x:x2*MM,y:(PH-y2)*MM},thickness:t||.5,color:C(c),dashArray:da?da.map(v=>v*MM):undefined,opacity:op==null?1:op,lineCap:da?1:undefined});
+ const Dot=(x,y,r,c,op)=>pg.drawCircle({x:x*MM,y:(PH-y)*MM,size:r*MM,color:C(c),opacity:op==null?1:op});
+ const PL="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z";
+ const plane=(cx,cy,sz,dir,c,op)=>{const s=sz*MM/24,th=(dir-90)*Math.PI/180,vx=12*s*Math.cos(th)+12*s*Math.sin(th),vy=12*s*Math.sin(th)-12*s*Math.cos(th);pg.drawSvgPath(PL,{x:cx*MM-vx,y:(PH-cy)*MM-vy,scale:s,rotate:degrees(dir-90),color:C(c),opacity:op==null?1:op})};
+ const BED="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z";
+ const icon=(p,x,cy,sz,c)=>pg.drawSvgPath(p,{x:x*MM,y:(PH-cy+sz/2)*MM,scale:sz*MM/24,color:C(c)});
  const cut=(s,f,z,max)=>{s=san(s);if(tw(s,f,z)<=max)return s;while(s.length>1&&tw(s+"…",f,z)>max)s=s.slice(0,-1);return s.trim()+"…"};
  const fitZ=(s,f,z,max)=>{while(z>5&&tw(s,f,z)>max)z-=.25;return z};
+ const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+ const SMW=new Set(["de","di","da","del","della","la","le","el","los","las","of","the","and","by","at","on","in","du","des","y","e","&"]);
+ const htN=s=>String(s||"").trim().split(", ").map(htP).join(", "),htP=s=>{if(s!==s.toUpperCase())return s;return s.toLowerCase().split(/(\s+|-|\/)/).map((w,i)=>{if(!w.trim()||w=="-"||w=="/")return w;const W=w.toUpperCase();if(/^[A-Z]{2}$/.test(W)&&!SMW.has(w))return W;if(i&&SMW.has(w))return w;return w.charAt(0).toUpperCase()+w.slice(1)}).join("")};
+ const htFit=(s,f,z,max)=>{s=htN(s);if(tw(s,f,z)>max&&s.includes(", "))s=s.split(", ")[0];return cut(s,f,z,max)};
  const y0=view.getFullYear(),m0=view.getMonth(),n=new Date(y0,m0+1,0).getDate(),mt=loadMeta(),base=mt.base||"FCO";
- const MN=view.toLocaleDateString(LOC(),{month:"long",year:"numeric"}),MNc=MN.charAt(0).toUpperCase()+MN.slice(1);
- doc.setTitle(tt("Roster ","Turni ")+MNc);
- /* tints: [row, strong line] */
- const TN={fl:[[226,236,252],[203,220,249]],lay:[[244,246,250]],rest:[[212,238,221]],off:[[230,246,235]],leave:[[214,240,236]],sby:[[252,236,211]],rsv:[[250,241,205]],sim:[[230,228,251],[214,211,248]],gd:[[239,230,251]],med:[[251,224,231]],sick:[[251,224,231]],ret:[[226,236,252]],none:[[255,255,255]]};
- const ap=new Set(),K={fd:0,sec:0,dh:0,lay:0,off:0,rest:0,sby:0,leave:0,trn:0,sick:0};
- const rows=[];
- for(let d=1;d<=n;d++){const k=key(y0,m0,d),D=days[k],L=[];let kind="none";
+ const MNc=cap(view.toLocaleDateString(LOC(),{month:"long"}));
+ doc.setTitle(tt("Roster ","Turni ")+MNc+" "+y0);doc.setAuthor(mt.name||"");doc.setCreator("Rotate");
+ /* ---------- data ---------- */
+ const ap=new Set(),K={fd:0,sec:0,dh:0,lay:0,off:0,rest:0,sby:0,leave:0,trn:0,sick:0},rows=[];
+ for(let d=1;d<=n;d++){const k=key(y0,m0,d),D=days[k],r={d,dt:new Date(y0,m0,d),kind:"none",fls:[],items:[]};
   if(D){const E=D.ev||[],fl=E.filter(e=>e.t=="fl"),ci=E.find(e=>e.t=="ci")||E.find(e=>e.t=="pr"),co=E.find(e=>e.t=="co"),ht=E.find(e=>e.t=="ht"),sm=E.find(e=>e.t=="sm"),br=E.find(e=>e.t=="br"),g=E.find(e=>e.t=="gr");
    const hn=ht?(ht.name||ht.ap||""):"";
-   if(fl.length){kind="fl";K.fd++;
-    if(ci){L.push({t:"lab",a:tt("Report","Presentazione"),b:ci.ap,c:ci.h,st:1});ap.add(ci.ap)}
-    fl.forEach(f=>{L.push({t:"fl",f});ap.add(f.from);ap.add(f.to);if(f.dh)K.dh++;else K.sec++});
-    if(co)L.push({t:"lab",a:tt("Duty ends","Fine servizio"),b:co.ap,c:co.h});
-    const last=fl[fl.length-1];if(last.to!=base&&hn)L.push({t:"lab",a:"Hotel",b:"",c:"",x:hn})}
-   else if(D.lay){kind="lay";K.lay++;ap.add(D.lay);L.push({t:"lab",a:"Layover",b:D.lay,c:"",x:hn})}
-   else if(sm){kind="sim";K.trn++;if(br)L.push({t:"lab",a:tt("Report","Presentazione"),b:br.ap||sm.ap,c:br.h,st:1});L.push({t:"lab",a:tt("Simulator","Simulatore")+" "+sm.c,b:sm.ap||"",c:sm.s&&sm.e?sm.s+" – "+sm.e:""})}
+   if(fl.length){r.kind="fl";K.fd++;r.fls=fl;r.rep=ci&&ci.h;if(ci)ap.add(ci.ap);fl.forEach(f=>{ap.add(f.from);ap.add(f.to);if(f.dh)K.dh++;else K.sec++});
+    if(co)r.co={a:tt("Duty ends","Fine servizio"),ap:co.ap,tm:co.h};const last=fl[fl.length-1];if(last.to!=base&&hn)r.hotel=hn}
+   else if(D.lay){r.kind="lay";K.lay++;ap.add(D.lay);r.items.push({a:"Layover",ap:D.lay,x:hn,hot:!!hn,sty:"lay"})}
+   else if(sm){r.kind="sim";K.trn++;r.items.push({a:tt("Simulator","Simulatore")+" "+sm.c,ap:sm.ap||"",tm:sm.s&&sm.e?sm.s+" – "+sm.e:"",rep:br&&br.h,sty:"strong"})}
    else if(g){const gk=gKind(g.c),tm=g.s&&g.e?g.s+" – "+g.e:"";
-    const M={off:["off",tt("Day off","Giorno libero")],rest:["rest",g.c=="RPM"?tt("Monthly rest","Riposo mensile"):tt("Rest","Riposo")],leave:["leave",tt("Vacation","Ferie")],sby:["sby",/ASB|RRU/.test(g.c)?tt("Airport standby","Standby in aeroporto"):tt("Standby (on call)","Standby (reperibile)")],rsv:["rsv",tt("Reserve","Riserva")],sick:["sick",tt("Sick leave","Malattia")],gd:["gd",tt("Ground duty","Servizio a terra")],trn:["sim",g.c=="FAD"?tt("E-learning","Corso online (e-learning)"):tt("Classroom training","Corso in aula")],med:["med",tt("Medical examination","Visita medica")]}[gk]||["off",GL[g.c]||g.c];
-    kind=M[0];({off:()=>K.off++,rest:()=>K.rest++,leave:()=>K.leave++,sby:()=>K.sby++,rsv:()=>K.sby++,sick:()=>K.sick++,gd:()=>K.trn++,sim:()=>K.trn++,med:()=>K.trn++})[kind]();
-    L.push({t:"lab",a:M[1],b:g.ap&&tm?g.ap:"",c:tm,big:1});if(co)L.push({t:"lab",a:tt("Prev. duty ends","Fine turno prec."),b:co.ap,c:co.h})}
-   else if(co){kind="ret";L.push({t:"lab",a:tt("Duty ends","Fine servizio"),b:co.ap,c:co.h});ap.add(co.ap)}
-   else if(ht){kind="lay";L.push({t:"lab",a:"Hotel",b:"",c:"",x:hn})}}
-  if(!L.length)L.push({t:"lab",a:"—",b:"",c:""});
-  rows.push({d,dt:new Date(y0,m0,d),kind,L})}
- /* geometry */
- const nl=rows.reduce((s,r)=>s+r.L.length,0),apL=[...ap].filter(Boolean).sort(),apRows=Math.ceil(apL.length/3);
- const HDR=24,BOTTOM=6+30+(apL.length?6+apRows*5.6:0)+15;
- const avail=PH-HDR-4-BOTTOM-6,lh=Math.max(2.9,Math.min(6,avail/nl)),fz=Math.max(5.3,Math.min(9,lh*MM*.6));
- /* header */
- R(0,0,210,HDR,NAV);T(tt("Roster","Turni")+" · "+MNc,X0,11,fitZ(tt("Roster","Turni")+" · "+MNc,B,16,120),B,WH);
- const who=[mt.name||"",mt.id?tt("Crew ID ","Matricola ")+mt.id:"",mt.fleet||"",mt.base?"Base "+mt.base:""].filter(Boolean).join(" · ");
- if(who)T(who,X0,18,8.5,F,PALE);T(tt("Local times at each airport","Orari locali di ogni aeroporto"),X1,11,7.5,F,PALE,"r");
- /* table */
- let y=HDR+4;const DX=X0+21,cF=DX+1.5,cR=DX+26,cA=DX+36.5,cT=DX+42,cTm=DX+57,cAc=DX+94;
- const arrow=(x,yb,z)=>{const s=z/MM*.32;Ln(x,yb-s,x+3.2,yb-s,SUB,.55);pg.drawSvgPath("M0 0L2 1.3L0 2.6Z",{x:(x+2.7)*MM,y:(PH-yb+s+1.3*.42)*MM,scale:.42*MM,color:C(SUB)})};
- rows.forEach(r=>{const h=r.L.length*lh,tn=TN[r.kind]||TN.none;R(X0,y,TW,h,tn[0]);
-  r.L.forEach((l,i)=>{const ly=y+i*lh,bl=ly+lh/2+fz/MM*.35;if(l.st&&tn[1])R(DX,ly,X1-DX,lh,tn[1]);
-   if(l.t=="fl"){const f=l.f;T(f.fn.replace(/^AZ\s?/,"AZ "),cF,bl,fz,B,INK);T(f.from,cR,bl,fz,F,INK);arrow(cA,bl,fz);T(f.to,cT,bl,fz,F,INK);
-    T(f.dep+" – "+f.arr,cTm,bl,fz,B,INK);if(f.plus)T("+1",cTm+tw(f.dep+" – "+f.arr,B,fz)+1,bl,fz*.8,B,AC);
-    const tail=f.dh?tt("Deadhead (as passenger)","Posizionamento (da passeggero)"):(ACT[f.ac]||f.ac||"");if(tail)T(cut(tail,F,fz*.92,X1-cAc-2),cAc,bl,fz*.92,F,f.dh?AC:SUB)}
-   else{const lf=(l.big||l.st)?B:F;
-    if(l.big){T(cut(l.a+(l.b?" · "+l.b:""),lf,fz,(l.c?cTm:X1)-cF-2),cF,bl,fz,lf,INK);if(l.c)T(l.c,cTm,bl,fz,B,INK)}
-    else{T(cut(l.a,lf,fz,(l.b?cR:l.c?cTm:l.x?cR:X1)-cF-1.5),cF,bl,fz,lf,INK);if(l.b)T(l.b,cR,bl,fz,F,INK);if(l.c)T(l.c,cTm,bl,fz,B,INK);if(l.x)T(cut(l.x,F,fz,X1-(l.b?cT:cR)-2),l.b?cT:cR,bl,fz,F,SUB)}}});
-  const wd=r.dt.getDay(),lab=r.dt.toLocaleDateString(LOC(),{weekday:"short"}).replace(".","").slice(0,3);
-  const bl0=y+lh/2+fz/MM*.35;T(lab.charAt(0).toUpperCase()+lab.slice(1),X0+2,bl0,fz,F,wd==0||wd==6?AC:SUB);T(p2(r.d),X0+11,bl0,fz,B,INK);
-  y+=h;Ln(X0,y,X1,y,WH,.7)});
- Ln(DX-.5,HDR+4,DX-.5,y,WH,.7);
- /* totals */
- y+=6;const su=mt.sums&&mt.sums[y0+"-"+p2(m0+1)];
- const t1=[[tt("Flight hours","Ore di volo"),su&&su.ft||"—"],[tt("Duty hours","Ore di servizio"),su&&su.dt||"—"],[tt("Flight days","Giorni di volo"),K.fd],[tt("Flights","Voli"),K.sec+(K.dh?" + "+K.dh+" DH":"")]];
- const t2=[[tt("Nights away","Notti fuori"),K.lay],[tt("Days off","Giorni liberi"),K.off],[tt("Rest days","Riposi"),K.rest],[tt("Standby / reserve","Standby / riserva"),K.sby],[tt("Vacation","Ferie"),K.leave],[tt("Training / other","Corsi / altro"),K.trn+K.sick]];
- const tbl=(arr,yy)=>{const w=TW/arr.length;arr.forEach(([l,v],i)=>{const x=X0+i*w;R(x,yy,w,6,NAV);T(l,x+w/2,yy+4.1,fitZ(l,B,7.5,w-3),B,WH,"c");R(x,yy+6,w,8,[243,246,250]);T(String(v),x+w/2,yy+11.6,fitZ(String(v),B,11,w-3),B,i==0&&arr===t1?AC:INK,"c");if(i)Ln(x,yy,x,yy+14,WH,.7)})};
- tbl(t1,y);tbl(t2,y+15);y+=30;
- /* airports */
- if(apL.length){y+=6;T(tt("Airports","Aeroporti"),X0,y-1,8,B,SUB);const w=TW/3;
-  apL.forEach((a,i)=>{const x=X0+(i%3)*w,yy=y+Math.floor(i/3)*5.6;R(x,yy,w-1.5,4.8,[243,246,250]);T(a,x+2,yy+3.4,7.5,B,INK);T(cut(cityN(a),F,7.5,w-14),x+11,yy+3.4,7.5,F,SUB)});
-  y+=apRows*5.6}
- const now=new Date();Ln(X0,PH-10,X1,PH-10,LN,.4);T(tt("Created with Rotate · ","Creato con Rotate · ")+p2(now.getDate())+"/"+p2(now.getMonth()+1)+"/"+now.getFullYear(),X0,PH-6,7,F,SUB);T(tt("+1 = next day · DH = travel as passenger","+1 = giorno dopo · DH = viaggio da passeggero"),X1,PH-6,7,F,SUB,"r");
+    const M={off:["off",tt("Day off","Giorno libero")],rest:["rest",g.c=="RPM"?tt("Monthly rest","Riposo mensile"):tt("Rest","Riposo")],leave:["leave",tt("Vacation","Ferie")],sby:["sby",/ASB|RRU/.test(g.c)?tt("Airport standby","Standby in aeroporto"):tt("Standby (on call)","Standby (reperibile)")],rsv:["rsv",tt("Reserve","Riserva")],sick:["sick",tt("Sick leave","Malattia")],gd:["gd",tt("Ground duty","Servizio a terra")],trn:["sim",g.c=="FAD"?tt("E-learning","Corso online"):tt("Classroom training","Corso in aula")],med:["med",tt("Medical examination","Visita medica")]}[gk]||["off",GL[g.c]||g.c];
+    r.kind=M[0];({off:()=>K.off++,rest:()=>K.rest++,leave:()=>K.leave++,sby:()=>K.sby++,rsv:()=>K.sby++,sick:()=>K.sick++,gd:()=>K.trn++,sim:()=>K.trn++,med:()=>K.trn++})[r.kind]();
+    r.items.push({a:M[1],ap:tm?g.ap:"",tm,sty:r.kind});if(co)r.items.push({a:tt("Prev. duty ends","Fine turno prec."),ap:co.ap,tm:co.h,sty:"mute"})}
+   else if(co){r.kind="ret";r.items.push({a:tt("Duty ends","Fine servizio"),ap:co.ap,tm:co.h,sty:"mute"});ap.add(co.ap)}
+   else if(ht){r.kind="lay";r.items.push({a:"Hotel",x:hn,hot:1,sty:"lay"})}}
+  if(r.kind=="none"&&!r.items.length)r.items.push({a:"—",sty:"mute"});
+  rows.push(r)}
+ const QUIET={rest:1,off:1,leave:1,none:1},MS=rows.some(r=>r.fls.length>=3);
+ rows.forEach(r=>{const L=[];
+   if(r.kind=="fl"){if(MS){L.push({t:"ms",fls:r.fls,rep:r.rep,end:r.co&&r.co.tm,span:2});if(r.co&&r.co.ap!=r.fls[r.fls.length-1].to)L.push(Object.assign({t:"lab",sty:"mute"},r.co))}
+    else{r.fls.forEach((f,i)=>L.push({t:"fl",f,rep:i?null:r.rep}));if(r.co)L.push(Object.assign({t:"lab",sty:"mute"},r.co))}
+    if(r.hotel)L.push({t:"lab",a:"Hotel",x:r.hotel,hot:1,sty:"lay"})}
+   else r.items.forEach(it=>L.push(Object.assign({t:"lab"},it)));
+   r.L=L;r.w=QUIET[r.kind]&&L.length==1?.84:1;r.n=L.reduce((a,l)=>a+(l.span||1),0)});
+ const nl=rows.reduce((s,r)=>s+r.n*r.w,0);
+ /* segments (trips + runs) */
+ const segs=[];let cur=null;
+ rows.forEach(r=>{const g=r.kind=="fl"||r.kind=="lay"||r.kind=="ret"?"trip":r.kind=="rsv"?"sby":r.kind=="gd"||r.kind=="med"?"sim":r.kind;
+  if(g=="trip"){if(r.kind=="fl"){if(!cur||cur.g!="trip"||cur.done)segs.push(cur={g,d0:r.d,d1:r.d,dst:[]});else cur.d1=r.d;const lf=r.fls[r.fls.length-1];r.fls.forEach(f=>{[f.from,f.to].forEach(a=>{if(a&&a!=base&&!cur.dst.includes(a))cur.dst.push(a)})});cur.done=lf.to==base&&!lf.plus}
+   else{if(cur&&cur.g=="trip"&&!cur.done){cur.d1=r.d;if(r.kind=="ret")cur.done=true}else{segs.push(cur={g,d0:r.d,d1:r.d,dst:r.kind=="lay"&&days[key(y0,m0,r.d)].lay?[days[key(y0,m0,r.d)].lay]:[],done:r.kind=="ret"})}}}
+  else{if(cur&&cur.g==g&&cur.d1==r.d-1&&g!="none")cur.d1=r.d;else segs.push(cur={g,d0:r.d,d1:r.d})}});
+ /* ---------- header ---------- */
+ const fh=mt.sums&&mt.sums[y0+"-"+p2(m0+1)]||{};let y;
+ {const hy=8,hh=32,xp=X1-52;
+  RR(X0,hy,TW,hh,4.5,NAV);
+  {const q=v=>(v*MM).toFixed(2),ax=xp-62,P0=[ax,hh-6.5],P1=[ax+30,hh-4],P2=[xp-10,8.5];
+   pg.drawSvgPath("M "+q(P0[0]-X0)+" "+q(P0[1])+" Q "+q(P1[0]-X0)+" "+q(P1[1])+" "+q(P2[0]-X0)+" "+q(P2[1]),{x:X0*MM,y:(PH-hy)*MM,borderColor:C(PALE),borderWidth:.7,borderDashArray:[.4,3.2],borderLineCap:1,borderOpacity:.55});
+   Dot(P0[0],hy+P0[1],.9,PALE,.6);plane(P2[0],hy+P2[1],4.2,Math.atan2(-(P2[1]-P1[1]),P2[0]-P1[0])*180/Math.PI,WH,.9)}
+  Ln(xp,hy+3.2,xp,hy+hh-3.2,PALE,.5,[.9,1.3],.55);Dot(xp,hy,2.6,WH);Dot(xp,hy+hh,2.6,WH);
+  Dot(X0+8.4,hy+7.6,2.7,AC);plane(X0+8.4,hy+7.6,3.4,45,WH);
+  TS("ROTATE",X0+12.6,hy+8.9,7,B,WH,.55);TS(tt("MONTHLY ROSTER","TURNI DEL MESE"),X0+12.6+tw("ROTATE",B,7)+3.6+6*.55,hy+8.9,6.2,F,PALE,.45);
+  const mz=fitZ(MNc+" "+y0,B,27,xp-X0-14),w1=T(MNc,X0+6,hy+21.5,mz,B,WH);T(String(y0),X0+6+w1+2.6,hy+21.5,mz,F,PALE);
+  if(mt.name)T(mt.name,X0+6,hy+28.3,8.5,B,WH);
+  const sx=xp+6;TS("BASE",sx,hy+8.4,5.8,F,PALE,.4);T(mt.base||"—",sx,hy+18.6,22,B,[150,190,255]);
+  TS(tt("FLEET","FLOTTA"),sx,hy+23.6,5.8,F,PALE,.4);T(mt.fleet||"—",sx,hy+28.4,9.5,B,WH);
+  TS(tt("CREW ID","MATRICOLA"),sx+18,hy+23.6,5.8,F,PALE,.4);T(cut(mt.id||"—",B,9.5,X1-sx-21),sx+18,hy+28.4,9.5,B,WH);
+  y=hy+hh+7}
+ /* ---------- month ribbon ---------- */
+ const cw=TW/n,th=6.4;
+ TS(tt("MONTH AT A GLANCE","IL MESE IN BREVE"),X0,y,5.8,B,SUB,.5);
+ const legend=[["trip",tt("Flights","Voli")],["sby","Standby"],["sim",tt("Sim / training","Sim / corsi")],["rest",tt("Rest","Riposi")],["off",tt("Days off","Liberi")],["leave",tt("Vacation","Ferie")],["sick",tt("Sick leave","Malattia")]].filter(([g])=>segs.some(s=>s.g==g));
+ let lx=X1;legend.slice().reverse().forEach(([g,l])=>{const w=T(l,lx,y,6,F,SUB,"r");lx-=w+2.2;const col=g=="trip"?KC.fl:KC[g];Dot(lx,y-.75,1,col,g=="off"||g=="rest"?.55:1);lx-=4.6});
+ const wy=y+4.6;
+ for(let d=1;d<=n;d++){const dt=new Date(y0,m0,d),wd=dt.getDay(),x=X0+(d-1)*cw,we=wd==0||wd==6;
+  if(we)RR(x+.25,wy-2.6,cw-.5,7.4,1,WK);
+  T(dt.toLocaleDateString(LOC(),{weekday:"narrow"}).toUpperCase(),x+cw/2,wy,5,F,we?AC:MUT,"c");T(String(d),x+cw/2,wy+3.7,6.2,B,we?AC:INK,"c")}
+ const ty=wy+6;RR(X0,ty,TW,th,th/2,SOFT);
+ segs.forEach(s=>{if(s.g=="none")return;const x0=X0+(s.d0-1)*cw+.45,x1=X0+s.d1*cw-.45,w=x1-x0,col=s.g=="trip"?KC.fl:KC[s.g]||KC.none,quiet=s.g=="rest"||s.g=="off";
+  RR(x0,ty+.5,w,th-1,(th-1)/2,col,quiet?.22:1);
+  const mid=ty+th/2,tc=quiet?KT[s.g]:WH,z=6;
+  if(s.g=="trip"){const lab=s.dst.join(" · ");if(lab&&w>=tw(lab,B,z)+7){const lw=tw(lab,B,z),sx=x0+w/2-(lw+4)/2;plane(sx+1.4,mid,3,0,WH);T(lab,sx+3.8,mid+z*.36/MM,z,B,WH)}else plane(x0+w/2,mid,3,0,WH)}
+  else{const lab={sby:"SBY",rsv:"RSV",sim:"SIM",gd:"GD",med:"MED",leave:tt("Vacation","Ferie"),sick:tt("Sick","Mal."),rest:tt("Rest","Riposo"),off:tt("Off","Libero")}[s.g]||"";
+   if(lab&&w>=tw(lab,B,z*.92)+3)T(lab,x0+w/2,mid+z*.92*.36/MM,z*.92,B,tc,"c")}});
+ y=ty+th+7;
+ /* ---------- table ---------- */
+ const cD=X0+4.6,cP=X0+23,cA=X0+36,cR=X0+67,cT=X0+92,cI=X0+125;
+ TS(tt("DAY","GIORNO"),cD-.4,y,5.6,B,MUT,.35);if(MS){TS(tt("REPORT · END","PRES. · FINE"),cP,y,5.6,B,MUT,.35);TS(tt("FLIGHTS AND ACTIVITIES  ·  LOCAL TIMES","VOLI E ATTIVITÀ  ·  ORARI LOCALI"),cA+10,y,5.6,B,MUT,.35)}
+ else{TS(tt("REPORT","PRES."),cP,y,5.6,B,MUT,.35);TS(tt("ACTIVITY","ATTIVITÀ"),cA,y,5.6,B,MUT,.35);TS(tt("ROUTE","TRATTA"),cR,y,5.6,B,MUT,.35);TS(tt("LOCAL TIME","ORARIO LOCALE"),cT,y,5.6,B,MUT,.35);TS(tt("AIRCRAFT · HOTEL","AEREO · HOTEL"),cI,y,5.6,B,MUT,.35)}
+ y+=2;Ln(X0,y,X1,y,INK,.6);y+=.6;
+ /* bottom block height */
+  const apL=[...ap].filter(Boolean).sort(),apLW=[...tt("AIRPORTS","AEROPORTI")].reduce((a,k)=>a+tw(k,B,5.6),0)+.35*(tt("AIRPORTS","AEROPORTI").length-1);
+ let apRows=apL.length?1:0;{let x=X0+apLW+4;apL.forEach(a=>{const w=tw(a,B,7)+1.4+tw(cityN(a),F,7);if(x+w>X1){x=X0+apLW+4;apRows++}x+=w+5})}
+ const BOT=12+6+15+2.5+10+(apRows?6.5+(apRows-1)*4.2+3:0);
+ const avail=PH-BOT-y,lh=Math.max(2.4,Math.min(6.2,avail/nl)),fz=Math.max(5,Math.min(8.4,lh*MM*.6));
+ const capH=z=>z*.36/MM;
+ const chip=(f,x,ly,lh,z)=>{const s=f.fn.replace(/^AZ\s?/,"AZ "),w=tw(s,B,z*.92)+3,h=Math.min(lh*.8,z/MM*1.62),yy=ly+(lh-h)/2;
+  if(f.dh){RR(x,yy,w,h,h*.3,WH,1,AC,.5);T(s,x+1.5,ly+lh/2+capH(z*.92),z*.92,B,AC)}else{RR(x,yy,w,h,h*.3,NAV);T(s,x+1.5,ly+lh/2+capH(z*.92),z*.92,B,WH)}return w};
+ const route=(f,x,bl,z)=>{const w1=T(f.from,x,bl,z,B,INK),a=x+w1+1.1,b=a+8.4;Ln(a,bl-capH(z),b,bl-capH(z),MUT,.45,[.25,.9]);R(a+2.6,bl-capH(z)-1.3,3.2,2.6,WH);plane((a+b)/2,bl-capH(z),2.7,0,AC);T(f.to,b+1.1,bl,z,B,INK);return b+1.1+tw(f.to,B,z)-x};
+ const times=(f,x,bl,z)=>{const s=f.dep+" – "+f.arr,w=T(s,x,bl,z,B,INK);if(f.plus)T("+1",x+w+.6,bl-z*.3/MM,z*.68,B,AC);return w};
+ rows.forEach(r=>{const h=r.n*lh*r.w,wd=r.dt.getDay(),we=wd==0||wd==6,quiet=QUIET[r.kind];r.y=y;r.h=h;
+  if(we)RR(X0+2.8,y+.35,18.4,h-.7,1.1,WK);
+  const dz=Math.min(fz*1.22,lh*.84*MM*.7),db=y+lh*r.w/2+capH(dz),wl=r.dt.toLocaleDateString(LOC(),{weekday:"short"}).replace(".","").slice(0,3);
+  T(p2(r.d),cD,db,dz,B,quiet?SUB:INK);T(cap(wl),cD+tw("00",B,dz)+1.6,db,fz*.86,F,we?AC:MUT);
+  let ly=y;const b0=v=>v+lh*r.w/2+capH(fz);r.L.forEach((l,i)=>{const LH=lh*r.w;ly+=LH*(l.span||1);
+   const l0=ly-LH*(l.span||1);if(l.rep)T(l.rep,cP,l0+LH/2+capH(fz),fz,B,SUB);
+   if(l.t=="ms"){const k=Math.max(4,l.fls.length),cw2=(X1-cA)/k,b1=l0+LH/2+capH(fz),b2=l0+LH*1.5+capH(fz);let zz=fz;while(zz>4.2&&tw("AZ 0000",B,zz*.92)+3+1.6+tw("FCO",B,zz)*2+8.2>cw2-1.5)zz-=.2;
+     if(l.end)T(l.end,cP,b2,fz,F,MUT);
+     l.fls.forEach((f,j)=>{const x=cA+j*cw2;if(j)Ln(x-1.2,l0+LH*.25,x-1.2,l0+LH*1.75,LN,.5);const cwid=chip(f,x,l0,LH,zz),rx=x+cwid+1.6;
+      const w1=T(f.from,rx,b1,zz,B,INK),a=rx+w1+.9,bb=a+5.4;Ln(a,b1-capH(zz),bb,b1-capH(zz),MUT,.4,[.25,.8]);R(a+1.2,b1-capH(zz)-1.1,3,2.2,WH);plane((a+bb)/2,b1-capH(zz),2.3,0,AC);T(f.to,bb+.9,b1,zz,B,INK);
+      const tw2=T(f.dep+" – "+f.arr,x+.4,b2,zz,F,INK);if(f.plus)T("+1",x+.4+tw2+.5,b2-zz*.3/MM,zz*.68,B,AC);if(f.dh)T("DH",x+.4+tw2+(f.plus?4:1.4),b2,zz*.8,B,AC)})}
+   else if(l.t=="fl"){const f=l.f;chip(f,cA,l0,LH,fz);route(f,cR,b0(l0),fz);times(f,cT,b0(l0),fz);
+    const tail=f.dh?tt("Deadhead (as passenger)","Posizionamento (da passeggero)"):(ACT[f.ac]||f.ac||"");if(tail)T(cut(tail,F,fz*.92,X1-cI),cI,b0(l0),fz*.92,F,f.dh?AC:SUB)}
+   else{const st=l.sty,col=st=="mute"?SUB:st=="lay"?INK:KT[st]||(st=="strong"?INK:SUB),fn=st=="mute"||st=="lay"||QUIET[st]?F:B;
+    const bl=b0(l0),lim=(l.ap?cR:l.tm?cT:l.x?cI:X1)-cA-2;T(cut(l.a,fn,fz,lim),cA,bl,fz,fn,col);
+    if(l.ap)T(l.ap,cR,bl,fz,st=="mute"?F:B,st=="mute"?SUB:INK);if(l.tm)T(l.tm,cT,bl,fz,st=="mute"?F:B,st=="mute"?SUB:INK);
+    if(l.x){const ix=l.ap||l.tm?cI:cR;let xx=ix;if(l.hot){icon(BED,ix,l0+LH/2,fz/MM*1.05,MUT);xx+=fz/MM*1.35}T(l.hot?htFit(l.x,F,fz*.92,X1-xx):cut(l.x,F,fz*.92,X1-xx),xx,bl,fz*.92,F,SUB)}}});
+  y+=h;Ln(X0+2.8,y,X1,y,LN,.4)});
+ /* type bars, continuous per trip / run */
+ segs.forEach(s=>{const a=rows[s.d0-1],b=rows[s.d1-1],col=s.g=="trip"?KC.fl:KC[s.g]||KC.none,quiet=s.g=="rest"||s.g=="off"||s.g=="none";RR(X0,a.y+.7,1.5,b.y+b.h-a.y-1.4,.75,col,quiet?(s.g=="none"?.6:.55):1)});
+ /* ---------- totals ---------- */
+ y+=6;const gap=2.5,w4=(TW-3*gap)/4,t1=[[tt("Flight hours","Ore di volo"),fh.ft||"—"],[tt("Duty hours","Ore di servizio"),fh.dt||"—"],[tt("Flight days","Giorni di volo"),String(K.fd)],[tt("Flights","Voli"),String(K.sec)+(K.dh?" + "+K.dh+" DH":"")]];
+ t1.forEach(([l,v],i)=>{const x=X0+i*(w4+gap),hero=i==0;
+  RR(x,y,w4,15,2.6,hero?NAV:SOFT);TS(l.toUpperCase(),x+4,y+5.3,5.6,F,hero?PALE:MUT,.35);T(v,x+4,y+12.2,fitZ(v,B,15,w4-8),B,hero?[150,190,255]:INK)});
+ y+=15+gap;const w6=(TW-5*gap)/6,t2=[["lay",tt("Nights away","Notti fuori"),K.lay],["off",tt("Days off","Giorni liberi"),K.off],["rest",tt("Rest days","Riposi"),K.rest],["sby",tt("Standby","Standby"),K.sby],["leave",tt("Vacation","Ferie"),K.leave],["sim",tt("Training / other","Corsi / altro"),K.trn+K.sick]];
+ t2.forEach(([g,l,v],i)=>{const x=X0+i*(w6+gap);RR(x,y,w6,10,2.2,SOFT);
+  Dot(x+3.6,y+5,1.15,g=="lay"?[122,158,232]:KC[g],g=="off"||g=="rest"?.7:1);T(cut(l,F,6.4,w6-14),x+6.3,y+6.15,6.4,F,SUB);T(String(v),x+w6-3.2,y+6.8,10,B,INK,"r")});
+ y+=10;
+ /* ---------- airports ---------- */
+ if(apL.length){y+=6.5;const lw=TS(tt("AIRPORTS","AEROPORTI"),X0,y,5.6,B,MUT,.35);let x=X0+lw+4;
+  apL.forEach(a=>{const nm=cityN(a),w=tw(a,B,7)+1.4+tw(nm,F,7);if(x+w>X1){x=X0+lw+4;y+=4.2}T(a,x,y,7,B,INK);T(nm,x+tw(a,B,7)+1.4,y,7,F,SUB);x+=w+5})}
+ /* ---------- footer ---------- */
+ const now=new Date(),fy=PH-8;Ln(X0,fy-4.2,X1,fy-4.2,LN,.4);plane(X0+1.5,fy-.9,2.8,45,AC);
+ T(tt("Created with Rotate · ","Creato con Rotate · ")+p2(now.getDate())+"/"+p2(now.getMonth()+1)+"/"+now.getFullYear(),X0+4,fy,6.4,F,MUT);
+ T(tt("Local times  ·  +1 = next day  ·  DH = travelling as passenger","Orari locali  ·  +1 = giorno dopo  ·  DH = viaggio da passeggero"),X1,fy,6.4,F,MUT,"r");
  return doc.save()}
 
 async function sharePdf(){
@@ -1918,6 +1991,7 @@ function drUi(){const m=loadMeta(),n=(m.name||"").trim(),ini=n?n.split(/\s+/).ma
 
 /* ===== Changelog ===== */
 const CHLOG=[
+ ["Beta 81","18/11/2026",["New roster PDF: boarding-pass header, month at a glance strip, rotations joined by a coloured bar, cleaner table and totals","Months with many sectors per day (short-haul) now fit on one page"],["Nuovo PDF dei turni: intestazione a carta d'imbarco, striscia \"Il mese in breve\", rotazioni unite da una barra colorata, tabella e totali più puliti","I mesi con tante tratte al giorno (corto raggio) ora stanno su una pagina"]],
  ["Beta 80","18/11/2026",["Small planes flying in the background (can be turned off in Settings › Rotate App)"],["Aeroplanini che volano sullo sfondo (si possono spegnere in Impostazioni › Rotate App)"]],
  ["Beta 79","18/11/2026",["One-page month PDF table; green status lights merge next to the logo; Beta label; CrewLink portals with SharePoint and LIDO"],["PDF del mese su una pagina a tabella; i semafori verdi si uniscono accanto al logo; scritta Beta; portali CrewLink con SharePoint e LIDO"]],
  ["Beta 78","17/11/2026",["New month PDF, day by day and easy to read; new In-flight rest PDF; CrewLink reorganised and on the home page"],["Nuovo PDF del mese giorno per giorno e facile da leggere; nuovo PDF Riposi in volo; CrewLink riorganizzato e in home"]],
