@@ -515,8 +515,8 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 </nav>
 
 <script>
-const VER="Beta 88";
-const BUILD="202611181139";
+const VER="Beta 89";
+const BUILD="202611181205";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME);try{bgColors();bgDraw(performance.now())}catch(e){}}
 themeApply();
@@ -1615,7 +1615,9 @@ function hNext(){const now=Date.now(),t=new Date(),tk=key(t.getFullYear(),t.getM
   if(fl.length){const l=fl[fl.length-1];let end=now+1;try{end=hUtc(l.to,k,l.arr,l.plus);if(end<=hUtc(l.from,k,l.dep))end+=864e5}catch(e){}if(end<now)continue;
    const ci=E.find(e=>e.t=="ci")||E.find(e=>e.t=="pr"),rep=ci?ci.h:fl[0].dep;let ru=null;try{ru=hUtc(ci?ci.ap||fl[0].from:fl[0].from,k,rep)}catch(e){}
    let n=0;for(let i=1;i<10;i++){const d=new Date(+k.slice(0,4),+k.slice(5,7)-1,+k.slice(8)+i),D2=days[key(d.getFullYear(),d.getMonth(),d.getDate())];if(D2&&D2.lay)n++;else break}
-   return{k,fl:true,f:fl[0],nf:fl.length,rep,ru,end,lay:n}}
+   let nights=n,stay=null;if(l.to!=(loadMeta().base||"FCO")||n){try{const d=new Date(+k.slice(0,4),+k.slice(5,7)-1,+k.slice(8)+n+1),k2=key(d.getFullYear(),d.getMonth(),d.getDate()),E2=(days[k2]||{ev:[]}).ev,f2=E2.find(e=>e.t=="fl"&&e.from==l.to);
+    if(f2){nights=n+1;const c2=E2.find(e=>(e.t=="ci"||e.t=="pr")&&(e.ap||l.to)==l.to),r2=hUtc(l.to,k2,c2?c2.h:f2.dep);if(r2>end)stay=r2-end}}catch(e){}}
+   return{k,fl:true,f:fl[0],nf:fl.length,rep,ru,end,lay:nights,stay}}
   const sm=E.find(e=>e.t=="sm"),g=E.find(e=>e.t=="gr"&&["sby","rsv","gd","trn","med"].includes(gKind(e.c)));
   if(sm||g){const s=sm?sm.s:g.s,e2=sm?sm.e:g.e;if(k==tk&&e2&&+e2.replace(":","")<t.getHours()*100+t.getMinutes())continue;
    return{k,fl:false,sm,g,s,e:e2,ru:s?(()=>{try{return hUtc(sm?sm.ap:g.ap||"FCO",k,s)}catch(x){return null}})():null}}}
@@ -1661,7 +1663,7 @@ function homeRender(){{const v=$("#hVer");if(v)v.textContent=/^Beta/i.test(VER)?
  else if(N.fl){const f=N.f,ac=ACT[f.ac]||f.ac||"";
   el.innerHTML='<div class="nxh"><span>'+(f.dh?tt("NEXT · DEADHEAD","PROSSIMO · POSIZIONAMENTO"):tt("NEXT FLIGHT","PROSSIMO VOLO"))+'</span><b>'+esc(f.fn+(N.nf>1?" +"+(N.nf-1):"")+" · "+DW(N.k))+'</b></div>'
    +'<div class="nxb"><div><small>'+esc(cityN(f.from))+'</small><span class="nxa">'+esc(f.from)+'</span><em>'+esc(f.dep)+'</em></div><div class="nxm">'+IC.plane.replace('class="ico pl"','width="22" height="22" style="transform:rotate(45deg)"')+'<i></i><small>'+esc(ac)+'</small></div><div><small>'+esc(cityN(f.to))+'</small><span class="nxa">'+esc(f.to)+'</span><em>'+esc(f.arr+(f.plus?" +1":""))+'</em></div></div>'
-   +'<div class="nxp"><i></i></div><div class="nxs"><div class="nxt"><small>'+tt("Report","Presentazione")+'</small><b>'+esc(N.rep||"—")+'</b></div><div class="nxt"><small>'+(N.ru&&N.ru<=Date.now()?tt("Status","Stato"):tt("In","Mancano"))+'</small><b class="ac">'+(N.ru&&N.ru<=Date.now()?tt("On duty","In servizio"):hLeft(N.ru?N.ru-Date.now():null))+'</b></div><div class="nxt"><small>'+(N.lay?"Layover":tt("Sectors","Settori"))+'</small><b>'+(N.lay?N.lay+" "+(N.lay==1?tt("night","notte"):tt("nights","notti")):N.nf)+'</b></div></div>'}
+   +'<div class="nxp"><i></i></div><div class="nxs"><div class="nxt"><small>'+tt("Report","Presentazione")+'</small><b>'+esc(N.rep||"—")+'</b></div><div class="nxt"><small>'+(N.ru&&N.ru<=Date.now()?tt("Status","Stato"):tt("In","Mancano"))+'</small><b class="ac">'+(N.ru&&N.ru<=Date.now()?tt("On duty","In servizio"):hLeft(N.ru?N.ru-Date.now():null))+'</b></div><div class="nxt"><small>'+(N.lay?"Layover · "+N.lay+" "+(N.lay==1?tt("night","notte"):tt("nights","notti")):tt("Sectors","Settori"))+'</small><b>'+(N.lay?(N.stay?(m=>Math.floor(m/60)+"h "+p2(m%60)+"m")(Math.round(N.stay/6e4)):N.lay+" "+(N.lay==1?tt("night","notte"):tt("nights","notti"))):N.nf)+'</b></div></div>'}
  else{const k=N.sm?null:gKind(N.g.c),col=N.sm?"var(--blue)":k=="sby"?"var(--org)":k=="rsv"?"var(--yel)":k=="gd"?"var(--pur)":k=="trn"?"var(--ind)":"var(--red)",ic=N.sm?IC.pc:k=="sby"||k=="rsv"?IC.phone:k=="gd"?IC.brief:k=="trn"?IC.pc:IC.cross;
   const ti=N.sm?(GL[N.sm.c]||tt("Simulator","Simulatore")):(GL[N.g.c]||hDayLabel(days[N.k]));
   el.innerHTML='<div class="nxh"><span>'+tt("NEXT DUTY","PROSSIMO SERVIZIO")+'</span><b>'+esc(DW(N.k))+'</b></div><div class="nxo"><span class="ic2" style="background:'+col+'">'+ic+'</span><div><b>'+esc(ti)+'</b><span>'+esc((N.s?N.s+(N.e?" – "+N.e:""):"")+((N.sm&&N.sm.ap)||(N.g&&N.g.ap)?" · "+((N.sm&&N.sm.ap)||N.g.ap):""))+'</span></div></div>'
@@ -1996,6 +1998,7 @@ function drUi(){const m=loadMeta(),n=(m.name||"").trim(),ini=n?n.split(/\s+/).ma
 
 /* ===== Changelog ===== */
 const CHLOG=[
+ ["Beta 89","18/11/2026",["Home: next-flight layover now counts the real nights away (e.g. 2, not 1) and shows the layover time from landing to the next report in hours"],["Home: il layover del prossimo volo ora conta le notti reali (es. 2, non 1) e mostra le ore di sosta dall'atterraggio alla presentazione successiva"]],
  ["Beta 88","18/11/2026",["Home: \"CrewLink portal\" is now the title of the CrewLink strip (left, tappable)"],["Home: \"Portale CrewLink\" è ora il titolo della striscia CrewLink (a sinistra, cliccabile)"]],
  ["Beta 87","18/11/2026",["Home: the CrewLink strip link now reads \"CrewLink portal\" and opens the CrewLink page"],["Home: il link della striscia CrewLink ora dice \"Portale CrewLink\" e apre la pagina CrewLink"]],
  ["Beta 86","18/11/2026",["Payslip simulator opens by default on the payslip you receive this month (last month's flying and allowances)"],["Il simulatore di busta paga si apre di default sulla busta che ricevi questo mese (volato e indennità del mese scorso)"]],
