@@ -385,6 +385,10 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 .brg{margin-top:16px}.brg h4{margin:0 4px 8px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx2)}
 .brl{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;box-shadow:var(--sh);padding:12px 14px;margin-bottom:8px;color:var(--tx);text-decoration:none}.brl i{width:38px;height:38px;border-radius:12px;background:rgba(31,91,214,.1);color:var(--ac);display:grid;place-items:center;flex:none}.brl span{flex:1;min-width:0}.brl b{display:block;font-size:15px}.brl small{display:block;font-size:12.5px;color:var(--tx2);margin-top:1px}.brl>svg{color:var(--tx2);flex:none}
 .brf{font-size:12px;color:var(--tx2);margin:16px 4px 0;line-height:1.45}
+.brd{background:var(--card);border-radius:16px;box-shadow:var(--sh);padding:12px 14px;margin-bottom:8px}.brdh{display:flex;gap:8px;align-items:baseline;margin-bottom:6px}.brdh b{font-family:var(--ff);font-size:18px}.brdh span{font-size:12.5px;color:var(--tx2)}
+.brdm small,.brdt{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx2);margin:8px 0 3px;font-weight:700}.brdm code,.brd details code{display:block;font:12px/1.4 ui-monospace,Menlo,monospace;color:var(--tx);word-break:break-word}
+.brdp{display:flex;gap:10px;font-size:13px;padding:6px 8px;border-radius:10px;background:rgba(31,91,214,.09);margin-top:4px;line-height:1.35}.brdp b{flex:none;color:var(--ac);font-variant-numeric:tabular-nums}.brdp.nas{background:rgba(232,146,28,.14)}.brdp.nas b{color:#b46e00}
+.brd summary{font-size:12px;color:var(--ac);margin-top:8px;cursor:pointer}#brNas{margin-top:4px}
 </style>
 </head>
 <body>
@@ -527,8 +531,8 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 
 <div id="brief" hidden></div>
 <script>
-const VER="Beta 90";
-const BUILD="202611182016";
+const VER="Beta 91";
+const BUILD="202611182129";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME);try{bgColors();bgDraw(performance.now())}catch(e){}}
 themeApply();
@@ -1747,16 +1751,37 @@ function briefRender(){const b=$("#brief"),D=days[brDay]||{ev:[]},fl=(D.ev||[]).
  +(ia?row(tt("Departure METAR + TAF","METAR + TAF partenza"),ia+" · "+cityN(f.from),AWC+"data/metar/?ids="+ia+"&hours=3&taf=1",icW):"")
  +(ib?row(tt("Arrival METAR + TAF","METAR + TAF arrivo"),ib+" · "+cityN(f.to),AWC+"data/metar/?ids="+ib+"&hours=3&taf=1",icW):"")
  +(ids.length>1?row(tt("Both airports together","Entrambi gli aeroporti"),ids.join(" · "),AWC+"data/metar/?ids="+ids.join(",")+"&hours=3&taf=1",icW):"")
- +'</div><div class="brg"><h4>'+tt("Turbulence","Turbolenza")+'</h4>'
+ +'<div id="brLive"></div></div><div class="brg"><h4>'+tt("Turbulence","Turbolenza")+'</h4>'
  +row(tt("Turbulence forecast (GFA)","Previsione turbolenza (GFA)"),tt("Interactive map, by altitude and time","Mappa interattiva, per quota e orario"),AWC+"gfa/",icT)
  +row(tt("Significant weather charts (SIGWX)","Carte tempo significativo (SIGWX)"),tt("Turbulence, CB and jet streams along the route","Turbolenza, CB e correnti a getto lungo la rotta"),AWC+"sigwx/",icT)
  +row(tt("Pilot reports (PIREP)","Segnalazioni piloti (PIREP)"),tt("Turbulence actually reported","Turbolenza realmente segnalata"),AWC+"data/pirep/",icT)
  +'</div><div class="brg"><h4>NOTAM</h4>'
  +(ids.length?row(tt("NOTAM for the two airports","NOTAM dei due aeroporti"),ids.join(" · ")+" · "+tt("FAA search","ricerca FAA"),"https://www.notams.faa.gov/dinsQueryWeb/queryRetrievalMapAction.do?reportType=Raw&retrieveLocId="+ids.join("+")+"&actionType=notamRetrievalByICAOs",icN):"")
+ +row("National Airspace System Status",tt("US delays, ground stops and closures (FAA)","Ritardi, ground stop e chiusure USA (FAA)"),"https://nasstatus.faa.gov/",icN)
+ +'<div id="brNas"></div>'
  +row(tt("Company briefing (LIDO)","Briefing compagnia (LIDO)"),tt("Official NOTAM and flight documents","NOTAM e documenti di volo ufficiali"),"https://ity.lido.aero/lido/lsc/application-center-ui/login?redirectURL=https:%2F%2Fity.lido.aero%2Flido%2Flsc%2Fapplication-center-ui%2FstartCenter",icL)
  +'</div><p class="brf">'+tt("Support only: the official briefing is the one in LIDO / the OFP. The links open the public sites in your browser.","Solo di supporto: il briefing ufficiale è quello di LIDO / OFP. I link aprono i siti pubblici nel browser.")+'</p></div>';
- $("#brX").onclick=briefClose;b.querySelectorAll(".brs button").forEach(x=>x.onclick=()=>{brSel=+x.dataset.i;briefRender()});
+ $("#brX").onclick=briefClose;brLive(f,w0,w1,ia,ib);b.querySelectorAll(".brs button").forEach(x=>x.onclick=()=>{brSel=+x.dataset.i;briefRender()});
  b.querySelectorAll(".brm input").forEach(x=>x.onchange=()=>{const v=x.value.trim().toUpperCase();if(/^[A-Z]{4}$/.test(v)){const m=loadMeta();m.icao=m.icao||{};m.icao[x.dataset.ap]=v;saveMeta(m);briefRender()}})}
+
+/* live data (METAR now, TAF periods inside the window, NAS status): if the network or the source blocks it, only the links stay */
+const brC={};
+async function brGet(u,txt){const c=new AbortController(),t=setTimeout(()=>c.abort(),9000);try{const r=await fetch(u,{signal:c.signal});if(!r.ok)throw 0;return txt?await r.text():await r.json()}finally{clearTimeout(t)}}
+function brWx(f){const o=[];if(f.wdir!=null||f.wspd!=null)o.push((f.wdir=="VRB"?"VRB":p2(f.wdir||0).padStart(3,"0"))+"/"+(f.wspd||0)+(f.wgst?"G"+f.wgst:"")+"kt");if(f.visib!=null)o.push("vis "+f.visib);if(f.wxString)o.push(f.wxString);if(f.clouds&&f.clouds.length)o.push(f.clouds.map(c=>c.cover+(c.base!=null?String(Math.round(c.base/100)).padStart(3,"0"):"")).join(" "));if(f.wshearHgt)o.push("WS");if(f.icgTurb&&f.icgTurb.length)o.push("TURB");return o.join(" · ")}
+function brLiveHtml(res,w0,w1){let h="";res.forEach(r=>{const t=r.taf,m=r.metar;h+='<div class="brd"><div class="brdh"><b>'+esc(r.ap)+'</b><span>'+esc(cityN(r.iata))+'</span></div>';
+  if(m)h+='<div class="brdm"><small>METAR '+brZ(m.obsTime*1000)+'</small><code>'+esc(m.rawOb||"")+'</code></div>';else h+='<div class="brdm"><small>METAR</small><i>'+tt("not available","non disponibile")+'</i></div>';
+  if(t&&t.fcsts){const hit=t.fcsts.filter(x=>x.timeTo*1000>w0&&x.timeFrom*1000<w1);h+='<small class="brdt">'+tt("TAF periods inside the window","Periodi TAF dentro la finestra")+'</small>'+(hit.length?hit.map(x=>'<div class="brdp"><b>'+brZ(Math.max(x.timeFrom*1000,w0))+'–'+brZ(Math.min(x.timeTo*1000,w1))+'</b><span>'+esc((x.fcstChange?x.fcstChange+(x.probability?" "+x.probability:"")+" · ":"")+brWx(x))+'</span></div>').join(""):'<div class="brdp"><span>'+tt("No TAF period covers the window yet","Nessun periodo TAF copre ancora la finestra")+'</span></div>')+'<details><summary>TAF</summary><code>'+esc(t.rawTAF||"")+'</code></details>'}
+  else h+='<small class="brdt">TAF</small><div class="brdp"><span>'+tt("TAF not available","TAF non disponibile")+'</span></div>';h+='</div>'});return h}
+async function brLive(f,w0,w1,ia,ib){const box=$("#brLive");if(!box)return;const ids=[ia,ib].filter(Boolean);if(!ids.length)return;
+ const key=ids.join(",");box.innerHTML='<p class="brn">'+tt("Loading live data…","Carico i dati in diretta…")+'</p>';
+ try{const B="https://aviationweather.gov/api/data/",[me,ta]=await Promise.all([brGet(B+"metar?ids="+key+"&format=json&hours=3"),brGet(B+"taf?ids="+key+"&format=json")]);
+  const res=[[f.from,ia],[f.to,ib]].filter(x=>x[1]).map(([iata,ap])=>({iata,ap,metar:(me||[]).filter(x=>x.icaoId==ap).sort((a,b)=>b.obsTime-a.obsTime)[0],taf:(ta||[]).find(x=>x.icaoId==ap)}));
+  if(!document.body.contains(box))return;box.innerHTML=brLiveHtml(res,w0,w1)}catch(e){if(document.body.contains(box))box.innerHTML='<p class="brn">'+tt("Live data is not available here: use the links.","Dati in diretta non disponibili qui: usa i link.")+'</p>'}
+ const nb=$("#brNas");if(!nb)return;const us=[[f.from,ia],[f.to,ib]].filter(x=>/^K|^P[AHGW]/.test(x[1]||""));if(!us.length)return;
+ try{const x=await brGet("https://nasstatus.faa.gov/api/airport-status-information",true),d=new DOMParser().parseFromString(x,"text/xml");let o="";
+  us.forEach(([iata])=>{const hits=[];d.querySelectorAll("ARPT").forEach(a=>{if(a.textContent.trim()!=iata)return;const par=a.parentElement,dt=par.closest("Delay_type"),nm=dt&&dt.querySelector("Name"),rows=[...par.children].filter(c=>c.tagName!="ARPT"&&c.textContent.trim()).map(c=>c.tagName.replace(/_/g," ")+": "+c.textContent.trim());hits.push((nm?nm.textContent.trim()+" — ":"")+rows.join(" · "))});
+   o+='<div class="brdp nas"><b>'+esc(iata)+'</b><span>'+(hits.length?esc(hits.join(" | ")):tt("no delays or ground stops reported","nessun ritardo o ground stop segnalato"))+'</span></div>'});
+  if(document.body.contains(nb))nb.innerHTML='<small class="brdt">'+tt("NAS status now","Stato NAS adesso")+'</small>'+o}catch(e){}}
 document.addEventListener("click",e=>{const t=e.target;if(t.closest&&t.closest(".nxm")&&PG=="home"){e.stopPropagation();e.preventDefault();briefOpen()}else if(t.id=="brief")briefClose()},true);
 /* System status: profile + logbook settings saved (missing flight data not counted) */
 function sysChk(){const m=loadMeta(),ok=m.lbOk||{};return[["acc",tt("Profile","Profilo"),!!m.pfAt],["prev",tt("Previous logbook totals","Totali del vecchio logbook"),!!ok.prev],["auto",tt("Autoload","Autoload"),!!ok.auto],["sim",tt("Simulator","Simulatore"),!!ok.sim]]}
@@ -2045,6 +2070,7 @@ function drUi(){const m=loadMeta(),n=(m.name||"").trim(),ini=n?n.split(/\s+/).ma
 
 /* ===== Changelog ===== */
 const CHLOG=[
+ ["Beta 91","18/11/2026",["Briefing: added National Airspace System Status; the app now tries to read METAR and the TAF periods inside the takeoff-landing window (highlighted) and the US NAS status directly — if the source blocks it, the links remain"],["Briefing: aggiunto National Airspace System Status; l'app prova a leggere direttamente METAR, i periodi TAF dentro la finestra decollo-atterraggio (evidenziati) e lo stato NAS USA — se la fonte lo blocca restano i link"]],
  ["Beta 90","18/11/2026",["Home: tap the plane on the next-flight card to open a side briefing with weather (METAR/TAF), turbulence charts and NOTAM links for the takeoff-to-landing window"],["Home: tocca l'aereo nella card del prossimo volo per aprire un briefing laterale con meteo (METAR/TAF), carte turbolenza e link NOTAM per la finestra decollo-atterraggio"]],
  ["Beta 89","18/11/2026",["Home: next-flight layover now counts the real nights away (e.g. 2, not 1) and shows the layover time from landing to the next report in hours"],["Home: il layover del prossimo volo ora conta le notti reali (es. 2, non 1) e mostra le ore di sosta dall'atterraggio alla presentazione successiva"]],
  ["Beta 88","18/11/2026",["Home: \"CrewLink portal\" is now the title of the CrewLink strip (left, tappable)"],["Home: \"Portale CrewLink\" è ora il titolo della striscia CrewLink (a sinistra, cliccabile)"]],
