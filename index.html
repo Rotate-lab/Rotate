@@ -532,8 +532,8 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 
 <div id="brief" hidden></div>
 <script>
-const VER="Beta 95";
-const BUILD="202611191914";
+const VER="Beta 96";
+const BUILD="202611191924";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME);try{bgColors();bgDraw(performance.now())}catch(e){}}
 themeApply();
@@ -1153,9 +1153,9 @@ function lbFlights(){
    out.push({k:lbDate(t0).split("-").reverse().join("-")+"|"+e.fn,fn:e.fn,from:e.from,to:e.to,t0,t1,blk:Math.round((t1-t0)/6e4),ac:ACT[e.ac]||e.ac||"",ds:k})})}
  out.sort((a,b)=>a.t0-b.t0);out.miss=[...miss];return out}
 function lbCfg(){const mt=loadMeta();return{mt,S:Object.assign({},LBD,mt.lbS||{}),A:Object.assign({},LBA,mt.lbA||{}),M:Object.assign({},LBM,mt.lbM||{}),L:mt.lb||{}}}
-function lbRows(){
+function lbRows(LFo){
  const{S,A,M,L}=lbCfg(),rows=[],fl=lbFlights(),now=Date.now();LBTH=-(parseFloat(A.nc)||6);
- const LF=loadMeta().lbMode=="file"?lbFile():null,mode=LF?"file":"man";let FX={m:{},used:new Set()},skip=0;
+ const LF=LFo!==undefined?LFo:(loadMeta().lbMode=="file"?lbFile():null),mode=LF?"file":"man";let FX={m:{},used:new Set()},skip=0;
  if(LF){FX=lbMatch(LF.F,fl.filter(f=>!f.sim&&f.ds>=S.start&&f.t0<=now));Object.assign(S,lbBase(LF.F,FX.used,LF.cls))}
  for(const f of fl){if(f.ds<S.start||f.t0>now)continue;
   if(mode=="man"&&S.thru&&f.ds<=S.thru){skip++;continue}
@@ -1240,6 +1240,9 @@ function lbImpRun(src,name){
  return lbImpFin(out)}
 function lbImpFin(o){if(!o.F.length)return{err:tt("No past flights found in the file","Nessun volo passato trovato nel file")};const ds=o.F.map(x=>x.d).sort();o.from=ds[0];o.to=ds[ds.length-1];return o}
 const lbFnS=n=>{n=String(n||"");return n.length>22?"…"+n.slice(-21):n};
+function lbFinal(R){const L=loadMeta().lb||{},lr=R.rows.filter(r=>!r.sim),S=R.S,o={},sm=k=>lr.reduce((a,r)=>a+(r[k]||0),0),ct=(k,v)=>lr.filter(r=>r[k]==v).length,nu=x=>parseInt(String(x||"").replace(/[.,\s]/g,""),10)||0,ex=k=>lr.reduce((a,r)=>a+nu((L[r.f.k]||{})[k]||(r.fx&&r.fx[k])),0),T={tot:"tt",se:"se",me:"me",mp:"mp",night:"night",ifr:"ifr",pic:"pf",cop:"cop",dual:"dual",ins:"ins"};
+ for(const k in T)if(S[k]!=null&&S[k]!=="")o[k]=lbImM((pm(S[k])||0)+sm(T[k]));
+ o.tod=String(nu(S.tod)+ct("to","D"));o.ton=String(nu(S.ton)+ct("to","N"));o.ldd=String(nu(S.ldd)+ct("ld","D"));o.ldn=String(nu(S.ldn)+ct("ld","N"));o.pax=String(nu(S.pax)+ex("pax"));o.fuel=String(nu(S.fuel)+ex("fuel"));return o}
 function lbTotRows(V,cmp){return LBIF.filter(f=>V[f[0]]!=null&&V[f[0]]!=="").map(f=>"<div class='row nl'><span class='bd'>"+tt(f[1],f[2])+"</span><span class='v'>"+lbEsc(V[f[0]])+(cmp&&cmp[f[0]]&&cmp[f[0]]!=V[f[0]]?"<small style='display:block;color:var(--org);font-size:11px'>"+tt("now","ora")+" "+lbEsc(cmp[f[0]])+"</small>":"")+"</span></div>").join("")}
 function lbPrevBody(){const S0=lbCfg().S,md=loadMeta().lbMode=="file"?"file":"man",LF=lbFile(),I=lbImp,
  f=(k,l,ph)=>"<label class='row nl'><span class='bd'>"+l+"</span><input class='sv' data-s='"+k+"' value='"+lbEsc(S0[k])+"'"+(ph?" placeholder='"+ph+"'":"")+" autocomplete='off'></label>",
@@ -1254,16 +1257,16 @@ function lbPrevBody(){const S0=lbCfg().S,md=loadMeta().lbMode=="file"?"file":"ma
  const imp="<label class='row chev nl' for='lbimpf'><span class='ic' style='background:var(--pri)'>⇩</span><span class='bd'><span class='t'>"+(LF?tt("Replace file","Sostituisci file"):tt("Choose file","Scegli file"))+"</span><span class='s'>JSON · CSV · XLS · XLSX</span></span></label><input type='file' id='lbimpf' accept='.json,.csv,.txt,.xls,.xlsx,application/json,text/csv' hidden>";
  const how="<p class='ft'>"+tt("Totals = flights in the file + roster flights not in the file. A flight in both (same date and flight number) is counted once, with the roster data. Planned flights after today are ignored.","Totali = voli del file + voli del roster che non sono nel file. Un volo presente in entrambi (stessa data e numero di volo) conta una volta sola, con i dati del roster. I voli pianificati dopo oggi vengono ignorati.")+"</p>";
  if(I){if(I.err)return h+"<div class='hd'>"+tt("Old logbook file","File del vecchio logbook")+"</div><div class='grp'>"+imp+"</div><div class='grp' style='margin-top:10px'><div class='em'>"+lbEsc(I.err)+"</div></div>";
-  const X=lbMatch(I.F,lbCand()),B=lbBase(I.F,X.used,I.cls);
+  const R1=lbRows({F:I.F,cls:I.cls}),X={used:{size:R1.nm}},B=lbFinal(R1),C0=lbFinal(lbRows());
   return h+"<div class='hd'>"+tt("Preview","Anteprima")+"</div><div class='grp'>"+rv("File",lbEsc(lbFnS(I.name)))+rv(tt("Flights","Voli"),th(I.F.length),lbD0(I.from)+" → "+lbD0(I.to))+rv(tt("Also in the roster","Anche nel roster"),X.used.size,tt("counted once","contati una volta"))+"</div>"
-   +"<div class='hd'>"+tt("Totals from the file","Totali dal file")+"</div><div class='grp'>"+lbTotRows(B,S0)+"</div>"
+   +"<div class='hd'>"+tt("Career totals with this file","Totali complessivi con questo file")+"</div><div class='grp'>"+lbTotRows(B,C0)+"</div><p class='ft'>"+tt("File + roster flights, each flight counted once. In orange, the value shown today where it differs.","File + voli del roster, ogni volo contato una volta. In arancione il valore di oggi, dove è diverso.")+"</p>"
    +(I.warn?"<p class='ft' style='color:var(--org)'>"+I.warn+"</p>":"")+(I.cls?"":"<p class='ft'>"+tt("The file has no aircraft class: single/multi-pilot totals keep the manual values.","Il file non indica la classe dell'aereo: i totali monopilota/multipilota restano quelli manuali.")+"</p>")+how
    +"<button class='lbsv' data-imp='ok'>"+tt("Use this file","Usa questo file")+"</button><button class='lbsv' data-imp='no' style='background:none;color:var(--tx2)'>"+tt("Cancel","Annulla")+"</button>"}
  if(!LF)return h+"<div class='hd'>"+tt("Old logbook file","File del vecchio logbook")+"</div><div class='grp'>"+imp+"</div><p class='ft'>"+tt("Export the old logbook as JSON, CSV or Excel and choose it here. Until a file is imported, the manual totals are used.","Esporta il vecchio logbook in JSON, CSV o Excel e sceglilo qui. Finché non importi un file restano validi i totali manuali.")+"</p>"+how;
  const R0=lbRows(),ds=LF.F.map(x=>x.d).sort();
  return h+"<div class='hd'>"+tt("Imported file","File importato")+"</div><div class='grp'>"+rv("File",lbEsc(lbFnS(LF.name)))+rv(tt("Flights","Voli"),th(LF.F.length),lbD0(ds[0])+" → "+lbD0(ds[ds.length-1]))+rv(tt("Also in the roster","Anche nel roster"),R0.nm,tt("counted once","contati una volta"))+rv(tt("Imported","Importato"),lbEsc(fmtAt(LF.at)))+"</div>"
-  +"<div class='hd'>"+tt("Totals used","Totali usati")+"</div><div class='grp'>"+lbTotRows(Object.assign({},R0.S,{tot:R0.S.tot}))+"</div>"
-  +"<p class='ft'>"+tt("These are the totals before the logbook period. Statistics and the generated logbook add the roster flights to them.","Sono i totali prima del periodo del logbook. Statistiche e logbook generato ci aggiungono i voli del roster.")+"</p>"+how
+  +"<div class='hd'>"+tt("Career totals","Totali complessivi")+"</div><div class='grp'>"+lbTotRows(lbFinal(R0))+"</div>"
+  +"<p class='ft'>"+tt("File + roster flights, each flight counted once. Same values as in Statistics.","File + voli del roster, ogni volo contato una volta. Gli stessi valori di Statistiche.")+"</p>"+how
   +"<div class='grp'>"+imp+"<button class='row nl' data-imp='rm'><span class='bd' style='color:#ff3b30'>"+tt("Remove file","Rimuovi file")+"</span></button></div>"}
 document.addEventListener("change",async e=>{const t=e.target;if(!t||t.id!="lbimpf"||!t.files[0])return;const f=t.files[0];
  try{const b=await f.arrayBuffer();
