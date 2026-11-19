@@ -532,8 +532,8 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 
 <div id="brief" hidden></div>
 <script>
-const VER="Beta 96";
-const BUILD="202611191924";
+const VER="Beta 97";
+const BUILD="202611191933";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME);try{bgColors();bgDraw(performance.now())}catch(e){}}
 themeApply();
@@ -1175,8 +1175,9 @@ function lbHead(){if(PG!="log")return;$("#ttl").textContent=lbTab?LBTI[lbTab]:"L
 let lbImp=null;
 const LBIF=[["tot","Total time of flight","Tempo totale di volo"],["se","Single pilot SE","Monopilota SE"],["me","Single pilot ME","Monopilota ME"],["mp","Multi-pilot","Multipilota"],["night","Night","Notte"],["ifr","IFR","IFR"],["pic","Pilot in command","Pilota in comando"],["cop","Co-pilot","Copilota"],["dual","Dual","Doppio comando"],["ins","Instructor","Istruttore"],["tod","Takeoffs day","Decolli giorno"],["ton","Takeoffs night","Decolli notte"],["ldd","Landings day","Atterraggi giorno"],["ldn","Landings night","Atterraggi notte"],["pax","Passengers carried","Passeggeri trasportati"],["fuel","Fuel burned (kg)","Carburante bruciato (kg)"]];
 const lbImM=n=>Math.floor(n/60)+":"+p2(n%60),lbIso=ms=>new Date(ms).toISOString().slice(0,10),lbNum=s=>{const m=String(s||"").toUpperCase().match(/(\d+)\s*[A-Z]?\s*$/);return m?String(+m[1]):""};
-const LBFK=["d","n","dp","ar","t","tt","se","me","mp","night","ifr","pic","cop","dual","ins","tod","ton","ldd","ldn","pax","fuel","reg","pn"],LBFS="turni_lbf_v1",LBTK=["tt","se","me","mp","night","ifr","pic","cop","dual","ins"],LBNK=["tod","ton","ldd","ldn","pax","fuel"];
+const LBFK=["d","n","dp","ar","t","tt","se","me","mp","night","ifr","pic","cop","dual","ins","tod","ton","ldd","ldn","pax","fuel","reg","pn","ac","pf"],LBFS="turni_lbf_v1",LBTK=["tt","se","me","mp","night","ifr","pic","cop","dual","ins"],LBNK=["tod","ton","ldd","ldn","pax","fuel"];
 let lbFC;
+const LBAP=Object.fromEntries("8488:YYZ 8593:ALG 8807:TUN 8849:BRU 8856:CRL 8975:FRA 8977:HAM 8978:CGN 8979:DUS 8980:MUC 9004:HHN 9057:FMM 9467:MAN 9539:LGW 9576:EMA 9593:EDI 9624:STN 9681:AMS 9687:EIN 9754:BLL 9755:CPH 9915:KRK 9937:WMI 9950:POZ 10807:MRU 11760:FUE 11766:ACE 11767:TFS 12041:CAI 12057:SSH 13913:BOS 14865:IAD 14867:IAH 14947:JFK 15305:MIA 16022:SFO 16571:TIA 16608:SOF 16655:ALC 16665:BCN 16705:MAD 16707:AGP 16719:PMI 16748:VLC 16754:SDR 16755:ZAZ 17037:MRS 17038:NCE 17074:BVA 17105:CDG 17111:ORY 17233:ATH 17242:HER 17270:RHO 17293:BUD 17336:CRV 17337:BRI 17341:PSR 17342:BDS 17345:SUF 17346:CTA 17347:LMP 17349:PMO 17352:REG 17353:TPS 17371:AHO 17373:CAG 17393:MXP 17394:BGY 17395:TRN 17397:GOA 17398:LIN 17410:BLQ 17420:TRS 17424:QPA 17426:VRN 17427:AOI 17428:VCE 17436:FCO 17443:NAP 17444:PSA 17445:FLR 17449:PEG 17531:PRG 17617:TLV 17639:MLA 17766:OTP 17767:SBZ 17813:GVA 17858:ZRH 20303:JED 20319:RUH 20714:DXB 26982:LWO 27629:DEL 100002:BER 100024:CIY 101008:DSS".split(" ").map(x=>x.split(":")));
 function lbFile(){if(lbFC!==undefined)return lbFC;try{const j=JSON.parse(localStorage.getItem(LBFS)||"null");lbFC=j&&j.F?{name:j.name,at:j.at,cls:j.cls,F:j.F.map(a=>Object.fromEntries(LBFK.map((k,i)=>[k,a[i]])))}:null}catch(e){lbFC=null}return lbFC}
 function lbFileSave(I){try{localStorage.setItem(LBFS,JSON.stringify({name:I.name,at:Date.now(),cls:I.cls,F:I.F.map(x=>LBFK.map(k=>x[k]==null?"":x[k]))}));lbFC=undefined;return true}catch(e){lbFC=undefined;return false}}
 function lbCand(){const{S}=lbCfg(),now=Date.now();return lbFlights().filter(f=>!f.sim&&f.ds>=S.start&&f.t0<=now)}
@@ -1215,8 +1216,8 @@ function lbImpRun(src,name){
    j.forEach(x=>{const t=String(x.table).toLowerCase(),g=up(x.guid);if(t=="aircraft")AC[g]=x.meta;else if(t=="pilot")PL[g]=x.meta;else if(t=="flight"&&(!U[g]||x._modified>U[g]._modified))U[g]=x});
    Object.values(U).forEach(x=>{const m=x.meta;if(!m.DateUTC||m.DateUTC>today)return;const a=AC[up(m.AircraftCode)]||{},tt0=m.minTOTAL||0,
     cl=a.Category==1?"se":a.Power==1?"me":"mp",p1=up(m.P1Code),pn=/0{8}-0{4}-0{4}-0{4}-0{11}1$/.test(p1)?"SELF":(PL[p1]||{}).PilotName||"",[y,mo,d]=m.DateUTC.split("-").map(Number);
-    F.push({d:m.DateUTC,n:lbNum(m.FlightNumber),dp:"",ar:"",t:m.DepTimeUTC||m.ArrTimeUTC?Date.UTC(y,mo-1,d)+m.DepTimeUTC*6e4:"",tt:tt0,se:cl=="se"?tt0:0,me:cl=="me"?tt0:0,mp:cl=="mp"?tt0:0,
-     night:m.minNIGHT||0,ifr:m.minIFR||0,pic:(m.minPIC||0)+(m.minPICUS||0),cop:m.minCOP||0,dual:m.minDUAL||0,ins:m.minINSTR||0,tod:m.ToDay||0,ton:m.ToNight||0,ldd:m.LdgDay||0,ldn:m.LdgNight||0,pax:m.Pax||0,fuel:m.FuelUsed||0,reg:a.Reference||"",pn})});
+    F.push({d:m.DateUTC,n:lbNum(m.FlightNumber),dp:LBAP[parseInt(String(m.DepCode).slice(-12),10)]||"",ar:LBAP[parseInt(String(m.ArrCode).slice(-12),10)]||"",t:m.DepTimeUTC||m.ArrTimeUTC?Date.UTC(y,mo-1,d)+m.DepTimeUTC*6e4:"",tt:tt0,se:cl=="se"?tt0:0,me:cl=="me"?tt0:0,mp:cl=="mp"?tt0:0,
+     night:m.minNIGHT||0,ifr:m.minIFR||0,pic:(m.minPIC||0)+(m.minPICUS||0),cop:m.minCOP||0,dual:m.minDUAL||0,ins:m.minINSTR||0,tod:m.ToDay||0,ton:m.ToNight||0,ldd:m.LdgDay||0,ldn:m.LdgNight||0,pax:m.Pax||0,fuel:m.FuelUsed||0,reg:a.Reference||"",pn,ac:a.Model||"",pf:m.PF||(m.ToDay||0)+(m.ToNight||0)>0?1:0})});
    out.cls=true;return lbImpFin(out)}
   R=lbImpCsv(src)}
  if(!R||R.length<2)return{err:tt("File not recognized","File non riconosciuto")};
@@ -1224,14 +1225,14 @@ function lbImpRun(src,name){
  C={d:ix(/^(pilotlog )?(date|data)\b/),tot:ix(/^(total|totale|tot)\b|total time|total flight|tempo totale/),night:ix(/night|notte|notturn/),ifr:ix(/\bifr\b/),pic:ix(/^pic\b|comando|pilot in command/),picus:ix(/^picus\b/),cop:ix(/co ?pilot|copilota|\bsic\b/),dual:ix(/dual/),ins:ix(/instructor|istruttore/),
   tod:ix(/(takeoff|decoll|\bto\b).*(day|giorno)|^to day/),ton:ix(/(takeoff|decoll|\bto\b).*(night|notte)|^to night/),ldd:ix(/(land|atterr|\bldg\b).*(day|giorno)|^ldg day/),ldn:ix(/(land|atterr|\bldg\b).*(night|notte)|^ldg night/),pax:ix(/pax|passeng/),fuel:ix(/fuel ?used|burn|carbur/),
   fn:ix0(/^(flightnumber|flight ?n(o|um|umber)?|flight|volo|n volo|numero volo)$/),dp:ix0(/^(af dep|from|dep|departure|partenza|origin)$/),ar:ix0(/^(af arr|to|arr|arrival|arrivo|destination|dest)$/),td:ix0(/^(time dep|dep time|off ?block|block off|out)$/),
-  reg:ix0(/^(ac reg|reg|registration|marche|immatricolazione)$/),pn:ix0(/^(pilot1 name|pic name|comandante)$/),pw:ix0(/^(ac power|engine|engines|power|motore)$/)};
+  reg:ix0(/^(ac reg|reg|registration|marche|immatricolazione)$/),pn:ix0(/^(pilot1 name|pic name|comandante)$/),pw:ix0(/^(ac power|engine|engines|power|motore)$/),acm:ix0(/^(ac model|model|aircraft|aircraft type|type|tipo|modello)$/),pf:ix0(/^(pf|pilot flying)$/)};
  if(C.fuel<0)C.fuel=ix(/^fuel$/);
  if(C.d<0||C.tot<0)return{err:tt("Date or total time column not found","Colonna data o tempo totale non trovata")};
  const pe=H0.findIndex(h=>/prevexp/.test(h));
  if(pe>=0&&R.slice(1).some(r=>String(r[pe]).trim()=="1"))out.warn=tt("The “previous experience” row of this CSV has times cut off at 24 hours (e.g. 220:17 appears as 4:17). Check the totals against the old logbook, or import the JSON export instead.","La riga “esperienza precedente” di questo CSV ha i tempi troncati a 24 ore (es. 220:17 appare come 4:17). Controlla i totali con il vecchio logbook, oppure importa l'export JSON.");
  out.cls=C.pw>=0;const g=(r,k)=>C[k]>=0?String(r[C[k]]==null?"":r[C[k]]).trim():"";
  R.slice(1).forEach(r=>{const x=g(r,"d");let m=x.match(/^(\d{4})-(\d{2})-(\d{2})/),d=m?m[1]+"-"+m[2]+"-"+m[3]:(m=x.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})/))?m[3]+"-"+p2(+m[2])+"-"+p2(+m[1]):"";if(!d||d>today)return;
-  const o={d,n:lbNum(g(r,"fn")),dp:g(r,"dp").toUpperCase(),ar:g(r,"ar").toUpperCase(),t:"",reg:g(r,"reg").toUpperCase(),pn:g(r,"pn")};
+  const o={d,n:lbNum(g(r,"fn")),dp:g(r,"dp").toUpperCase(),ar:g(r,"ar").toUpperCase(),t:"",reg:g(r,"reg").toUpperCase(),pn:g(r,"pn"),ac:g(r,"acm"),pf:/^(1|true|yes|si|sì|x|pf)$/i.test(g(r,"pf"))||nu(g(r,"tod"))+nu(g(r,"ton"))>0?1:0};
   LBTK.forEach(k=>o[k]=0);["tot","night","ifr","pic","picus","cop","dual","ins"].forEach(k=>{if(C[k]>=0)o[k=="tot"?"tt":k]=tm(g(r,k))});o.pic+=o.picus||0;delete o.picus;
   LBNK.forEach(k=>o[k]=C[k]>=0?nu(g(r,k)):0);
   const td=g(r,"td").match(/^(\d{1,2}):(\d{2})/);if(td&&(o.tt||+td[1]||+td[2])){const[y,mo,dd]=d.split("-").map(Number);o.t=Date.UTC(y,mo-1,dd,+td[1],+td[2])}
@@ -1348,11 +1349,11 @@ function lbMiss(c){const n=c.todo.length,fil=lbFil||(n?"todo":"all"),list=fil=="
  h+="<datalist id='lbpics'>"+pics.map(p=>"<option value='"+lbEsc(p)+"'>").join("")+"</datalist>";
  if(c.miss&&c.miss.length)h+="<p class='ft'>Airports not in table (flights excluded): "+c.miss.map(lbEsc).join(", ")+"</p>";
  return h+"<p class='ft'>Registration: type only the 4 letters, I- is added automatically. Night is calculated (sun below −6°): type hh:mm only to correct it.</p><p class='ft'>Flights from "+lbEsc(lbD0(c.S.start))+". Change the start date in Generate logbook.</p>"}
-function lbGen(c){const{S}=c,td=new Date(),tod=td.getFullYear()+"-"+p2(td.getMonth()+1)+"-"+p2(td.getDate()),tt=c.fl.reduce((a,r)=>a+r.tt,0),nt=c.fl.reduce((a,r)=>a+r.night,0),sm=c.rows.filter(r=>r.sim),smt=sm.reduce((a,r)=>a+r.sdur,0),n=c.todo.length;
+function lbGen(c){const{S}=c,td=new Date(),tod=td.getFullYear()+"-"+p2(td.getMonth()+1)+"-"+p2(td.getDate()),tT=c.fl.reduce((a,r)=>a+r.tt,0),nt=c.fl.reduce((a,r)=>a+r.night,0),sm=c.rows.filter(r=>r.sim),smt=sm.reduce((a,r)=>a+r.sdur,0),n=c.todo.length;
  const st=(v,l)=>"<div class='stt'><b>"+v+"</b><span>"+l+"</span></div>",rv=(l,v)=>"<div class='row nl'><span class='bd'>"+l+"</span><span class='v'>"+v+"</span></div>";
  return"<div class='hd'>Period</div><div class='grp'><label class='row nl'><span class='bd'>From</span><input type='date' class='sv' data-s='start' value='"+lbEsc(S.start)+"' max='"+tod+"'></label>"+rv("To","Today · "+lbD0(tod))+"</div>"
- +"<div class='hd'>In this period</div><div class='st2'>"+st(c.fl.length,"Flights")+st(fm(tt),"Flight time")+st(fm(nt),"Night")+st(sm.length+" · "+fm(smt),"Simulator")+"</div>"
- +"<div class='hd'>Totals at the end</div><div class='grp'>"+rv("Total time of flight",fm((pm(S.tot)||0)+tt))+rv("Night",fm((pm(S.night)||0)+nt))+"</div>"
+ +"<div class='hd'>In this period</div><div class='st2'>"+st(c.fl.length,"Flights")+st(fm(tT),"Flight time")+st(fm(nt),"Night")+st(sm.length+" · "+fm(smt),"Simulator")+"</div>"
+ +"<div class='hd'>Totals at the end</div><div class='grp'>"+rv("Total time of flight",fm((pm(S.tot)||0)+tT))+rv("Night",fm((pm(S.night)||0)+nt))+"</div>"
  +(n?"<div class='grp' style='margin-top:16px'><button class='row chev' data-lt='c'><span class='ic' style='background:var(--org)'>!</span><span class='bd'><span class='t'>"+n+" with missing data</span><span class='s'>Complete them before generating</span></span></button></div>":"")
  +"<button class='lbgo2' id='lbgen'>Generate logbook (PDF)</button>"
  +(c.skip?"<p class='ft'>"+c.skip+" "+tt("roster flights up to","voli del roster fino al")+" "+lbEsc(lbD0(S.thru))+" "+tt("are already in the previous totals and are counted once.","sono già nei totali precedenti e contano una volta sola.")+"</p>":"")
@@ -1936,10 +1937,12 @@ const LAKE=["47,45,50,46.5,53,45,53,40,54,37,50.5,37,49,40,48,42","28,41.5,28,44
 function inPoly(x,y,P){let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>y)!=(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])c=!c}return c}
 const isLand=(lo,la)=>LAND.some(P=>inPoly(lo,la,P))&&!LAKE.some(P=>inPoly(lo,la,P));
 
+// approximate coordinates, used only for the stats map and km (never for roster times)
+const AIRS=Object.fromEntries("TRS 45.827 13.472,REG 38.071 15.652,PSR 42.432 14.181,STN 51.885 0.235,EIN 51.450 5.374,MAN 53.354 -2.275,BLL 55.740 9.152,PEG 43.096 12.513,PMI 39.552 2.739,HAM 53.630 9.988,BVA 49.455 2.113,PRG 50.101 14.260,BDS 40.658 17.947,CRL 50.459 4.454,POZ 52.421 16.826,TIA 41.415 19.721,ALC 38.282 -0.558,VLC 39.489 -0.482,KRK 50.078 19.785,BUD 47.437 19.256,MRS 43.437 5.215,RHO 36.405 28.086,EDI 55.950 -3.373,HHN 49.949 7.264,SOF 42.695 23.406,CIY 36.995 14.607,AOI 43.616 13.362,CGN 50.866 7.143,DUS 51.289 6.767,SDR 43.427 -3.820,OTP 44.571 26.085,DSS 14.670 -17.073,CPH 55.618 12.656,LMP 35.498 12.618,TPS 37.912 12.488,AGP 36.675 -4.499,WMI 52.451 20.652,CRV 38.997 17.080,ACE 28.946 -13.605,TFS 28.044 -16.573,LGW 51.148 -0.190,HER 35.340 25.180,EMA 52.831 -1.328,FMM 47.989 10.240,FUE 28.453 -13.864,LWO 49.813 23.956,ZAZ 41.666 -1.042,SSH 27.977 34.395,SBZ 45.786 24.091,JED 21.680 39.157".split(",").map(x=>{const q=x.split(" ");return[q[0],["",+q[1],+q[2]]]})),stA=k=>AIR[k]||AIRS[k]||null;
 function stMap(cv,fl){
  const W=cv.clientWidth||340,mil=p=>1.25*Math.log(Math.tan(Math.PI/4+.4*p*Math.PI/180)),inv=y=>(Math.atan(Math.exp(y/1.25))-Math.PI/4)/.4*180/Math.PI,dpr=Math.min(2,window.devicePixelRatio||1);
  const ap={},pr={};fl.forEach(f=>{const a=[f.from,f.to].sort().join("-");pr[a]=(pr[a]||0)+1;[f.from,f.to].forEach(x=>ap[x]=(ap[x]||0)+1)});
- const P=Object.keys(ap).map(k=>AIR[k]).filter(Boolean);
+ const P=Object.keys(ap).map(k=>stA(k)).filter(Boolean);
  let lo0=-180,lo1=180,la0=-56,la1=80;
  if(P.length){lo0=Math.min(...P.map(a=>a[2]))-14;lo1=Math.max(...P.map(a=>a[2]))+14;la0=Math.min(...P.map(a=>a[1]))-12;la1=Math.max(...P.map(a=>a[1]))+12;
   while(lo1-lo0<90){lo0-=5;lo1+=5}}
@@ -1953,26 +1956,29 @@ function stMap(cv,fl){
  for(let r=0;r<rows;r++){const la=inv(Y0-(r+.5)/rows*(Y0-Y1));
   for(let k=0;k<cols;k++){const lo=lo0+(k+.5)/cols*(lo1-lo0);if(isLand(lo,la)){c.beginPath();c.arc((k+.5)/cols*W,(r+.5)/rows*H,1.05,0,6.3);c.fill()}}}
  const mx=Math.max(1,...Object.values(pr));c.lineCap="round";c.lineJoin="round";
- for(const k in pr){const[a,b]=k.split("-"),A=AIR[a],B=AIR[b];if(!A||!B)continue;
+ for(const k in pr){const[a,b]=k.split("-"),A=stA(a),B=stA(b);if(!A||!B)continue;
   const al=.45+.55*pr[k]/mx;c.strokeStyle="rgba(255,159,10,"+al+")";c.shadowColor="rgba(255,159,10,.9)";c.shadowBlur=6;c.lineWidth=1.2+1.5*pr[k]/mx;c.beginPath();
   let px=null;for(let i=0;i<=60;i++){const p=lbGc(A,B,i/60),x=X(p[1]),y=Yp(p[0]);if(px!==null&&Math.abs(x-px)>W/2)c.moveTo(x,y);else if(px===null)c.moveTo(x,y);else c.lineTo(x,y);px=x}c.stroke()}
  c.shadowBlur=8;c.shadowColor="#5ac8fa";c.fillStyle="#fff";
- for(const k in ap){const A=AIR[k];if(!A)continue;c.beginPath();c.arc(X(A[2]),Yp(A[1]),3,0,6.3);c.fill()}
+ for(const k in ap){const A=stA(k);if(!A)continue;c.beginPath();c.arc(X(A[2]),Yp(A[1]),3,0,6.3);c.fill()}
  c.shadowBlur=0;c.font="600 10px -apple-system,Inter,sans-serif";c.textAlign="center";const used=[];
- for(const k of Object.keys(ap).sort((a,b)=>ap[b]-ap[a])){const A=AIR[k];if(!A)continue;const x=Math.min(W-14,Math.max(14,X(A[2])));let y=Yp(A[1])-8;
+ for(const k of Object.keys(ap).sort((a,b)=>ap[b]-ap[a])){const A=stA(k);if(!A)continue;const x=Math.min(W-14,Math.max(14,X(A[2])));let y=Yp(A[1])-8;
   if(used.some(u=>Math.abs(u[0]-x)<28&&Math.abs(u[1]-y)<12))y=Yp(A[1])+16;
   used.push([x,y]);c.fillStyle="rgba(255,255,255,.92)";c.fillText(k,x,y)}}
 function stRing(t,min,max){const pc=Math.min(1,min/(max*60)),col=pc>=1?"#ff3b30":pc>=.8?"#ff9500":"#0a84ff",C=2*Math.PI*30;
  return"<div class='rg'><svg viewBox='0 0 80 80' width='86' height='86'><circle cx='40' cy='40' r='30' fill='none' stroke='var(--sel)' stroke-width='8'/><circle cx='40' cy='40' r='30' fill='none' stroke='"+col+"' stroke-width='8' stroke-linecap='round' stroke-dasharray='"+(C*pc).toFixed(1)+" "+C.toFixed(1)+"' transform='rotate(-90 40 40)'/><text x='40' y='45' text-anchor='middle' font-size='15' font-weight='700' fill='var(--tx)'>"+Math.round(pc*100)+"%</text></svg><b>"+t+"</b><span>"+Math.floor(min/60)+" / "+max+" h</span></div>"}
+function stFile(rf){const LF=loadMeta().lbMode=="file"?lbFile():null;if(!LF)return[];const X=lbMatch(LF.F,rf);
+ return LF.F.filter((o,i)=>!X.used.has(i)&&+o.tt>0&&o.dp&&o.ar&&o.dp!=o.ar).map(o=>{const[y,m,d]=o.d.split("-").map(Number);return{from:o.dp,to:o.ar,t0:o.t!==""&&o.t!=null?+o.t:Date.UTC(y,m-1,d,12),blk:+o.tt,ac:o.ac||"",pf:+o.pf?1:0,fx:1}})}
+const stFam=a=>{a=String(a||"?").toUpperCase();return/^BD-500/.test(a)?"A220":a.split("-")[0]};
 function stRender(){
- const el=$("#stx"),fl=lbFlights().filter(f=>!f.sim&&f.t0<=Date.now()),now=Date.now(),{rows,S}=lbRows(),lr=rows.filter(r=>!r.sim);
+ const el=$("#stx"),rf=lbFlights().filter(f=>!f.sim&&f.t0<=Date.now()),xf=stFile(rf),fl=rf.concat(xf),flk=fl.filter(f=>stA(f.from)&&stA(f.to)),now=Date.now(),{rows,S}=lbRows(),lr=rows.filter(r=>!r.sim);
  const sumH=(a,b)=>fl.filter(f=>f.t0>=a&&f.t0<b).reduce((x,f)=>x+f.blk,0),dn=new Date(),y0=Date.UTC(dn.getUTCFullYear(),0,1);
  const g=k=>pm(S[k])||0,c=k=>parseInt(String(S[k]).replace(/[.\s]/g,""),10)||0,sm=k=>lr.reduce((a,r)=>a+(r[k]||0),0),ct=(k,v)=>lr.filter(r=>r[k]==v).length;
- const km=fl.reduce((a,f)=>{const A=AIR[f.from],B=AIR[f.to],d=lbRad(B[1]-A[1]),e=lbRad(B[2]-A[2]),h=Math.sin(d/2)**2+Math.cos(lbRad(A[1]))*Math.cos(lbRad(B[1]))*Math.sin(e/2)**2;return a+12742*Math.asin(Math.sqrt(h))},0);
+ const km=flk.reduce((a,f)=>{const A=stA(f.from),B=stA(f.to),d=lbRad(B[1]-A[1]),e=lbRad(B[2]-A[2]),h=Math.sin(d/2)**2+Math.cos(lbRad(A[1]))*Math.cos(lbRad(B[1]))*Math.sin(e/2)**2;return a+12742*Math.asin(Math.sqrt(h))},0);
  const aps=new Set();fl.forEach(f=>{aps.add(f.from);aps.add(f.to)});
  const tot=g("tot")+sm("tt"),LB=loadMeta().lb||{},LBX=k=>lr.reduce((a,r)=>a+(parseInt(String((LB[r.f.k]||{})[k]||(r.fx&&r.fx[k])||"").replace(/[.,\s]/g,""),10)||0),0);
- let h="<div class='sh'><span>Total flight time</span><b>"+fm(tot)+"</b><div class='sc'><i>"+fl.length+"</i> flights in rosters<i>"+th(Math.round(km))+"</i> km<i>"+aps.size+"</i> airports</div></div>";
- h+="<div class='hd'>Flight time limits</div><div class='grp rgs'>"+stRing("28 days",sumH(now-28*864e5,now+1),100)+stRing("Calendar year",sumH(y0,now+1),900)+stRing("12 months",sumH(now-365*864e5,now+1),1000)+"</div><p class='ft'>From imported roster flights. EASA limits: 100 h / 28 days, 900 h / calendar year, 1000 h / 12 months.</p>";
+ let h="<div class='sh'><span>Total flight time</span><b>"+fm(tot)+"</b><div class='sc'><i>"+fl.length+"</i> "+(xf.length?tt("flights","voli"):"flights in rosters")+"<i>"+th(Math.round(km))+"</i> km<i>"+aps.size+"</i> airports</div></div>";
+ h+="<div class='hd'>Flight time limits</div><div class='grp rgs'>"+stRing("28 days",sumH(now-28*864e5,now+1),100)+stRing("Calendar year",sumH(y0,now+1),900)+stRing("12 months",sumH(now-365*864e5,now+1),1000)+"</div><p class='ft'>"+(xf.length?tt("From roster flights and the imported old logbook. EASA limits: 100 h / 28 days, 900 h / calendar year, 1000 h / 12 months.","Dai voli dei roster e dal vecchio logbook importato. Limiti EASA: 100 h / 28 giorni, 900 h / anno solare, 1000 h / 12 mesi."):"From imported roster flights. EASA limits: 100 h / 28 days, 900 h / calendar year, 1000 h / 12 months.")+"</p>";
  h+="<div class='hd'>Routes flown</div><div class='mapc'><canvas id='stmap'></canvas><div class='mcap'>"+(fl.length?Object.keys(fl.reduce((o,f)=>(o[[f.from,f.to].sort().join("-")]=1,o),{})).length+" routes · "+aps.size+" airports":"Import a roster to see your routes")+"</div></div>";
  const mo=[];for(let i=5;i>=0;i--){const d=new Date(Date.UTC(dn.getUTCFullYear(),dn.getUTCMonth()-i,1)),e=Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1);mo.push([d.toLocaleDateString(LOC(),{month:"short",timeZone:"UTC"}),sumH(d.getTime(),e)])}
  const mx=Math.max(1,...mo.map(m=>m[1]));
@@ -1981,14 +1987,14 @@ function stRender(){
   ["Takeoffs D / N",th(c("tod")+ct("to","D"))+" / "+th(c("ton")+ct("to","N")),"#64d2ff","↗"],["Landings D / N",th(c("ldd")+ct("ld","D"))+" / "+th(c("ldn")+ct("ld","N")),"#ff375f","↘"],
   ["Passengers carried",th(c("pax")+LBX("pax")),"#bf5af2","☺"],["Fuel burned (kg)",th(c("fuel")+LBX("fuel")),"#ff6b35","⛽︎"]];
  h+="<div class='hd'>Career totals</div><div class='st2'>"+T.map(t=>"<div class='stt'><span class='sti' style='background:"+t[2]+"'>"+t[3]+"</span><b>"+t[1]+"</b><span>"+t[0]+"</span></div>").join("")+"</div>";
- const ap={},ac={};fl.forEach(f=>{ap[f.to]=(ap[f.to]||0)+1;ac[f.ac||"?"]=(ac[f.ac||"?"]||0)+f.blk});
+ const ap={},ac={};fl.forEach(f=>{ap[f.to]=(ap[f.to]||0)+1;ac[stFam(f.ac)]=(ac[stFam(f.ac)]||0)+f.blk});
  const top=Object.entries(ap).sort((a,b)=>b[1]-a[1]).slice(0,5),tm=top.length?top[0][1]:1;
  if(top.length)h+="<div class='hd'>Most frequent destinations</div><div class='grp'>"+top.map(t=>"<div class='sr'><div class='l'><span>"+esc(t[0])+"</span><span>"+t[1]+(t[1]==1?" flight":" flights")+"</span></div><div class='bar'><i style='width:"+Math.round(t[1]/tm*100)+"%'></i></div></div>").join("")+"</div>";
  const A=Object.entries(ac).sort((a,b)=>b[1]-a[1]),at=A.reduce((a,x)=>a+x[1],0),pal=["#0a84ff","#bf5af2","#30d158","#ff9f0a"];
  if(A.length)h+="<div class='hd'>Fleet</div><div class='grp'><div class='sr'><div class='stk'>"+A.map((x,i)=>"<i style='flex:"+x[1]+";background:"+pal[i%4]+"'></i>").join("")+"</div>"+A.map((x,i)=>"<div class='l' style='margin-top:8px'><span><u style='background:"+pal[i%4]+"'></u>"+esc(x[0])+"</span><span>"+fm(x[1])+" · "+Math.round(x[1]/at*100)+"%</span></div>").join("")+"</div></div>";
- const pf=lr.filter(r=>r.role=="PF").length,pmn=lr.filter(r=>r.role=="PM").length;
+ const pf=lr.filter(r=>r.role=="PF").length+xf.filter(f=>f.pf).length,pmn=lr.filter(r=>r.role=="PM").length+xf.filter(f=>!f.pf).length;
  if(pf+pmn)h+="<div class='hd'>Pilot flying</div><div class='grp'><div class='sr'><div class='stk'><i style='flex:"+pf+";background:#0a84ff'></i><i style='flex:"+pmn+";background:#8e8e93'></i></div><div class='l' style='margin-top:8px'><span><u style='background:#0a84ff'></u>PF</span><span>"+pf+"</span></div><div class='l'><span><u style='background:#8e8e93'></u>PM</span><span>"+pmn+"</span></div></div></div>";
- el.innerHTML=h;const cv=$("#stmap");if(cv)stMap(cv,fl)}
+ el.innerHTML=h;const cv=$("#stmap");if(cv)stMap(cv,flk)}
 
 function accLoad(){pfLoad()}
 $("#bkx").onclick=async()=>{const o=$("#bkm");try{const dl=await getDl();if(!dl){o.textContent="Backup is not available in this view.";return}
@@ -2182,6 +2188,8 @@ function drUi(){const m=loadMeta(),n=(m.name||"").trim(),ini=n?n.split(/\s+/).ma
 
 /* ===== Changelog ===== */
 const CHLOG=[
+ ["Beta 97","19/11/2026",["Generate logbook works again after importing a file.","Statistics include the imported old logbook: flights, km, airports, routes map, hours per month, flight time limits, destinations, fleet and PF/PM. Flights also in the roster are counted once."],["Genera logbook funziona di nuovo dopo l'import di un file.","Le statistiche includono il vecchio logbook importato: voli, km, aeroporti, mappa delle rotte, ore per mese, limiti di volo, destinazioni, flotta e PF/PM. I voli presenti anche nel roster contano una volta sola."]],
+ ["Beta 96","19/11/2026",["Import preview compares career totals (file + roster): passengers and fuel no longer show a false difference."],["L'anteprima dell'import confronta i totali complessivi (file + roster): passeggeri e carburante non mostrano più una falsa differenza."]],
  ["Beta 95","19/11/2026",["Logbook settings: choose Manual entry or Import file (JSON, CSV, XLS, XLSX).","Flights that are both in the old logbook and in the roster are counted once (same date and flight number), so totals and counts stay correct in Statistics and in the generated logbook.","Manual entry: new “Totals updated to” date; roster flights up to that date are not added again."],["Impostazioni logbook: scegli Inserimento manuale o Import da file (JSON, CSV, XLS, XLSX).","I voli presenti sia nel vecchio logbook sia nel roster contano una volta sola (stessa data e numero di volo): totali e conteggi restano corretti in Statistiche e nel logbook generato.","Inserimento manuale: nuova data “Totali aggiornati al”; i voli del roster fino a quella data non vengono sommati di nuovo."]],
  ["Beta 94","19/11/2026",["Logbook import: reads the CSV export of the old logbook (PilotLog columns), shows current vs imported values and warns when the CSV truncates the previous-experience row at 24 hours."],["Import logbook: legge l'export CSV del vecchio logbook (colonne PilotLog), mostra valori attuali e importati e avvisa quando il CSV tronca a 24 ore la riga di esperienza precedente."]],
  ["Beta 93","19/11/2026",["Logbook: import your old logbook from a JSON or CSV file (Settings › Previous logbook). Totals up to the day before the start date are calculated and shown for confirmation before they are applied, including passengers and fuel burned."],["Logbook: importa il vecchio logbook da file JSON o CSV (Impostazioni › Logbook precedente). I totali fino al giorno prima della data di inizio vengono calcolati e mostrati per conferma prima di applicarli, compresi passeggeri e carburante bruciato."]],
