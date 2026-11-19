@@ -388,7 +388,15 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 .brl{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;box-shadow:var(--sh);padding:12px 14px;margin-bottom:8px;color:var(--tx);text-decoration:none}.brl i{width:38px;height:38px;border-radius:12px;background:rgba(31,91,214,.1);color:var(--ac);display:grid;place-items:center;flex:none}.brl span{flex:1;min-width:0}.brl b{display:block;font-size:15px}.brl small{display:block;font-size:12.5px;color:var(--tx2);margin-top:1px}.brl>svg{color:var(--tx2);flex:none}
 .brf{font-size:12px;color:var(--tx2);margin:16px 4px 0;line-height:1.45}
 .brd{background:var(--card);border-radius:16px;box-shadow:var(--sh);padding:12px 14px;margin-bottom:8px}.brdh{display:flex;gap:8px;align-items:baseline;margin-bottom:6px}.brdh b{font-family:var(--ff);font-size:18px}.brdh span{font-size:12.5px;color:var(--tx2)}
-.brdm small,.brdt{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx2);margin:8px 0 3px;font-weight:700}.brdm code,.brd details code{display:block;font:12px/1.4 ui-monospace,Menlo,monospace;color:var(--tx);word-break:break-word}
+.brdm small,.brd.warn{box-shadow:var(--sh),inset 3px 0 0 #ff9f0a}.brdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.brrole{font:700 11px var(--fb);letter-spacing:.1em;color:var(--pri)}.brin{font-size:12px;color:var(--tx2)}
+.brwin{display:flex;justify-content:space-between;align-items:baseline;padding:8px 10px;border-radius:10px;background:rgba(255,214,10,.16);margin:4px 0 8px}.brwin span{font-size:12px;color:var(--tx2)}.brwin b{font:700 14px var(--ff)}
+.brsum{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.brk{font:700 11px var(--fb);letter-spacing:.04em;padding:3px 8px;border-radius:99px;color:#fff;background:var(--k);flex:none;align-self:center}.brz{font:600 12px var(--fb);padding:3px 8px;border-radius:99px;background:rgba(255,69,58,.14);color:#ff453a}.brz.gray{background:var(--sel);color:var(--tx2)}.brok{font-size:12px;color:#30d158;font-weight:600;align-self:center}
+.btl{position:relative;margin:22px 0 10px;padding-top:2px}.btb,.bto{position:relative;border-radius:6px;overflow:hidden;background:var(--sel)}.btb{height:14px}.bto{height:6px;margin-top:3px;background:none}.btb i,.bto i{position:absolute;top:0;bottom:0}.bto i{background:repeating-linear-gradient(45deg,var(--k) 0 3px,transparent 3px 6px);border-radius:3px}
+.btw{position:absolute;top:-4px;height:31px;border:2px solid var(--tx);border-radius:6px;background:rgba(255,214,10,.25);box-sizing:border-box}.btw em{position:absolute;top:-17px;left:50%;transform:translateX(-50%);font:700 10px var(--fb);font-style:normal;white-space:nowrap}.btn{position:absolute;top:-2px;height:27px;width:2px;background:#ff375f;border-radius:1px}.btt{display:flex;justify-content:space-between;font-size:10px;color:var(--tx2);margin-top:3px}
+.brdp.hit{background:rgba(255,214,10,.18);align-items:center}.brdp.hit em{font-style:normal;font-weight:700;color:var(--tx2);margin-right:4px}.brdp .brk{margin-left:auto}
+.brraw{margin-top:8px}.brraw summary{font-size:12px;color:var(--pri);font-weight:600}.brraw code{display:block;margin-top:6px;font:12px/1.6 ui-monospace,Menlo,monospace;color:var(--tx2);white-space:normal}.brraw code span.on{background:rgba(255,214,10,.45);color:var(--tx);border-radius:3px;padding:0 2px}
+.brmet{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.brmet code{flex-basis:100%;font:12px/1.5 ui-monospace,Menlo,monospace;color:var(--tx)}
+.brdt{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx2);margin:8px 0 3px;font-weight:700}.brdm code,.brd details code{display:block;font:12px/1.4 ui-monospace,Menlo,monospace;color:var(--tx);word-break:break-word}
 .brdp{display:flex;gap:10px;font-size:13px;padding:6px 8px;border-radius:10px;background:rgba(31,91,214,.09);margin-top:4px;line-height:1.35}.brdp b{flex:none;color:var(--ac);font-variant-numeric:tabular-nums}.brdp.nas{background:rgba(232,146,28,.14)}.brdp.nas b{color:#b46e00}
 .brd summary{font-size:12px;color:var(--ac);margin-top:8px;cursor:pointer}#brNas{margin-top:4px}
 .llf.two{grid-template-columns:1fr 1fr;margin-top:6px}
@@ -534,8 +542,8 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 
 <div id="brief" hidden></div>
 <script>
-const VER="Beta 99";
-const BUILD="202611192055";
+const VER="Beta 101";
+const BUILD="202611192346";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME);try{bgColors();bgDraw(performance.now())}catch(e){}}
 themeApply();
@@ -1859,7 +1867,7 @@ function briefRender(){const b=$("#brief"),D=days[brDay]||{ev:[]},fl=(D.ev||[]).
  b.innerHTML='<div class="brp"><div class="brh"><button type="button" id="brX" aria-label="Close"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button><div><small>'+tt("FLIGHT BRIEFING","BRIEFING DEL VOLO")+'</small><b>'+esc(f.fn)+' · '+esc(f.from)+' → '+esc(f.to)+'</b></div></div>'
  +(fl.length>1?'<div class="brs">'+fl.map((x,i)=>'<button type="button" data-i="'+i+'"'+(i==brSel?' class="on"':'')+'>'+esc(x.from+"–"+x.to)+'</button>').join("")+'</div>':'')
  +'<div class="brw"><div><small>'+tt("Takeoff","Decollo")+'</small><b>'+brZ(d0)+'</b><em>'+esc(f.dep)+' '+tt("local","locali")+'</em></div><div><small>'+tt("Landing","Atterraggio")+'</small><b>'+brZ(a0)+'</b><em>'+esc(f.arr+(f.plus?" +1":""))+' '+tt("local","locali")+'</em></div></div>'
- +'<p class="brn">'+tt("Window to check: ","Finestra da controllare: ")+'<b>'+brD(w0)+' '+brZ(w0)+' → '+brD(w1)+' '+brZ(w1)+'</b> '+tt("(1 h before takeoff to 1 h after landing)","(1 h prima del decollo, 1 h dopo l'atterraggio)")+'</p>'
+ +'<p class="brn">'+tt("Highlighted windows: ±1 h around takeoff at departure and ±1 h around landing at arrival.","Finestre evidenziate: ±1 h attorno al decollo in partenza e ±1 h attorno all'atterraggio a destinazione.")+'</p>'
  +(miss.length?'<div class="brm">'+miss.map(a=>'<label>'+esc(a)+' ICAO <input data-ap="'+esc(a)+'" maxlength="4" autocapitalize="characters" placeholder="----"></label>').join("")+'</div>':'')
  +'<div class="brg"><h4>'+tt("Weather","Meteo")+'</h4>'
  +(ia?row(tt("Departure METAR + TAF","METAR + TAF partenza"),ia+" · "+cityN(f.from),AWC+"data/metar/?ids="+ia+"&hours=3&taf=1",icW):"")
@@ -1875,22 +1883,59 @@ function briefRender(){const b=$("#brief"),D=days[brDay]||{ev:[]},fl=(D.ev||[]).
  +'<div id="brNas"></div>'
  +row(tt("Company briefing (LIDO)","Briefing compagnia (LIDO)"),tt("Official NOTAM and flight documents","NOTAM e documenti di volo ufficiali"),"https://ity.lido.aero/lido/lsc/application-center-ui/login?redirectURL=https:%2F%2Fity.lido.aero%2Flido%2Flsc%2Fapplication-center-ui%2FstartCenter",icL)
  +'</div><p class="brf">'+tt("Support only: the official briefing is the one in LIDO / the OFP. The links open the public sites in your browser.","Solo di supporto: il briefing ufficiale è quello di LIDO / OFP. I link aprono i siti pubblici nel browser.")+'</p></div>';
- $("#brX").onclick=briefClose;brLive(f,w0,w1,ia,ib);b.querySelectorAll(".brs button").forEach(x=>x.onclick=()=>{brSel=+x.dataset.i;briefRender()});
+ $("#brX").onclick=briefClose;brLive(f,d0,a0,ia,ib);b.querySelectorAll(".brs button").forEach(x=>x.onclick=()=>{brSel=+x.dataset.i;briefRender()});
  b.querySelectorAll(".brm input").forEach(x=>x.onchange=()=>{const v=x.value.trim().toUpperCase();if(/^[A-Z]{4}$/.test(v)){const m=loadMeta();m.icao=m.icao||{};m.icao[x.dataset.ap]=v;saveMeta(m);briefRender()}})}
 
 /* live data (METAR now, TAF periods inside the window, NAS status): if the network or the source blocks it, only the links stay */
 const brC={};
 async function brGet(u,txt){const c=new AbortController(),t=setTimeout(()=>c.abort(),9000);try{const r=await fetch(u,{signal:c.signal});if(!r.ok)throw 0;return txt?await r.text():await r.json()}finally{clearTimeout(t)}}
-function brWx(f){const o=[];if(f.wdir!=null||f.wspd!=null)o.push((f.wdir=="VRB"?"VRB":p2(f.wdir||0).padStart(3,"0"))+"/"+(f.wspd||0)+(f.wgst?"G"+f.wgst:"")+"kt");if(f.visib!=null)o.push("vis "+f.visib);if(f.wxString)o.push(f.wxString);if(f.clouds&&f.clouds.length)o.push(f.clouds.map(c=>c.cover+(c.base!=null?String(Math.round(c.base/100)).padStart(3,"0"):"")).join(" "));if(f.wshearHgt)o.push("WS");if(f.icgTurb&&f.icgTurb.length)o.push("TURB");return o.join(" · ")}
-function brLiveHtml(res,w0,w1){let h="";res.forEach(r=>{const t=r.taf,m=r.metar;h+='<div class="brd"><div class="brdh"><b>'+esc(r.ap)+'</b><span>'+esc(cityN(r.iata))+'</span></div>';
-  if(m)h+='<div class="brdm"><small>METAR '+brZ(m.obsTime*1000)+'</small><code>'+esc(m.rawOb||"")+'</code></div>';else h+='<div class="brdm"><small>METAR</small><i>'+tt("not available","non disponibile")+'</i></div>';
-  if(t&&t.fcsts){const hit=t.fcsts.filter(x=>x.timeTo*1000>w0&&x.timeFrom*1000<w1);h+='<small class="brdt">'+tt("TAF periods inside the window","Periodi TAF dentro la finestra")+'</small>'+(hit.length?hit.map(x=>'<div class="brdp"><b>'+brZ(Math.max(x.timeFrom*1000,w0))+'–'+brZ(Math.min(x.timeTo*1000,w1))+'</b><span>'+esc((x.fcstChange?x.fcstChange+(x.probability?" "+x.probability:"")+" · ":"")+brWx(x))+'</span></div>').join(""):'<div class="brdp"><span>'+tt("No TAF period covers the window yet","Nessun periodo TAF copre ancora la finestra")+'</span></div>')+'<details><summary>TAF</summary><code>'+esc(t.rawTAF||"")+'</code></details>'}
-  else h+='<small class="brdt">TAF</small><div class="brdp"><span>'+tt("TAF not available","TAF non disponibile")+'</span></div>';h+='</div>'});return h}
-async function brLive(f,w0,w1,ia,ib){const box=$("#brLive");if(!box)return;const ids=[ia,ib].filter(Boolean);if(!ids.length)return;
+function brWx(f,us){const o=[];if(f.wdir!=null||f.wspd!=null)o.push((f.wdir=="VRB"?"VRB":p2(f.wdir||0).padStart(3,"0"))+"/"+(f.wspd||0)+(f.wgst?"G"+f.wgst:"")+"kt");if(f.visib!=null)o.push(us?"vis "+f.visib+" SM":(()=>{const v=brVis(f.visib);return v==null?"vis "+f.visib:v>=6?"vis ≥10 km":"vis "+(v*1609.34>=5000?Math.round(v*1.60934)+" km":Math.round(v*1609.34/50)*50+" m")})());if(f.wxString)o.push(f.wxString);if(f.clouds&&f.clouds.length)o.push(f.clouds.map(c=>c.cover+(c.base!=null?String(Math.round(c.base/100)).padStart(3,"0"):"")).join(" "));if(f.wshearHgt)o.push("WS");if(f.icgTurb&&f.icgTurb.length)o.push("TURB");return o.join(" · ")}
+const BRK=[["VFR","#30d158"],["MVFR","#0a84ff"],["IFR","#ff453a"],["LIFR","#bf5af2"]];
+function brVis(v){if(v==null||v==="")return null;const s=String(v).trim();if(/\+/.test(s))return 10;const m=s.match(/^(\d+)\s+(\d+)\/(\d+)$/);if(m)return+m[1]+m[2]/m[3];const f=s.match(/^(\d+)\/(\d+)$/);if(f)return f[1]/f[2];const n=parseFloat(s);return isNaN(n)?null:n}
+function brCat(st){if(!st)return null;const vis=brVis(st.visib);let ce=1e9,any=vis!=null;(st.clouds||[]).forEach(c=>{any=true;if(/BKN|OVC|OVX|VV/.test(c.cover||"")&&c.base!=null)ce=Math.min(ce,+c.base)});if(st.vertVis!=null){any=true;ce=Math.min(ce,+st.vertVis)}
+ if(!any)return null;if(ce<500||(vis!=null&&vis<1))return 3;if(ce<1000||(vis!=null&&vis<3))return 2;if(ce<=3000||(vis!=null&&vis<=5))return 1;return 0}
+const BRHZ=[[/\bTS\w*|\bCB\b|\bTCU\b/,"TS / CB"],[/\bFZ\w+/,tt("Freezing","Gelicidio")],[/(^|\s)[+-]?\w*SN\b/,tt("Snow","Neve")],[/\bFG\b/,tt("Fog","Nebbia")],[/\bGR\b|\bGS\b/,tt("Hail","Grandine")],[/\bSQ\b|\bFC\b/,"SQ / FC"],[/\bSS\b|\bDS\b|\bVA\b/,"SS / DS / VA"],[/\+RA|\+SHRA/,tt("Heavy rain","Pioggia forte")]];
+function brHz(txt,st){const o=[];BRHZ.forEach(([re,l])=>{if(re.test(txt))o.push(l)});if(st&&((+st.wgst||0)>=30||(+st.wspd||0)>=25))o.push(tt("Strong wind","Vento forte"));return o}
+function brGroups(raw){const w=String(raw||"").replace(/\s+/g," ").trim().split(" "),G=[];let cur=[];
+ w.forEach((t,i)=>{if((/^FM\d{6}$/.test(t)||t=="BECMG"||/^PROB\d{2}$/.test(t)||(t=="TEMPO"&&!/^PROB\d{2}$/.test(w[i-1]||"")))&&cur.length){G.push(cur.join(" "));cur=[]}cur.push(t)});if(cur.length)G.push(cur.join(" "));return G}
+const brPick=x=>{const o={};["wdir","wspd","wgst","visib","wxString","vertVis"].forEach(k=>{if(x[k]!=null&&x[k]!=="")o[k]=x[k]});if(x.clouds&&x.clouds.length)o.clouds=x.clouds;return o};
+function brTaf(t){const F=t.fcsts||[],G=brGroups(t.rawTAF),okG=G.length==F.length,v0=(t.validTimeFrom||(F[0]&&F[0].timeFrom)||0)*1e3,v1=(t.validTimeTo||(F.length&&F[F.length-1].timeTo)||0)*1e3;
+ const base=[],ov=[];let st={};
+ F.forEach((x,i)=>{const ch=(x.fcstChange||"").toUpperCase(),g=okG?G[i]:"";
+  if(!ch||ch=="FM"){st=Object.assign({},x);base.push({a:x.timeFrom*1e3,s:st,i,g,ch:ch||"BASE"})}
+  else if(ch=="BECMG"){st=Object.assign({},st,brPick(x));base.push({a:x.timeFrom*1e3,s:st,i,g,ch})}
+  else ov.push({a:x.timeFrom*1e3,b:x.timeTo*1e3,s:Object.assign({},st,brPick(x)),i,g,ch:(x.probability?"PROB"+x.probability+(ch=="TEMPO"?" TEMPO":""):ch)})});
+ base.forEach((s,k)=>s.b=k+1<base.length?base[k+1].a:v1);return{v0,v1,base,ov,G,okG,F}}
+function brWin(T,w0,w1){const hit=T.base.concat(T.ov).filter(s=>s.b>w0&&s.a<w1).sort((a,b)=>a.a-b.a);let cat=null,hz=[];
+ hit.forEach(s=>{const c=brCat(s.s);if(c!=null&&(cat==null||c>cat))cat=c;hz=hz.concat(brHz((s.g||"")+" "+(s.s.wxString||""),s.s))});return{hit,cat,hz:[...new Set(hz)]}}
+const brChip=c=>c==null?"":'<span class="brk" style="--k:'+BRK[c][1]+'">'+BRK[c][0]+'</span>';
+function brTl(T,w0,w1,lab){const span=T.v1-T.v0;if(!(span>0))return"";const X=t=>Math.max(0,Math.min(100,(t-T.v0)/span*100)),now=Date.now();
+ let h='<div class="btl"><div class="btb">'+T.base.map(s=>{const c=brCat(s.s);return'<i style="left:'+X(s.a)+'%;width:'+(X(s.b)-X(s.a))+'%;background:'+(c==null?"var(--sep)":BRK[c][1])+'"></i>'}).join("")+'</div>'
+  +'<div class="bto">'+T.ov.map(s=>{const c=brCat(s.s);return'<i style="left:'+X(s.a)+'%;width:'+Math.max(.8,X(s.b)-X(s.a))+'%;--k:'+(c==null?"#8e8e93":BRK[c][1])+'"></i>'}).join("")+'</div>';
+ if(w1>T.v0&&w0<T.v1)h+='<b class="btw" style="left:'+X(w0)+'%;width:'+Math.max(1.5,X(w1)-X(w0))+'%"><em>'+lab+'</em></b>';
+ if(now>T.v0&&now<T.v1)h+='<u class="btn" style="left:'+X(now)+'%"></u>';
+ return h+'<div class="btt"><span>'+brDZ(T.v0)+'</span><span>'+brDZ(T.v1)+'</span></div></div>'}
+function brIn(ms){const m=Math.round((ms-Date.now())/6e4);if(m<=0)return tt("now","adesso");const d=Math.floor(m/1440),h=Math.floor(m%1440/60);return tt("in ","tra ")+(d?d+(LANG=="it"?"g ":"d "):"")+(h||!d?h+"h ":"")+(d?"":p2(m%60)+"m")}
+function brLiveHtml(res){let h="";res.forEach(r=>{const t=r.taf,m=r.metar,w0=r.w0,w1=r.w1,T=t&&t.fcsts?brTaf(t):null,A=T?brWin(T,w0,w1):null,mc=m?brCat(m):null,mh=m?brHz(m.rawOb||"",m):[];
+  const cat=A&&A.cat!=null?A.cat:null,hz=A?A.hz:[];
+  h+='<div class="brd'+(cat>=2||hz.length?" warn":"")+'"><div class="brdr"><span class="brrole">'+(r.dep?tt("TAKEOFF","DECOLLO"):tt("LANDING","ATTERRAGGIO"))+'</span><span class="brin">'+brIn(r.t)+'</span></div>'
+  +'<div class="brdh"><b>'+esc(r.ap)+'</b><span>'+esc(cityN(r.iata))+'</span></div>'
+  +'<div class="brwin"><span>'+tt("Window","Finestra")+'</span><b>'+brD(w0)+' '+brZ(w0)+' – '+brZ(w1)+'</b></div>'
+  +'<div class="brsum">'+(T?(A.hit.length?brChip(cat)+hz.map(x=>'<span class="brz">'+esc(x)+'</span>').join("")+(cat!=null&&cat<1&&!hz.length?'<span class="brok">'+tt("Nothing significant forecast","Niente di significativo previsto")+'</span>':""):'<span class="brz gray">'+tt("TAF does not cover the window yet","Il TAF non copre ancora la finestra")+'</span>'):'<span class="brz gray">'+tt("TAF not available","TAF non disponibile")+'</span>')+'</div>';
+  if(T){h+=brTl(T,w0,w1,r.dep?"T/O":"LDG");
+   if(A.hit.length)h+='<small class="brdt">'+tt("Forecast inside the window","Previsione dentro la finestra")+'</small>'+A.hit.map(s=>'<div class="brdp hit"><b>'+brZ(Math.max(s.a,w0))+'–'+brZ(Math.min(s.b,w1))+'</b><span><em>'+esc(s.ch=="BASE"?tt("Main","Principale"):s.ch)+'</em> '+esc(brWx(s.s,/^[KP]/.test(r.ap)))+'</span>'+brChip(brCat(s.s))+'</div>').join("");
+   h+='<details class="brraw"><summary>TAF '+(t.rawTAF&&/AMD/.test(t.rawTAF)?"AMD ":"")+tt("complete","completo")+'</summary><code>'+(T.okG?T.G.map((g,i)=>'<span'+(A.hit.some(s=>s.i==i)?' class="on"':"")+'>'+esc(g)+'</span>').join(" "):esc(t.rawTAF||""))+'</code></details>'}
+  h+='<small class="brdt">METAR '+(m?brZ(m.obsTime*1000)+" · "+brAgo(m.obsTime*1000):"")+'</small>'+(m?'<div class="brmet">'+brChip(mc)+mh.map(x=>'<span class="brz">'+esc(x)+'</span>').join("")+'<code>'+esc(m.rawOb||"")+'</code></div>':'<div class="brdp"><span>'+tt("not available","non disponibile")+'</span></div>');
+  h+='</div>'});return h}
+const brDZ=ms=>p2(new Date(ms).getUTCDate())+"/"+brZ(ms);
+function brAgo(ms){const m=Math.round((Date.now()-ms)/6e4);return m<60?m+" min "+tt("ago","fa"):Math.floor(m/60)+" h "+p2(m%60)+" "+tt("ago","fa")}
+// Rotate weather server (Cloudflare Worker); empty = direct AWC calls (blocked by CORS in browsers)
+const WXS="https://rotate-wx.locaoneshot.workers.dev";
+async function brLive(f,d0,a0,ia,ib){const box=$("#brLive");if(!box)return;const ids=[ia,ib].filter(Boolean);if(!ids.length)return;
  const key=ids.join(",");box.innerHTML='<p class="brn">'+tt("Loading live data…","Carico i dati in diretta…")+'</p>';
- try{const B="https://aviationweather.gov/api/data/",[me,ta]=await Promise.all([brGet(B+"metar?ids="+key+"&format=json&hours=3"),brGet(B+"taf?ids="+key+"&format=json")]);
-  const res=[[f.from,ia],[f.to,ib]].filter(x=>x[1]).map(([iata,ap])=>({iata,ap,metar:(me||[]).filter(x=>x.icaoId==ap).sort((a,b)=>b.obsTime-a.obsTime)[0],taf:(ta||[]).find(x=>x.icaoId==ap)}));
-  if(!document.body.contains(box))return;box.innerHTML=brLiveHtml(res,w0,w1)}catch(e){if(document.body.contains(box))box.innerHTML='<p class="brn">'+tt("Live data is not available here: use the links.","Dati in diretta non disponibili qui: usa i link.")+'</p>'}
+ try{let me,ta;if(WXS){const j=await brGet(WXS+"/wx?ids="+key);me=j.metar;ta=j.taf}else{const B="https://aviationweather.gov/api/data/";[me,ta]=await Promise.all([brGet(B+"metar?ids="+key+"&format=json&hours=3"),brGet(B+"taf?ids="+key+"&format=json")])}
+  const res=[[f.from,ia,1,d0],[f.to,ib,0,a0]].filter(x=>x[1]).map(([iata,ap,dep,t])=>({iata,ap,dep,t,w0:t-36e5,w1:t+36e5,metar:(me||[]).filter(x=>x.icaoId==ap).sort((a,b)=>b.obsTime-a.obsTime)[0],taf:(ta||[]).find(x=>x.icaoId==ap)}));
+  if(!document.body.contains(box))return;box.innerHTML=brLiveHtml(res)}catch(e){if(document.body.contains(box))box.innerHTML='<p class="brn">'+tt("Live data is not available here: use the links.","Dati in diretta non disponibili qui: usa i link.")+'</p>'}
  const nb=$("#brNas");if(!nb)return;const us=[[f.from,ia],[f.to,ib]].filter(x=>/^K|^P[AHGW]/.test(x[1]||""));if(!us.length)return;
  try{const x=await brGet("https://nasstatus.faa.gov/api/airport-status-information",true),d=new DOMParser().parseFromString(x,"text/xml");let o="";
   us.forEach(([iata])=>{const hits=[];d.querySelectorAll("ARPT").forEach(a=>{if(a.textContent.trim()!=iata)return;const par=a.parentElement,dt=par.closest("Delay_type"),nm=dt&&dt.querySelector("Name"),rows=[...par.children].filter(c=>c.tagName!="ARPT"&&c.textContent.trim()).map(c=>c.tagName.replace(/_/g," ")+": "+c.textContent.trim());hits.push((nm?nm.textContent.trim()+" — ":"")+rows.join(" · "))});
@@ -2238,6 +2283,8 @@ function drUi(){const m=loadMeta(),n=(m.name||"").trim(),ini=n?n.split(/\s+/).ma
 
 /* ===== Changelog ===== */
 const CHLOG=[
+ ["Beta 101","20/11/2026",["Briefing: live METAR and TAF from the Rotate weather server."],["Briefing: METAR e TAF in diretta dal server meteo di Rotate."]],
+ ["Beta 100","20/11/2026",["Briefing: one card per airport with the takeoff or landing window (±1 h) highlighted, TAF timeline coloured by flight category, forecast periods inside the window, hazards (TS/CB, freezing, snow, fog, strong wind) and the full TAF with the relevant groups highlighted.","Weather server ready (METAR and TAF via Cloudflare Worker)."],["Briefing: una scheda per aeroporto con la finestra di decollo o atterraggio (±1 h) evidenziata, timeline del TAF colorata per categoria, periodi previsti dentro la finestra, fenomeni (TS/CB, gelicidio, neve, nebbia, vento forte) e il TAF completo con i gruppi interessati evidenziati.","Server meteo pronto (METAR e TAF tramite Cloudflare Worker)."]],
  ["Beta 99","19/11/2026",["Statistics: routes on a 3D globe. Drag to rotate, pinch or double-tap to zoom, full-screen mode.","Share a high-resolution image of the globe exactly as you are framing it."],["Statistiche: rotte su un globo 3D. Trascina per ruotare, pizzica o tocca due volte per lo zoom, modalità a schermo intero.","Condividi un'immagine ad alta risoluzione del globo esattamente come lo stai inquadrando."]],
  ["Beta 98","19/11/2026",["Statistics: hours per month for every year (year selector), top 10 destinations, more fleet colours.","Statistics: notice when the imported old logbook was saved by an older version and must be imported again."],["Statistiche: ore per mese per ogni anno (selettore dell'anno), 10 destinazioni più frequenti, più colori per la flotta.","Statistiche: avviso quando il vecchio logbook importato è stato salvato da una versione precedente e va importato di nuovo."]],
  ["Beta 97","19/11/2026",["Generate logbook works again after importing a file.","Statistics include the imported old logbook: flights, km, airports, routes map, hours per month, flight time limits, destinations, fleet and PF/PM. Flights also in the roster are counted once."],["Genera logbook funziona di nuovo dopo l'import di un file.","Le statistiche includono il vecchio logbook importato: voli, km, aeroporti, mappa delle rotte, ore per mese, limiti di volo, destinazioni, flotta e PF/PM. I voli presenti anche nel roster contano una volta sola."]],
