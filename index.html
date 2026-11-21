@@ -549,8 +549,8 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 
 <div id="brief" hidden></div>
 <script>
-const VER="v1.2.2";
-const BUILD="202611212225";
+const VER="v1.2.3";
+const BUILD="202611212231";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME);try{bgColors();bgDraw(performance.now())}catch(e){}}
 themeApply();
@@ -1556,59 +1556,99 @@ async function rsShare(R,c){const msg=$("#rsMsg");msg.textContent="";
   await dl.save({filename:nm.replace(/[^\w.-]+/g,"-"),data:new Blob([by],{type:"application/pdf"})})}
  catch(e){if(!e||e.code!=="declined")msg.textContent=tt("Could not create the PDF.","Non riesco a creare il PDF.")}}
 const PLR="M22 13.5L15 13.5L11 21L8.5 21L10.5 13.5L5 13.5L3 16L1.5 16L2.5 12L1.5 8L3 8L5 10.5L10.5 10.5L8.5 3L11 3L15 10.5L22 10.5C22.8 10.5 22.8 13.5 22 13.5Z";
-async function rsPdf(R,c){const{PDFDocument,StandardFonts,rgb}=PDFLib,doc=await PDFDocument.create(),MM=72/25.4,PH=297,pg=doc.addPage([210*MM,PH*MM]),X0=16,X1=194,W=X1-X0;
- const F=await doc.embedFont(StandardFonts.Helvetica),B=await doc.embedFont(StandardFonts.HelveticaBold);
- const NAV=[11,37,69],INK=[11,37,69],SUB=[90,107,133],LN=[220,227,238],SOFT=[243,246,250],WH=[255,255,255],PALE=[178,198,232],AC=[31,91,214],HAT=[196,206,222];
- const san=s=>String(s==null?"":s).replace(/[^\x20-\x7E -ÿ–—‘’•]/g,"");
- const hx=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)],C=a=>rgb(a[0]/255,a[1]/255,a[2]/255),tw=(s,f,z)=>f.widthOfTextAtSize(san(s),z)/MM;
- const T=(s,x,y,z,f,col,al)=>{s=san(s);const X=al=="r"?x-tw(s,f,z):al=="c"?x-tw(s,f,z)/2:x;pg.drawText(s,{x:X*MM,y:(PH-y)*MM,size:z,font:f,color:C(col)})};
- const Rc=(x,y,w,h,col)=>pg.drawRectangle({x:x*MM,y:(PH-y-h)*MM,width:w*MM,height:h*MM,color:C(col)});
- const RR=(x,y,w,h,r,col)=>{const q=v=>(v*MM).toFixed(2),k=.5523;r=Math.min(r,w/2,h/2);pg.drawSvgPath("M "+q(r)+" 0 H "+q(w-r)+" C "+q(w-r+r*k)+" 0 "+q(w)+" "+q(r-r*k)+" "+q(w)+" "+q(r)+" V "+q(h-r)+" C "+q(w)+" "+q(h-r+r*k)+" "+q(w-r+r*k)+" "+q(h)+" "+q(w-r)+" "+q(h)+" H "+q(r)+" C "+q(r-r*k)+" "+q(h)+" 0 "+q(h-r+r*k)+" 0 "+q(h-r)+" V "+q(r)+" C 0 "+q(r-r*k)+" "+q(r-r*k)+" 0 "+q(r)+" 0 Z",{x:x*MM,y:(PH-y)*MM,color:C(col)})};
- const Ln=(x1,y1,x2,y2,col,t)=>pg.drawLine({start:{x:x1*MM,y:(PH-y1)*MM},end:{x:x2*MM,y:(PH-y2)*MM},thickness:t||.5,color:C(col)});
+async function rsPdf(R,c){const{PDFDocument,StandardFonts,rgb,degrees}=PDFLib,doc=await PDFDocument.create(),MM=72/25.4,PW=210,PH=297,X0=12,X1=198,TW=X1-X0;
+ const pg=doc.addPage([PW*MM,PH*MM]),F=await doc.embedFont(StandardFonts.Helvetica),B=await doc.embedFont(StandardFonts.HelveticaBold);
+ const NAV=[11,37,69],INK=[14,30,56],SUB=[92,106,132],MUT=[146,156,175],WH=[255,255,255],PALE=[158,182,224],AC=[31,91,214],LN=[227,232,240],SOFT=[243,246,250],HAT=[200,208,222],LBL=[150,190,255];
+ const san=s=>String(s==null?"":s).replace(/[^\x20-\x7E\xA0-\xFF–—‘’•…]/g,"");
+ const C=a=>rgb(a[0]/255,a[1]/255,a[2]/255),tw=(s,f,z)=>f.widthOfTextAtSize(san(s),z)/MM,hx=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+ const T=(s,x,y,z,f,col,al,op)=>{s=san(s);if(!s)return 0;const w=tw(s,f,z),X=al=="r"?x-w:al=="c"?x-w/2:x;pg.drawText(s,{x:X*MM,y:(PH-y)*MM,size:z,font:f,color:C(col),opacity:op==null?1:op});return w};
+ const TS=(s,x,y,z,f,col,sp,al)=>{s=san(s);const ch=[...s],w=ch.reduce((a,k)=>a+tw(k,f,z),0)+sp*(ch.length-1);let X=al=="r"?x-w:al=="c"?x-w/2:x;ch.forEach(k=>{T(k,X,y,z,f,col);X+=tw(k,f,z)+sp});return w};
+ const Rc=(x,y,w,h,col,op)=>pg.drawRectangle({x:x*MM,y:(PH-y-h)*MM,width:w*MM,height:h*MM,color:C(col),opacity:op==null?1:op});
+ const RR=(x,y,w,h,r,col,op)=>{const q=v=>(v*MM).toFixed(2),k=.5523;r=Math.max(0,Math.min(r,w/2,h/2));
+  pg.drawSvgPath("M "+q(r)+" 0 H "+q(w-r)+" C "+q(w-r+r*k)+" 0 "+q(w)+" "+q(r-r*k)+" "+q(w)+" "+q(r)+" V "+q(h-r)+" C "+q(w)+" "+q(h-r+r*k)+" "+q(w-r+r*k)+" "+q(h)+" "+q(w-r)+" "+q(h)+" H "+q(r)+" C "+q(r-r*k)+" "+q(h)+" 0 "+q(h-r+r*k)+" 0 "+q(h-r)+" V "+q(r)+" C 0 "+q(r-r*k)+" "+q(r-r*k)+" 0 "+q(r)+" 0 Z",{x:x*MM,y:(PH-y)*MM,color:C(col),opacity:op==null?1:op})};
+ const Ln=(x1,y1,x2,y2,col,t,da,op)=>pg.drawLine({start:{x:x1*MM,y:(PH-y1)*MM},end:{x:x2*MM,y:(PH-y2)*MM},thickness:t||.5,color:C(col),dashArray:da?da.map(v=>v*MM):undefined,opacity:op==null?1:op,lineCap:da?1:undefined});
+ const Dot=(x,y,r,col,op)=>pg.drawCircle({x:x*MM,y:(PH-y)*MM,size:r*MM,color:C(col),opacity:op==null?1:op});
+ const PL="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z";
+ const plane=(cx,cy,sz,dir,col,op)=>{const s=sz*MM/24,th=(dir-90)*Math.PI/180,vx=12*s*Math.cos(th)+12*s*Math.sin(th),vy=12*s*Math.sin(th)-12*s*Math.cos(th);pg.drawSvgPath(PL,{x:cx*MM-vx,y:(PH-cy)*MM-vy,scale:s,rotate:degrees(dir-90),color:C(col),opacity:op==null?1:op})};
+ const fitZ=(s,f,z,max)=>{while(z>5&&tw(s,f,z)>max)z-=.25;return z};
  const wrap=(s,f,z,max)=>{const w=san(s).split(" "),o=[];let cur="";for(const x of w){const t=cur?cur+" "+x:x;if(cur&&tw(t,f,z)>max){o.push(cur);cur=x}else cur=t}if(cur)o.push(cur);return o};
- const fitZ=(s,f,z,max)=>{while(z>6&&tw(s,f,z)>max)z-=.25;return z};
- const z=R.rf||R.ft?"Z":"",tz=x=>{const t=rsT(x);return t.includes("(+1)")?t.replace(" (+1)",z+" +1"):t+z};
- const mt=loadMeta(),rf=R.rf;doc.setTitle(tt("In-flight rest plan","Piano riposi in volo"));
- /* header */
- Rc(0,0,210,58,NAV);
- T(tt("IN-FLIGHT REST PLAN","PIANO RIPOSI IN VOLO"),X0,14,8.5,B,PALE);
- if(mt.name)T(mt.name,X1,14,fitZ(mt.name,B,9.5,80),B,WH,"r");
- if(rf&&rf.from&&rf.to){T(rf.from,X0,36,32,B,WH);const w1=tw(rf.from,B,32),px=X0+w1+6;
-  Ln(px,31.5,px+24,31.5,PALE,.8);pg.drawSvgPath(PLR,{x:(px+27)*MM,y:(PH-26)*MM,scale:11*MM/24,color:C(WH)});Ln(px+40,31.5,px+64,31.5,PALE,.8);
-  T(rf.to,px+70,36,32,B,WH);
-  T([rf.fn,cityN(rf.from)+" – "+cityN(rf.to),rf.d?new Date(rf.d+"T12:00:00").toLocaleDateString(LOC(),{weekday:"short",day:"numeric",month:"long",year:"numeric"}):""].filter(Boolean).join(" · "),X0,47,10,F,PALE)}
- else{T(tt("In-flight rest","Riposi in volo"),X0,34,28,B,WH);T(tt("Rest periods for the crew on board","Turni di riposo dell'equipaggio a bordo"),X0,45,10,F,PALE)}
- /* info boxes */
- let y=66;const bw=(W-3*4)/4,box=(i,v,l,col)=>{const x=X0+i*(bw+4);RR(x,y,bw,24,3,SOFT);T(v,x+bw/2,y+11,fitZ(v,B,16,bw-6),B,col||INK,"c");T(l,x+bw/2,y+18.5,fitZ(l,F,8,bw-6),F,SUB,"c")};
- box(0,tz(c.D),tt("Takeoff","Decollo"));box(1,tz(c.A),tt("Landing","Atterraggio"));box(2,String(R.n),tt("Pilots","Piloti"));box(3,c.mode=="eq"?rsD(c.per)+" h":"2:00 / "+rsD(c.dO),c.mode=="eq"?tt("Rest each","Riposo a testa"):tt("PF-PM / others","PF-PM / altri"),AC);
- /* timeline */
- y=104;T(tt("Flight timeline","Linea del volo"),X0,y,12.5,B,INK);
- const L=c.A-c.D,X=v=>X0+(v-c.D)/L*W,by=y+13,bh=15;
- RR(X0,by,W,bh,3,SOFT);
- for(let x=X0+1.5;x<X(c.st)-1;x+=2.6)Ln(x,by+bh-1,Math.min(x+2.2,X(c.st)-.5),by+1,HAT,.45);
- for(let x=X(c.en)+1.5;x<X1-1;x+=2.6)Ln(x,by+bh-1,Math.min(x+2.2,X1-1),by+1,HAT,.45);
- c.slots.forEach(k=>{const x0=X(k.s),x1=X(k.e),col=hx(RSC[k.g%RSC.length]);Rc(x0,by,x1-x0,bh,col);if(k.g)Ln(x0,by,x0,by+bh,WH,.8);const lb=c.crew[k.g].sh;if(x1-x0>tw(lb,B,9)+3)T(lb,(x0+x1)/2,by+bh/2+1.5,9,B,WH,"c")});
- T(tt("Rest starts ","Inizio riposi ")+tz(c.st),X(c.st),by-2.2,7.5,B,INK,X(c.st)>X0+60?"c":"l");T(tt("Rest ends ","Fine riposi ")+tz(c.en),X(c.en),by-2.2,7.5,B,INK,X(c.en)<X1-60?"c":"r");
+ const Z=R.rf||R.ft?"Z":"",hm=x=>rsT(x).slice(0,5)+Z,nx=x=>Math.floor((x+1e-6)/1440)>0;
+ const tm=(x,X,y,z,f,col,al)=>{const s=hm(x),w=tw(s,f,z);let x0=al=="r"?X-w-(nx(x)?tw("+1",B,z*.62)+.6:0):al=="c"?X-w/2:X;T(s,x0,y,z,f,col);if(nx(x))T("+1",x0+w+.6,y-z*.3/MM,z*.62,B,AC);return w};
+ const mt=loadMeta(),rf=R.rf;doc.setTitle(tt("In-flight rest plan","Piano riposi in volo"));doc.setAuthor(mt.name||"");doc.setCreator("Rotate");
+ /* ---------- header (boarding pass) ---------- */
+ let y;{const hy=8,hh=40,xp=X1-54;
+  RR(X0,hy,TW,hh,4.5,NAV);
+  {const q=v=>(v*MM).toFixed(2),ax=xp-70,P0=[ax,hh-6.5],P1=[ax+34,hh-3.5],P2=[xp-10,9];
+   pg.drawSvgPath("M "+q(P0[0]-X0)+" "+q(P0[1])+" Q "+q(P1[0]-X0)+" "+q(P1[1])+" "+q(P2[0]-X0)+" "+q(P2[1]),{x:X0*MM,y:(PH-hy)*MM,borderColor:C(PALE),borderWidth:.7,borderDashArray:[.4,3.2],borderLineCap:1,borderOpacity:.45});
+   Dot(P0[0],hy+P0[1],.9,PALE,.5);plane(P2[0],hy+P2[1],4.2,Math.atan2(-(P2[1]-P1[1]),P2[0]-P1[0])*180/Math.PI,WH,.85)}
+  Ln(xp,hy+3.2,xp,hy+hh-3.2,PALE,.5,[.9,1.3],.55);Dot(xp,hy,2.6,WH);Dot(xp,hy+hh,2.6,WH);
+  Dot(X0+8.4,hy+7.6,2.7,AC);plane(X0+8.4,hy+7.6,3.4,45,WH);
+  TS("ROTATE",X0+12.6,hy+8.9,7,B,WH,.55);TS(tt("IN-FLIGHT REST","RIPOSI IN VOLO"),X0+12.6+tw("ROTATE",B,7)+3.6+6*.55,hy+8.9,6.2,F,PALE,.45);
+  if(rf&&rf.from&&rf.to){const z=26,w1=T(rf.from,X0+6,hy+23.5,z,B,WH),a=X0+6+w1+4,b=a+20;
+   Ln(a,hy+19.2,b,hy+19.2,PALE,.6,[.3,1.4],.8);Rc(a+7,hy+16.5,6,5.4,NAV);plane(a+10,hy+19.2,4.6,0,LBL);T(rf.to,b+4,hy+23.5,z,B,WH);
+   T([rf.fn,cityN(rf.from)+" – "+cityN(rf.to)].filter(Boolean).join("  ·  "),X0+6,hy+30.5,8.2,F,PALE)}
+  else{const w1=T(tt("In-flight ","Riposi "),X0+6,hy+23.5,26,B,WH);T(tt("rest","in volo"),X0+6+w1+1.5,hy+23.5,26,F,PALE);T(tt("Rest shifts for the pilots on board","Turni di riposo dei piloti a bordo"),X0+6,hy+30.5,8.2,F,PALE)}
+  const dl=rf&&rf.d?new Date(rf.d+"T12:00:00").toLocaleDateString(LOC(),{weekday:"short",day:"numeric",month:"long",year:"numeric"}):"";
+  const nm=[mt.name,dl].filter(Boolean).join("  ·  ");if(nm)T(nm,X0+6,hy+36,8,B,WH);
+  const sx=xp+6;TS(tt("TAKEOFF","DECOLLO"),sx,hy+8.4,5.8,F,PALE,.4);tm(c.D,sx,hy+16.4,15,B,LBL);
+  TS(tt("LANDING","ATTERRAGGIO"),sx,hy+22,5.8,F,PALE,.4);tm(c.A,sx,hy+30,15,B,LBL);
+  TS(tt("PILOTS","PILOTI"),sx,hy+36,5.8,F,PALE,.4);T(String(R.n),X1-6,hy+36.4,9.5,B,WH,"r");
+  y=hy+hh+9}
+ /* ---------- timeline ---------- */
+ const L=c.A-c.D,X=v=>X0+(v-c.D)/L*TW,cols=c.crew.map(k=>hx(RSC[k.g%RSC.length]));
+ TS(tt("THE FLIGHT AND THE REST WINDOW","IL VOLO E LA FINESTRA RIPOSI"),X0,y,5.8,B,SUB,.5);
+ {let lx=X1;c.crew.slice().reverse().forEach((k,i)=>{const j=c.crew.length-1-i,w=T(k.sh,lx,y,6,B,SUB,"r");lx-=w+2;Dot(lx,y-.75,1.05,cols[j]);lx-=4.4})}
+ const ty=y+12,th=13;
+ /* rest window bracket */
+ Ln(X(c.st),ty-4.2,X(c.en),ty-4.2,AC,.5);Ln(X(c.st),ty-5.6,X(c.st),ty-2.8,AC,.5);Ln(X(c.en),ty-5.6,X(c.en),ty-2.8,AC,.5);
+ {const lab=tt("Rest window  ","Finestra riposi  ")+rsD(c.tot)+" h",w=tw(lab,B,6.4)+4,mx=(X(c.st)+X(c.en))/2;Rc(mx-w/2,ty-6.4,w,4.4,WH);T(lab,mx,ty-3.2,6.4,B,AC,"c")}
+ RR(X0,ty,TW,th,th/2,SOFT);
+ const hatch=(a,b)=>{for(let x=a;x<b-1;x+=2.4)Ln(x,ty+th-2.2,Math.min(x+2,b-.4),ty+2.2,HAT,.5)};hatch(X0+5,X(c.st)-.6);hatch(X(c.en)+1,X1-5);
+ c.crew.forEach((k,i)=>{const x0=X(k.s)+.35,x1=X(k.e)-.35,w=x1-x0;RR(x0,ty+1,w,th-2,(th-2)/2,cols[i]);
+  const l1=k.sh,l2=rsD(k.d)+" h";if(w>tw(l1,B,8)+tw(l2,F,7)+7){const tot=tw(l1,B,8)+2+tw(l2,F,7),sx=(x0+x1)/2-tot/2;T(l1,sx,ty+th/2+1.4,8,B,WH);T(l2,sx+tw(l1,B,8)+2,ty+th/2+1.4,7,F,WH,null,.85)}else if(w>tw(l1,B,8)+2)T(l1,(x0+x1)/2,ty+th/2+1.4,8,B,WH,"c")});
  /* hour axis */
- const hr=L/60,step=hr<=8?1:hr<=16?2:3,first=Math.ceil(c.D/60/step)*step*60;let lastX=-99;
- Ln(X0,by+bh+1.5,X1,by+bh+1.5,LN,.5);
- for(let t=first;t<c.A;t+=step*60){const x=X(t);if(x<X0+8||x>X1-8)continue;Ln(x,by+bh+.5,x,by+bh+2.5,SUB,.4);if(x-lastX>9){T(rsT(t).slice(0,5),x,by+bh+6.5,7,F,SUB,"c");lastX=x}}
- T(tz(c.D),X0,by+bh+11,8,B,INK);T(tt("takeoff","decollo"),X0,by+bh+14.5,7,F,SUB);T(tz(c.A),X1,by+bh+11,8,B,INK,"r");T(tt("landing","atterraggio"),X1,by+bh+14.5,7,F,SUB,"r");
- /* legend */
- let ly=by+bh+21;RR(X0,ly-2.6,3.2,3.2,.6,HAT);T(tt("No rest: "+R.so+" min after takeoff and "+R.eo+" min before landing","Niente riposi: "+R.so+" min dopo il decollo e "+R.eo+" min prima dell'atterraggio"),X0+5,ly,8,F,SUB);
- /* table */
- y=ly+10;T(tt("Rest schedule","Turni di riposo"),X0,y,12.5,B,INK);y+=5;
- const rh=R.n>12?8.6:R.n>8?10:11.5,cols=[X0+16,X0+82,X0+122];
- RR(X0,y,W,8,2,SOFT);T(tt("Pilot","Pilota"),cols[0],y+5.4,8,B,SUB);T(tt("Start","Inizio"),cols[1],y+5.4,8,B,SUB);T(tt("End","Fine"),cols[2],y+5.4,8,B,SUB);T(tt("Duration","Durata"),X1-4,y+5.4,8,B,SUB,"r");y+=8;
- c.crew.forEach(k=>{const col=hx(RSC[k.g%RSC.length]),cy=y+rh/2;if(k.i%2)Rc(X0,y,W,rh,[249,251,253]);
-  pg.drawCircle({x:(X0+7)*MM,y:(PH-cy)*MM,size:3.4*MM,color:C(col)});T(k.sh,X0+7,cy+1.3,7,B,WH,"c");
-  T(k.lab,cols[0],cy+1.6,11,B,INK);T(tz(k.s),cols[1],cy+1.6,11,F,INK);T(tz(k.e),cols[2],cy+1.6,11,F,INK);T(rsD(k.d)+" h",X1-4,cy+1.6,11,B,AC,"r");
+ const ay=ty+th+2.2,hr=L/60,step=hr<=6?1:hr<=12?2:3,first=Math.ceil(c.D/60/step)*step*60;
+ for(let t=first;t<c.A;t+=step*60){const x=X(t);if(x<X0+14||x>X1-14)continue;Ln(x,ay,x,ay+1.4,MUT,.4);T(rsT(t).slice(0,5),x,ay+4.6,6,F,MUT,"c")}
+ plane(X0+2,ay+9.5,3.4,45,AC);tm(c.D,X0+5,ay+10.6,8.4,B,INK);T(tt("takeoff","decollo"),X0+5,ay+14.2,6.2,F,SUB);
+ plane(X1-2,ay+9.5,3.4,135,AC);tm(c.A,X1-5,ay+10.6,8.4,B,INK,"r");T(tt("landing","atterraggio"),X1-5,ay+14.2,6.2,F,SUB,"r");
+ {const s1=tt("rest from ","riposi da ")+hm(c.st),s2=tt("to ","a ")+hm(c.en);T(tt("No rest: ","Niente riposi: ")+"TO +"+R.so+" min  ·  LDG -"+R.eo+" min",X0+TW/2,ay+14.2,6.2,F,MUT,"c")}
+ y=ay+25;
+ /* ---------- who rests when ---------- */
+ TS(tt("WHO RESTS WHEN","CHI RIPOSA E QUANDO"),X0,y,5.8,B,SUB,.5);y+=4.5;
+ {const gx=X0+30,G=v=>gx+(v-c.D)/L*(X1-gx),gh=7.4;
+  c.crew.forEach((k,i)=>{const cy=y+gh/2;const cw=tw(k.sh,B,6.6)+4;RR(X0,cy-2.4,cw,4.8,1.5,cols[i]);T(k.sh,X0+2,cy+1.1,6.6,B,WH);T(k.land?tt("landing","atterr."):tt("relief","rinforzo"),X0+cw+2,cy+1.1,6.2,F,SUB);
+   Ln(gx,cy,X1,cy,LN,1.1);Dot(gx,cy,.7,MUT);Dot(X1,cy,.7,MUT);RR(G(k.s),cy-2.3,G(k.e)-G(k.s),4.6,2.3,cols[i]);
+   const lab=hm(k.s)+" – "+hm(k.e);if(G(k.e)-G(k.s)>tw(lab,B,6.2)+4)T(lab,(G(k.s)+G(k.e))/2,cy+1.1,6.2,B,WH,"c");
+   y+=gh});
+  Ln(G(c.st),y-c.crew.length*gh-1,G(c.st),y+.6,AC,.35,[.6,.9]);Ln(G(c.en),y-c.crew.length*gh-1,G(c.en),y+.6,AC,.35,[.6,.9]);
+  T(tt("at the controls when not resting","ai comandi quando non riposa"),X1,y+3.4,6,F,MUT,"r");y+=12}
+ /* ---------- shifts table ---------- */
+ TS(tt("REST SHIFTS","TURNI DI RIPOSO"),X0,y,5.8,B,SUB,.5);y+=6;
+ const cS=X0+4.6,cP=X0+22,cB=X0+92,cE=X0+117,cDu=X0+152,cM=X1-2;
+ TS(tt("SHIFT","TURNO"),cS-.4,y,5.6,B,MUT,.35);TS(tt("PILOT","PILOTA"),cP,y,5.6,B,MUT,.35);TS(tt("START","INIZIO"),cB,y,5.6,B,MUT,.35);TS(tt("END","FINE"),cE,y,5.6,B,MUT,.35);TS(tt("DURATION","DURATA"),cDu,y,5.6,B,MUT,.35);TS(tt("MINIMUM","MINIMO"),cM,y,5.6,B,MUT,.35,"r");
+ y+=2;Ln(X0,y,X1,y,INK,.6);
+ const rh=R.n>4?10:12.5;
+ c.crew.forEach((k,i)=>{const cy=y+rh/2,col=cols[i];RR(X0,y+1.2,1.4,rh-2.4,.7,col);
+  T((i+1)+(LANG=="it"?"°":["st","nd","rd"][i]||"th"),cS,cy+2,12,B,INK);
+  const cw=tw(k.sh,B,7)+4.4;RR(cP,cy-2.6,cw,5.2,1.6,col);T(k.sh,cP+2.2,cy+1.2,7,B,WH);T(k.lab,cP+cw+2.6,cy+1.6,9.5,B,INK);
+  tm(k.s,cB,cy+1.6,10,B,INK);tm(k.e,cE,cy+1.6,10,B,INK);T(rsD(k.d)+" h",cDu,cy+1.8,11,B,AC);
+  const mn=k.land?120:90,ok=k.d>=mn;T((ok?"":"! ")+rsD(mn)+" h",cM,cy+1.6,8,F,ok?SUB:[214,69,69],"r");
   y+=rh;Ln(X0,y,X1,y,LN,.4)});
- /* rules */
- y+=8;const rules=[tt("Rest window: from "+R.so+" minutes after takeoff to "+R.eo+" minutes before landing; one shift per pilot, one after the other.","Finestra riposi: da "+R.so+" minuti dopo il decollo a "+R.eo+" minuti prima dell'atterraggio; un turno per pilota, uno dopo l'altro."),c.mode=="eq"?tt("Split in equal parts: "+rsD(c.per)+" h for each pilot (at least 2 h for landing PF and PM, 1:30 h for the others).","Diviso in parti uguali: "+rsD(c.per)+" h per ogni pilota (almeno 2 h per PF e PM dell'atterraggio, 1:30 h per gli altri)."):tt("Equal parts would be under 2 h, so landing PF and PM get 2 h each and the other pilots share the rest.","Le parti uguali sarebbero sotto le 2 h, quindi PF e PM dell'atterraggio hanno 2 h a testa e gli altri piloti si dividono il resto."),z?tt("Times in UTC (Z); +1 means the next day.","Orari in UTC (Z); +1 vuol dire il giorno dopo."):tt("+1 means the next day.","+1 vuol dire il giorno dopo.")];
- const rl=rules.flatMap(r=>wrap(r,F,8.5,W-12)),rhh=10+rl.length*4.4;
- if(y+rhh<PH-18){RR(X0,y,W,rhh,3,SOFT);T(tt("How it is calculated","Come è calcolato"),X0+6,y+7,9.5,B,INK);rl.forEach((l,i)=>T(l,X0+6,y+12.5+i*4.4,8.5,F,SUB))}
- const now=new Date();Ln(X0,PH-13,X1,PH-13,LN,.4);T(tt("Created with Rotate · ","Creato con Rotate · ")+p2(now.getDate())+"/"+p2(now.getMonth()+1)+"/"+now.getFullYear(),X0,PH-8.5,7.5,F,SUB);T(tt("Estimate: always follow the commander's instructions","Stima: segui sempre le indicazioni del comandante"),X1,PH-8.5,7.5,F,SUB,"r");
+ /* ---------- tiles ---------- */
+ y+=8;const gap=2.5,w4=(TW-3*gap)/4;
+ const t1=[[tt("Rest window","Finestra riposi"),rsD(c.tot)+" h"],[tt("Flight time","Tempo di volo"),rsD(L)+" h"],c.mode=="eq"?[tt("Rest each","Riposo a testa"),rsD(c.per)+" h"]:[tt("Landing PF / PM","PF / PM atterraggio"),"2:00 h"],c.mode=="eq"?[tt("Pilots","Piloti"),String(R.n)]:[tt("Other pilots","Altri piloti"),rsD(c.dO)+" h"]];
+ t1.forEach(([l,v],i)=>{const x=X0+i*(w4+gap),hero=i==0;RR(x,y,w4,15,2.6,hero?NAV:SOFT);TS(l.toUpperCase(),x+4,y+5.3,5.6,F,hero?PALE:MUT,.35);T(v,x+4,y+12.2,fitZ(v,B,15,w4-8),B,hero?LBL:INK)});
+ y+=15+8;
+ /* ---------- how it is calculated ---------- */
+ const rules=[tt("Rest window: from takeoff +"+R.so+" min to landing -"+R.eo+" min. One shift per pilot, one after the other.","Finestra riposi: dal decollo +"+R.so+" min all'atterraggio -"+R.eo+" min. Un turno per pilota, uno dopo l'altro."),
+  c.mode=="eq"?tt("Equal parts: "+rsD(c.per)+" h for each pilot. Minimum consecutive rest: 2 h for landing PF and PM, 1:30 h for every other pilot.","Parti uguali: "+rsD(c.per)+" h per ogni pilota. Riposo minimo consecutivo: 2 h per PF e PM dell'atterraggio, 1:30 h per ogni altro pilota."):tt("Equal parts would be under 2 h, so landing PF and PM get 2 h each and the other pilots share the rest (at least 1:30 h each).","Le parti uguali sarebbero sotto le 2 h, quindi PF e PM dell'atterraggio hanno 2 h a testa e gli altri piloti si dividono il resto (almeno 1:30 h a testa)."),
+  c.cus?tt("Shift order chosen by the crew.","Ordine dei turni scelto dall'equipaggio."):tt("Order: other pilots first, then landing PM, then landing PF.","Ordine: prima gli altri piloti, poi PM e PF dell'atterraggio.")];
+ const rl=rules.flatMap(r=>wrap(r,F,7.6,TW-12)),rhh=9+rl.length*3.9;
+ if(y+rhh<PH-16){RR(X0,y,TW,rhh,2.6,SOFT);TS(tt("HOW IT IS CALCULATED","COME È CALCOLATO"),X0+5,y+5.6,5.6,B,MUT,.35);rl.forEach((l,i)=>T(l,X0+5,y+10.6+i*3.9,7.6,F,SUB))}
+ /* ---------- footer ---------- */
+ const now=new Date(),fy=PH-8;Ln(X0,fy-4.2,X1,fy-4.2,LN,.4);plane(X0+1.5,fy-.9,2.8,45,AC);
+ T(tt("Created with Rotate · ","Creato con Rotate · ")+p2(now.getDate())+"/"+p2(now.getMonth()+1)+"/"+now.getFullYear(),X0+4,fy,6.4,F,MUT);
+ T((Z?tt("UTC times  ·  ","Orari UTC  ·  "):"")+tt("+1 = next day  ·  Estimate: always follow the commander","+1 = giorno dopo  ·  Stima: segui sempre il comandante"),X1,fy,6.4,F,MUT,"r");
  return doc.save()}
 
 /* ===== PAYSLIP SIMULATOR: rules of "Busta Export V. 8.5" (BUSTA RIN, rinnovo 2026-28) by F/O Pietro Cecchi ===== */
@@ -2307,6 +2347,7 @@ function drUi(){const m=loadMeta(),n=(m.name||"").trim(),ini=n?n.split(/\s+/).ma
 
 /* ===== Changelog ===== */
 const CHLOG=[
+ ["v1.2.3","21/11/2026",["In-flight rest PDF redesigned in the same style as the roster: boarding-pass header, timeline with the rest window, who rests when, shift table and summary tiles."],["PDF dei riposi in volo ridisegnato nello stesso stile del calendario: intestazione a carta d'imbarco, linea del volo con la finestra riposi, chi riposa e quando, tabella dei turni e riquadri riassuntivi."]],
  ["v1.2.2","21/11/2026",["In-flight rest: choose which shift each pilot takes (1st, 2nd, 3rd…) from the menu next to the times; minimum rest stays with the pilot (2 h for landing PF and PM)."],["Riposo in volo: scegli quale turno fa ogni pilota (1°, 2°, 3°…) dal menu accanto agli orari; il riposo minimo resta legato al pilota (2 h per PF e PM dell'atterraggio)."]],
  ["v1.2.1","21/11/2026",["Logbook: registration is written freely (dash included). Fuel start and fuel end, burned fuel is calculated automatically. A flight is complete only when every field is filled (night is always calculated automatically and no longer asked).","In-flight rest: one shift per pilot inside the rest window (takeoff +40 min to landing −60 min), equal parts; landing PF and PM at least 2 h, the others at least 1:30 h. Two boxes: flight data and rest shifts."],["Logbook: le marche si scrivono liberamente (trattino compreso). Carburante iniziale e finale, il bruciato si calcola da solo. Un volo è completo solo quando tutti i campi sono compilati (la notte è sempre automatica e non viene più chiesta).","Riposo in volo: un turno per pilota dentro la finestra riposi (decollo +40 min, atterraggio −60 min), in parti uguali; PF e PM dell'atterraggio almeno 2 h, gli altri almeno 1:30 h. Due riquadri: dati del volo e turni di riposo."]],
  ["v1.2","20/11/2026",["Works offline: once opened from the website, Rotate keeps a copy on the phone and opens without a connection. Add it to the Home Screen to use it like an app.","Online-only features: live weather, Google Drive backup, CrewLink portal."],["Funziona offline: dopo la prima apertura dal sito, Rotate tiene una copia sul telefono e si apre anche senza connessione. Aggiungila alla schermata Home per usarla come un'app.","Restano solo online: meteo in diretta, backup su Google Drive, portale CrewLink."]],
