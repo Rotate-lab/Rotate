@@ -550,8 +550,8 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 
 <div id="brief" hidden></div>
 <script>
-const VER="v1.2.6";
-const BUILD="202611241936";
+const VER="v1.2.7";
+const BUILD="202611241959";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME);try{bgColors();bgDraw(performance.now())}catch(e){}}
 themeApply();
@@ -1127,12 +1127,12 @@ async function lbBuild(rows,S,name){
  function sheet(pg,k){for(const a of LBG[k])pg.drawLine({start:{x:a[0],y:HH-a[1]},end:{x:a[2],y:HH-a[3]},thickness:a[4],color:rgb(0,0,0)});
   for(const t of LBT[k]){const mw=(t[2]-t[1])*1.02;T(pg,t[0],(t[1]+t[2])/2,t[3],t[4],{al:"c",b:t[5],bl:BJ,mw})}}
  const cnt=s=>parseInt(String(s).replace(/[.\s]/g,""),10)||0,g=k=>pm(S[k])||0;
- let base={se:g("se"),me:g("me"),mp:g("mp"),tt:g("tot"),night:g("night"),ifr:g("ifr"),pf:g("pic"),cop:g("cop"),dual:g("dual"),ins:g("ins"),tod:cnt(S.tod),ton:cnt(S.ton),ldd:cnt(S.ldd),ldn:cnt(S.ldn)};
+ let base={simt:g("simt"),se:g("se"),me:g("me"),mp:g("mp"),tt:g("tot"),night:g("night"),ifr:g("ifr"),pf:g("pic"),cop:g("cop"),dual:g("dual"),ins:g("ins"),tod:cnt(S.tod),ton:cnt(S.ton),ldd:cnt(S.ldd),ldn:cnt(S.ldn)};
  const SIG={};for(const r of rows)if(r.sim&&r.sig&&r.sig.img){try{SIG[r.k]=await doc.embedPng(r.sig.img)}catch(e){}}
  const chunks=[];for(let i=0;i<rows.length||!chunks.length;i+=NR)chunks.push(rows.slice(i,i+NR));const sum=[];
  for(const ch of chunks){
   const fl=ch.filter(r=>!r.sim),sm=k=>fl.reduce((a,r)=>a+(r[k]||0),0),ct=(k,v)=>fl.filter(r=>r[k]==v).length;
-  const cu={se:sm("se"),me:sm("me"),mp:sm("mp"),tt:sm("tt"),night:sm("night"),ifr:sm("ifr"),pf:sm("pf"),cop:sm("cop"),dual:sm("dual"),ins:sm("ins"),tod:ct("to","D"),ton:ct("to","N"),ldd:ct("ld","D"),ldn:ct("ld","N")};
+  const cu={simt:ch.filter(r=>r.sim).reduce((a,r)=>a+(r.sdur||0),0),se:sm("se"),me:sm("me"),mp:sm("mp"),tt:sm("tt"),night:sm("night"),ifr:sm("ifr"),pf:sm("pf"),cop:sm("cop"),dual:sm("dual"),ins:sm("ins"),tod:ct("to","D"),ton:ct("to","N"),ldd:ct("ld","D"),ldn:ct("ld","N")};
   sum.push(cu);const pv=Object.assign({},base),tt={};for(const k in base)tt[k]=base[k]+cu[k];const V=[cu,pv,tt];
   const A=doc.addPage([W,HH]);sheet(A,0);
   ch.forEach((r,i)=>{if(r.sim)return;const rt=LB[0]+LB[1]*i,y=rt+3.5;
@@ -1151,13 +1151,13 @@ async function lbBuild(rows,S,name){
     if(im){const rem=String(r.rem||"").replace(/\s+/g," ");T(B,rem,625.5,rt+1.2,6.8,{mw:124});T(B,r.sig.name+"  "+r.sig.role+"  "+r.sig.lic,625.5,rt+8.4,5.6,{mw:124});let ih=12.6,iw=ih*im.width/im.height;if(iw>54){iw=54;ih=iw*im.height/im.width}B.drawImage(im,{x:625.5+178-iw,y:HH-(rt+RB[1]-1.3),width:iw,height:ih})}
     else T(B,String(r.rem||"").replace(/\s+/g," "),625.5,y,8.5,{mw:178});return}
    hm(B,r.night,84.75,y+.2,8.5);hm(B,r.ifr,141.75,y+.2,8.5);hm(B,r.pf,198.75,y+.2,8.5);hm(B,r.cop,255.75,y+.2,8.5);hm(B,r.dual,312.75,y+.2,8.5);hm(B,r.ins,369.75,y+.2,8.5);T(B,r.rem||"",625.5,y,8.5,{mw:178})});
-  V.forEach((v,i)=>{const t=TRR[i]+8.5;[["night",109],["ifr",166],["pf",223],["cop",280],["dual",337],["ins",394]].forEach(([k,x])=>tr(B,v[k],x,t,9))});
+  V.forEach((v,i)=>{const t=TRR[i]+8.5;[["night",109],["ifr",166],["pf",223],["cop",280],["dual",337],["ins",394]].forEach(([k,x])=>tr(B,v[k],x,t,9));if(v.simt>0||i)T(B,fm(v.simt||0),594.75,t,9,{al:"c"})});
   T(B,name||"",715,448.8,11,{al:"c",b:1,bl:BJ,mw:140});B.drawLine({start:{x:662.5,y:HH-446.3},end:{x:767.5,y:HH-446.3},thickness:.6,color:rgb(0,0,0)});
   base=tt}
  return{bytes:await doc.save(),pages:chunks.length,sum}}
 
 /* ===== LOGBOOK: interfaccia ===== */
-const LBD={start:"",name:"",sim:"",se:"",me:"",mp:"",tot:"",night:"",ifr:"",pic:"",cop:"",dual:"",ins:"",tod:"",ton:"",ldd:"",ldn:"",thru:"",pax:"",fuel:""};
+const LBD={start:"",name:"",sim:"",simt:"",simd:"",se:"",me:"",mp:"",tot:"",night:"",ifr:"",pic:"",cop:"",dual:"",ins:"",tod:"",ton:"",ldd:"",ldn:"",thru:"",pax:"",fuel:""};
 const LBA={nc:"6",cls:"MP",ifr:true,fn:"COP",ac:"AUTO",mix:false,more:""};
 const LBM={tipo:"",code:"",dur:""};
 
@@ -1184,7 +1184,7 @@ function lbSimRow(k,t0,SE,M,man){const st=SE.reg!=null&&SE.reg!==""?SE.reg:lbSim
 function lbSimGet(k){return(loadMeta().lbSim||[]).find(x=>x.k==k)}
 function lbSimSet(k,fn){lbSave(m=>{let E;if(String(k).startsWith("msim|")){m.lbSim=m.lbSim||[];E=m.lbSim.find(x=>x.k==k);if(!E)return}else{m.lb=m.lb||{};E=m.lb[k]=m.lb[k]||{}}fn(E,m);(m.lbAt=m.lbAt||{}).miss=Date.now()})}
 // h:mm fields with the numeric keypad: type 330 -> 3:30
-document.addEventListener("input",e=>{const t=e.target;if(!t.matches||!t.matches("[data-sx=dur],[data-m=dur]"))return;const d=t.value.replace(/\D/g,"").slice(0,4);t.value=d.length>2?d.slice(0,d.length-2)+":"+d.slice(-2):d});
+document.addEventListener("input",e=>{const t=e.target;if(!t.matches||!t.matches("[data-sx=dur],[data-m=dur],[data-s=simt]"))return;const d=t.value.replace(/\D/g,"").slice(0,t.dataset.s=="simt"?6:4);t.value=d.length>2?d.slice(0,d.length-2)+":"+d.slice(-2):d});
 function lbSxSave(t,quiet){const sk=t.closest("[data-sk]");if(!sk||t.readOnly||t.disabled)return;const k=sk.dataset.sk,F=t.dataset.sx;let v=F=="rem"?t.value.replace(/\s+$/,""):t.value.trim();if(F=="reg")v=v.replace(/\s+/g," ");
  if(F=="dur"&&v){const m=v.match(/^(\d{1,2}):(\d{2})$/)||v.match(/^(\d{1,2})$/);if(!m||(m[2]&&+m[2]>59)){if(quiet)return;toast(tt("Time not valid: type e.g. 330 for 3:30","Orario non valido: scrivi ad es. 330 per 3:30"));t.value="";return}
   if(!m[2]){if(quiet)return;v=m[1]+":00"}if(!quiet)t.value=v}
@@ -1227,14 +1227,14 @@ function lbRows(LFo){
  if(LF){FX=lbMatch(LF.F,fl.filter(f=>!f.sim&&f.ds>=S.start&&f.t0<=now));Object.assign(S,lbBase(LF.F,FX.used,LF.cls))}
  for(const f of fl){if(f.ds<S.start||f.t0>now)continue;
   if(mode=="man"&&S.thru&&f.ds<=S.thru){skip++;continue}
-  if(f.sim){rows.push(lbSimRow(f.k,f.t0,L[f.k]||{},M,0));continue}
+  if(f.sim){if(S.simd&&f.ds<=S.simd)continue;rows.push(lbSimRow(f.k,f.t0,L[f.k]||{},M,0));continue}
   const E=L[f.k]||{},c=lbCalc(f,{role:E.role,night:null}),b=f.blk,DY=days[f.ds],conf=DY&&DY.imp?DY.imp>=f.t1:f.t1<LBCUT,fx=FX.m[f.k]||null,pn=A.fn=="PIC"?"SELF":(E.pic||(fx&&fx.pn&&fx.pn!="SELF"?fx.pn:"")||"");
   rows.push({f,t0:f.t0,d:lbDate(f.t0),dp:AIR[f.from][0],dt:lbHm(f.t0),ap:AIR[f.to][0],at:lbHm(f.t1),ac:E.ac||(A.ac!="AUTO"?A.ac:f.ac),reg:E.reg||(fx&&fx.reg)||"",pn,fx,
    se:A.cls=="SE"?b:0,me:A.cls=="ME"?b:0,mp:A.cls=="MP"?b:0,tt:b,night:c.night,auto:c.auto,ifr:A.ifr?b:0,
    pf:A.fn=="PIC"?b:0,cop:A.fn=="COP"?b:0,dual:A.fn=="DUAL"?b:0,ins:A.fn=="INS"?b:0,
    to:c.to,ld:c.ld,role:E.role||"",rem:f.fn+(E.role?" "+E.role:""),conf,pxok:(E.pax!=null&&E.pax!=="")||!!(fx&&+fx.pax>0),fuok:(E.fuel!=null&&E.fuel!=="")||!!(fx&&+fx.fuel>0),
    done:conf&&!!(E.role&&(E.reg||(fx&&fx.reg))&&pn&&((E.pax!=null&&E.pax!=="")||(fx&&+fx.pax>0))&&((E.fuel!=null&&E.fuel!=="")||(fx&&+fx.fuel>0)))})}
- (loadMeta().lbSim||[]).forEach(x=>{if(!x.d||x.d<S.start)return;const[y,mo,d]=x.d.split("-").map(Number),t0=Date.UTC(y,mo-1,d,12);if(t0>now+864e5)return;rows.push(lbSimRow(x.k,t0,x,M,1))});
+ (loadMeta().lbSim||[]).forEach(x=>{if(!x.d||x.d<S.start||(S.simd&&x.d<=S.simd))return;const[y,mo,d]=x.d.split("-").map(Number),t0=Date.UTC(y,mo-1,d,12);if(t0>now+864e5)return;rows.push(lbSimRow(x.k,t0,x,M,1))});
  rows.sort((a,b)=>a.t0-b.t0);
  return{rows,S,A,M,miss:fl.miss,mode,LF,nm:FX.used.size,skip}}
 const lbCk=on=>"<span class='v' style='color:var(--ac);font-weight:700'>"+(on?"✓":"")+"</span>";
@@ -1408,7 +1408,9 @@ function lbSet(c){const{S,A,M}=c,f=(k,l,ph)=>"<label class='row nl'><span class=
   +"<p class='ft'>These choices apply automatically to all imported flights. Total time and takeoffs/landings are always calculated.</p>")
  +sec("sim",3,"Simulator",
   "<div class='hd'>Simulator</div><div class='grp'><label class='row nl'><span class='bd'>Type</span><input class='sv' data-m='tipo' value='"+lbEsc(M.tipo)+"' autocomplete='off'></label><label class='row nl'><span class='bd'>Device ID</span><input class='sv' data-m='code' value='"+lbEsc(M.code)+"' autocomplete='off'></label><label class='row nl'><span class='bd'>Standard duration</span><input class='sv' data-m='dur' placeholder='e.g. 4:00' value='"+lbEsc(M.dur)+"' inputmode='numeric' autocomplete='off'></label></div>"
-  +"<p class='ft'>Default values. For each session you enter FSTD, logged time and remarks in Missing data, where the TRE/TRI can sign.</p>")}
+  +"<p class='ft'>Default values. For each session you enter FSTD, logged time and remarks in Missing data, where the TRE/TRI can sign.</p>"
+  +"<div class='hd'>"+tt("Previous FSTD hours","Ore FSTD precedenti")+"</div><div class='grp'><label class='row nl'><span class='bd'>"+tt("Total FSTD time","Totale ore FSTD")+"</span><input class='sv' data-s='simt' placeholder='0:00' value='"+lbEsc(S.simt||"")+"' inputmode='numeric' maxlength='6' autocomplete='off'></label><label class='row nl'><span class='bd'>"+tt("Up to (included)","Fino al (compreso)")+"</span><input type='date' class='sv' data-s='simd' value='"+lbEsc(S.simd||"")+"'></label></div>"
+  +"<p class='ft'>"+tt("The total of column 11 of your previous logbook (paper or electronic), including every session up to this date. Sessions on or before this date are not added again; later ones are added from the roster and from “Add simulator session”.","Il totale della colonna 11 del tuo logbook precedente (cartaceo o elettronico), comprese tutte le sessioni fino a questa data. Le sessioni con data uguale o precedente non vengono sommate di nuovo; quelle successive si aggiungono dal roster e da “Aggiungi sessione al simulatore”.")+"</p>")}
 function lbMonth(t0){const s=new Date(t0).toLocaleDateString(LOC(),{month:"long",year:"numeric",timeZone:"UTC"});return s[0].toUpperCase()+s.slice(1)}
 function lbMiss(c){const n=c.todo.length,fil=lbFil||(n?"todo":"all"),list=fil=="todo"?c.todo:c.rows;
  let h="<div class='seg'><button data-fil='todo' class='"+(fil=="todo"?"on":"")+"'>To complete · "+n+"</button><button data-fil='all' class='"+(fil=="all"?"on":"")+"'>All · "+c.rows.length+"</button></div><p class='ft lbms' id='lbms'>"+lbMsTxt()+"</p>";
@@ -2403,6 +2405,7 @@ function drUi(){const m=loadMeta(),n=(m.name||"").trim(),ini=n?n.split(/\s+/).ma
 
 /* ===== Changelog ===== */
 const CHLOG=[
+ ["v1.2.7","24/11/2026",["Generated logbook: FSTD totals under column 11 (this page, previous pages, total).","Settings › Simulator: previous FSTD hours with the date they are updated to; sessions up to that date are not counted twice."],["Logbook generato: totali FSTD sotto la colonna 11 (questa pagina, pagine precedenti, totale).","Impostazioni › Simulatore: ore FSTD precedenti con la data a cui sono aggiornate; le sessioni fino a quella data non vengono contate due volte."]],
  ["v1.2.6","24/11/2026",["Simulator: logged time, FSTD and remarks are saved while typing (on iPhone the time was not saved).","“Add simulator session” is now on the Logbook home page."],["Simulatore: ore loggate, FSTD e remarks si salvano mentre scrivi (su iPhone le ore non venivano salvate).","“Aggiungi sessione al simulatore” ora è nella pagina principale del Logbook."]],
  ["v1.2.5","24/11/2026",["Simulator logged time: with the numeric keypad just type the digits (330 becomes 3:30)."],["Ore loggate al simulatore: con la tastiera numerica basta scrivere le cifre (330 diventa 3:30)."]],
  ["v1.2.4","24/11/2026",["Logbook: a flight is complete only after the duty plan has been imported again after landing, so block-off and block-on are the actual ones. Older flights are not affected.","Simulator sessions (EASA AMC1 FCL.050): FSTD type and qualification number, logged time and free-text remarks for each session; add sessions that are not in the roster; the TRE/TRI can sign the session with a finger, with name, role and licence number. A signed session is locked: editing it removes the signature. The signature is printed in the remarks of the generated logbook."],["Logbook: un volo è completo solo dopo aver reimportato il duty plan dopo l'atterraggio, così sblocco e blocco sono quelli effettivi. I voli precedenti non cambiano.","Sessioni al simulatore (EASA AMC1 FCL.050): FSTD con tipo e numero di qualifica, ore loggate e remarks a testo libero per ogni sessione; aggiungi le sessioni che non sono nel roster; il TRE/TRI può firmare la sessione con il dito, con nome, ruolo e numero di licenza. Una sessione firmata è bloccata: modificarla cancella la firma. La firma viene stampata nei remarks del logbook generato."]],
