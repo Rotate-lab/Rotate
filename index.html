@@ -550,8 +550,8 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 
 <div id="brief" hidden></div>
 <script>
-const VER="v1.2.4";
-const BUILD="202611241909";
+const VER="v1.2.5";
+const BUILD="202611241931";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME);try{bgColors();bgDraw(performance.now())}catch(e){}}
 themeApply();
@@ -1183,11 +1183,13 @@ function lbSimRow(k,t0,SE,M,man){const st=SE.reg!=null&&SE.reg!==""?SE.reg:lbSim
  sg=SE.sig&&SE.sig.h===lbSigH(sd,st,dur,rem)?SE.sig:null;return{sim:true,man,k,t0,sd,st,sdur:dur,rem,sig:sg,sigBad:!!(SE.sig&&!sg),done:dur>0&&!!st}}
 function lbSimGet(k){return(loadMeta().lbSim||[]).find(x=>x.k==k)}
 function lbSimSet(k,fn){lbSave(m=>{let E;if(String(k).startsWith("msim|")){m.lbSim=m.lbSim||[];E=m.lbSim.find(x=>x.k==k);if(!E)return}else{m.lb=m.lb||{};E=m.lb[k]=m.lb[k]||{}}fn(E,m);(m.lbAt=m.lbAt||{}).miss=Date.now()})}
+// h:mm fields with the numeric keypad: type 330 -> 3:30
+document.addEventListener("input",e=>{const t=e.target;if(!t.matches||!t.matches("[data-sx=dur],[data-m=dur]"))return;const d=t.value.replace(/\D/g,"").slice(0,4);t.value=d.length>2?d.slice(0,d.length-2)+":"+d.slice(-2):d});
 function lbSimLine(r,c){const SE=(r.man?lbSimGet(r.k):c.L[r.k])||{},lk=!!r.sig,ro=lk?" readonly":"",dis=lk?" disabled":"";
  return"<div class='ll sim"+(r.done?" ok":"")+(lk?" signed":"")+"' data-sk='"+lbEsc(r.k)+"'>"+lbDc(r.t0)+"<div class='llm'><div class='llr'><span class='lap'><b>SIM</b><small>"+lbEsc(r.st||"—")+"</small></span><span class='lbt'>"+(r.sdur?fm(r.sdur):"—")+"</span></div>"
  +(r.man?"<div class='llf two'><label class='lfi'><span>"+tt("Date","Data")+"</span><input type='date' data-sx='d' value='"+lbEsc(SE.d||"")+"'"+dis+"></label><button class='lsdel' data-sdel='1'"+dis+">"+tt("Delete session","Elimina sessione")+"</button></div>":"")
  +"<div class='llf two'><label class='lfi"+(r.st?"":" need")+"'><span>"+tt("FSTD type and qualification no.","FSTD: tipo e n. qualifica")+"</span><input data-sx='reg' placeholder='"+lbEsc(lbSimDef(c.M)||"FFS D A330")+"' value='"+lbEsc(SE.reg||"")+"' autocomplete='off' spellcheck='false'"+ro+"></label>"
- +"<label class='lfi"+(r.sdur?"":" need")+"'><span>"+tt("Logged time","Ore loggate")+"</span><input data-sx='dur' inputmode='numeric' placeholder='"+lbEsc(c.M.dur||"4:00")+"' value='"+lbEsc(SE.dur||"")+"' autocomplete='off'"+ro+"></label></div>"
+ +"<label class='lfi"+(r.sdur?"":" need")+"'><span>"+tt("Logged time","Ore loggate")+"</span><input data-sx='dur' inputmode='numeric' placeholder='"+lbEsc(c.M.dur||"4:00")+"' maxlength='5' value='"+lbEsc(SE.dur||"")+"' autocomplete='off'"+ro+"></label></div>"
  +"<label class='lfi lrem'><span>Remarks</span><textarea data-sx='rem' rows='2' placeholder='"+tt("Free text: e.g. LPC, OPC, exercises","Testo libero: es. LPC, OPC, esercizi")+"'"+ro+">"+lbEsc(SE.rem||"")+"</textarea></label>"
  +(lk?"<div class='lsig'><img src='"+r.sig.img+"' alt=''><div class='lsgi'><b>"+lbEsc(r.sig.name)+"</b><span>"+lbEsc(r.sig.role)+" · "+lbEsc(r.sig.lic)+"</span><small>"+tt("Signed ","Firmato il ")+new Date(r.sig.at).toLocaleString(LOC(),{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})+"</small></div></div><button class='lsunl' data-sunl='1'>"+tt("Edit session (removes the signature)","Modifica sessione (cancella la firma)")+"</button>"
   :"<button class='lsgn' data-sign='1'"+(r.done?"":" disabled")+">✍︎ "+tt("TRE / TRI signature","Firma TRE / TRI")+"</button>"+(r.sigBad?"<p class='lsbad'>"+tt("The signature was removed because the session data changed.","La firma è stata rimossa perché i dati della sessione sono cambiati.")+"</p>":""))
@@ -1442,6 +1444,7 @@ const lbChg=e=>{const t=e.target;
  if(t.dataset.m){const v=t.value.trim();lbSave(m=>{(m.lbM=m.lbM||{})[t.dataset.m]=v;st(m)});lbAccSum();lbAtUi(sec);return}
  if(t.dataset.a2){const v=t.value.trim();lbSave(m=>{(m.lbA=m.lbA||{})[t.dataset.a2]=v;st(m)});lbRef();return}
  if(t.dataset.sx){const k=t.closest("[data-sk]").dataset.sk,F=t.dataset.sx;let v=F=="rem"?t.value.replace(/\s+$/,""):t.value.trim();if(F=="reg")v=v.replace(/\s+/g," ");
+  if(F=="dur"&&v){const m=v.match(/^(\d{1,2}):(\d{2})$/)||v.match(/^(\d{1,2})$/);if(!m||(m[2]&&+m[2]>59)){toast(tt("Time not valid: type e.g. 330 for 3:30","Orario non valido: scrivi ad es. 330 per 3:30"));t.value="";return}if(!m[2])v=m[1]+":00";t.value=v}
   lbSimSet(k,E=>{if(E.sig)return;E[F]=v});if(F=="d")lbRef();else setTimeout(lbSoft,60);return}
  const c=t.closest(".ll");if(c&&t.dataset.f){const k=c.dataset.k,F=t.dataset.f;let v=t.value.trim();
   if(F=="reg"){v=v.toUpperCase().replace(/\s+/g,"");t.value=v}
@@ -2393,6 +2396,7 @@ function drUi(){const m=loadMeta(),n=(m.name||"").trim(),ini=n?n.split(/\s+/).ma
 
 /* ===== Changelog ===== */
 const CHLOG=[
+ ["v1.2.5","24/11/2026",["Simulator logged time: with the numeric keypad just type the digits (330 becomes 3:30)."],["Ore loggate al simulatore: con la tastiera numerica basta scrivere le cifre (330 diventa 3:30)."]],
  ["v1.2.4","24/11/2026",["Logbook: a flight is complete only after the duty plan has been imported again after landing, so block-off and block-on are the actual ones. Older flights are not affected.","Simulator sessions (EASA AMC1 FCL.050): FSTD type and qualification number, logged time and free-text remarks for each session; add sessions that are not in the roster; the TRE/TRI can sign the session with a finger, with name, role and licence number. A signed session is locked: editing it removes the signature. The signature is printed in the remarks of the generated logbook."],["Logbook: un volo è completo solo dopo aver reimportato il duty plan dopo l'atterraggio, così sblocco e blocco sono quelli effettivi. I voli precedenti non cambiano.","Sessioni al simulatore (EASA AMC1 FCL.050): FSTD con tipo e numero di qualifica, ore loggate e remarks a testo libero per ogni sessione; aggiungi le sessioni che non sono nel roster; il TRE/TRI può firmare la sessione con il dito, con nome, ruolo e numero di licenza. Una sessione firmata è bloccata: modificarla cancella la firma. La firma viene stampata nei remarks del logbook generato."]],
  ["v1.2.3","21/11/2026",["In-flight rest PDF redesigned in the same style as the roster: boarding-pass header, timeline with the rest window, who rests when, shift table and summary tiles."],["PDF dei riposi in volo ridisegnato nello stesso stile del calendario: intestazione a carta d'imbarco, linea del volo con la finestra riposi, chi riposa e quando, tabella dei turni e riquadri riassuntivi."]],
  ["v1.2.2","21/11/2026",["In-flight rest: choose which shift each pilot takes (1st, 2nd, 3rd…) from the menu next to the times; minimum rest stays with the pilot (2 h for landing PF and PM)."],["Riposo in volo: scegli quale turno fa ogni pilota (1°, 2°, 3°…) dal menu accanto agli orari; il riposo minimo resta legato al pilota (2 h per PF e PM dell'atterraggio)."]],
