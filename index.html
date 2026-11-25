@@ -574,13 +574,17 @@ function toast(t,s){let el=document.getElementById("toast");if(!el){el=document.
  el.innerHTML="<i>✓</i><span><b></b><small></small></span>";el.querySelector("b").textContent=t;const sm=el.querySelector("small");sm.textContent=s||"";sm.hidden=!s;
  el.classList.remove("on");void el.offsetWidth;el.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("on"),3200)}
 const fmtAt=ms=>new Date(ms).toLocaleString(LOC(),{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let days={},sel=null,view=new Date();view.setDate(1);
 
-function load(){try{days=JSON.parse(localStorage.getItem("turni_v1")||"{}")}catch(e){days={}}}
-function save(){try{localStorage.setItem("turni_v1",JSON.stringify(days))}catch(e){}}
+function load(){try{days=JSON.parse(localStorage.getItem("turni_v1")||"{}")}catch(e){days={}}if(!days||typeof days!="object"||Array.isArray(days))days={};
+ // dati arrivati da backup/sync: giorni malformati fuori, niente markup nei campi che finiscono in innerHTML
+ const cl=v=>typeof v=="string"?v.replace(/[<>"'&`]/g,""):v;
+ for(const k of Object.keys(days)){const D=days[k];if(!/^\d{4}-\d\d-\d\d$/.test(k)||!D||typeof D!="object"){delete days[k];continue}if(!Array.isArray(D.ev))D.ev=[];
+  ["lay","FT","DT","RT"].forEach(x=>{if(x in D)D[x]=cl(D[x])});D.ev=D.ev.filter(e=>e&&typeof e=="object");D.ev.forEach(e=>{for(const f of ["t","fn","from","to","dep","arr","ac","ap","h","s","e","c","hc"])if(f in e)e[f]=cl(e[f])})}}
+function save(){try{localStorage.setItem("turni_v1",JSON.stringify(days));return true}catch(e){toast(tt("Not saved: storage full","Non salvato: memoria piena"),"!");return false}}
 function loadMeta(){let o={};try{o=JSON.parse(localStorage.getItem("turni_meta_v1")||"{}")||{}}catch(e){}o.sums=o.sums||{};return o}
-function saveMeta(o){try{localStorage.setItem("turni_meta_v1",JSON.stringify(o))}catch(e){}try{sysUp()}catch(e){}}
+function saveMeta(o){let ok=true;try{localStorage.setItem("turni_meta_v1",JSON.stringify(o))}catch(e){ok=false;toast(tt("Not saved: storage full","Non salvato: memoria piena"),"!")}try{sysUp()}catch(e){}return ok}
 
 function parseLines(L){
  const out={},sum={};const strip={};let y=null,mo=null,prev=0,cur=null,lf=null,lc="",hot={},lh=null,name="",idn="",per=null;
@@ -637,7 +641,7 @@ async function pdfLines(buf){
 function ingest(res,label,ls){
  const ks=Object.keys(res.days).sort();
  if(!ks.length){if(ls){const q=document.createElement("pre");q.style.cssText="font-size:11px;white-space:pre-wrap";q.textContent=ls.length+" lines read:\n"+ls.slice(0,18).join("\n");setTimeout(()=>$("#msg").appendChild(q))}$("#msg").textContent="No duties recognised. Check that it is the “Individual duty plan” PDF.";return 0}
- const IT=Date.now();Object.keys(res.days).forEach(k=>{if(res.days[k]&&typeof res.days[k]=="object")res.days[k].imp=IT});Object.assign(days,res.days);save();
+ const IT=Date.now();Object.keys(res.days).forEach(k=>{if(res.days[k]&&typeof res.days[k]=="object")res.days[k].imp=IT});Object.assign(days,res.days);try{lbMigrate()}catch(e){}if(!save()){$("#msg").textContent=tt("Not saved: this device's storage is full.","Non salvato: memoria del dispositivo piena.");return 0}
  const mt=loadMeta(),P=res.per;if(res.name)mt.name=res.name;if(res.idn)mt.id=res.idn;
  if(P&&P.d==1&&P.m2===P.m&&P.y2===P.y&&P.d2===new Date(P.y,P.m+1,0).getDate()&&res.sum.ft)mt.sums[P.y+"-"+p2(P.m+1)]=res.sum;
  saveMeta(mt);
@@ -1108,7 +1112,7 @@ const lbRad=x=>x*Math.PI/180,lbDeg=x=>x*180/Math.PI;
 function lbSun(lat,lon,ms){const d=ms/864e5+2440587.5-2451545,g=lbRad((357.529+0.98560028*d)%360),q=(280.459+0.98564736*d)%360,L=lbRad((q+1.915*Math.sin(g)+0.02*Math.sin(2*g))%360),e=lbRad(23.439-3.6e-7*d),dec=Math.asin(Math.sin(e)*Math.sin(L)),ra=Math.atan2(Math.cos(e)*Math.sin(L),Math.cos(L)),H=lbRad(((18.697374558+24.06570982441908*d)%24)*15+lon)-ra;return lbDeg(Math.asin(Math.sin(lbRad(lat))*Math.sin(dec)+Math.cos(lbRad(lat))*Math.cos(dec)*Math.cos(H)))}
 function lbGc(a,b,f){const p1=lbRad(a[1]),l1=lbRad(a[2]),p2_=lbRad(b[1]),l2=lbRad(b[2]),dd=2*Math.asin(Math.sqrt(Math.sin((p2_-p1)/2)**2+Math.cos(p1)*Math.cos(p2_)*Math.sin((l2-l1)/2)**2));if(!dd)return[a[1],a[2]];const A=Math.sin((1-f)*dd)/Math.sin(dd),B=Math.sin(f*dd)/Math.sin(dd),x=A*Math.cos(p1)*Math.cos(l1)+B*Math.cos(p2_)*Math.cos(l2),y=A*Math.cos(p1)*Math.sin(l1)+B*Math.cos(p2_)*Math.sin(l2),z=A*Math.sin(p1)+B*Math.sin(p2_);return[lbDeg(Math.atan2(z,Math.hypot(x,y))),lbDeg(Math.atan2(y,x))]}
 let LBTH=-6;
-function lbNight(A,B,t0,t1){const N=Math.round((t1-t0)/6e4);let n=0;for(let i=0;i<N;i++){const p=lbGc(A,B,(i+.5)/N);if(lbSun(p[0],p[1],t0+(i+.5)*6e4)<LBTH)n++}return n}
+const lbNC=new Map();function lbNight(A,B,t0,t1){const ck=A[0]+","+A[1]+"|"+B[0]+","+B[1]+"|"+t0+"|"+t1+"|"+LBTH;const c=lbNC.get(ck);if(c!=null)return c;const N=Math.round((t1-t0)/6e4);let n=0;for(let i=0;i<N;i++){const p=lbGc(A,B,(i+.5)/N);if(lbSun(p[0],p[1],t0+(i+.5)*6e4)<LBTH)n++}if(lbNC.size>5000)lbNC.clear();lbNC.set(ck,n);return n}
 const lbDate=ms=>{const d=new Date(ms);return p2(d.getUTCDate())+"-"+p2(d.getUTCMonth()+1)+"-"+d.getUTCFullYear()},lbHm=ms=>{const d=new Date(ms);return p2(d.getUTCHours())+":"+p2(d.getUTCMinutes())};
 /* decollo: sole a partenza+10 min; atterraggio: sole ad arrivo-8 min (rullaggio); notte = sole < -6 gradi */
 function lbCalc(f,E){const A=AIR[f.from],B=AIR[f.to],auto=lbNight(A,B,f.t0,f.t1),n=Math.min(E.night!=null?E.night:auto,f.blk),pf=E.role=="PF";
@@ -1164,16 +1168,21 @@ const LBM={tipo:"",code:"",dur:""};
 const LBFL=[["BD-500-1A10","A220-100 · roster 221"],["BD-500-1A11","A220-300 · roster 223"],["A319-111","A319 · roster 319"],["A320-216","A320 · roster 320"],["A320-271N","A320neo · roster 32N"],["A321-271NX","A321neo · roster 32Q"],["A321-271N","A321neo (without ACF)"],["A330-202","A330-200 · roster 330/332"],["A330-941","A330-900neo · roster 339"],["A350-941","A350-900 · roster 359"]],LBF=LBFL.map(x=>x[0]),LBFN=Object.fromEntries(LBFL);
 function lbFleet(A){return[...new Set(LBF.concat(String(A.more||"").split(",").map(x=>x.trim().toUpperCase()).filter(Boolean)))]}
 let lbTab="";
-const lbEsc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const lbEsc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function lbFlights(){
  const out=[],miss=new Set();
- for(const k of Object.keys(days).sort()){const D=days[k];if(!D||!D.ev)continue;const[y,m,d]=k.split("-").map(Number);
+ for(const k of Object.keys(days).sort()){const D=days[k];if(!D||!D.ev)continue;const[y,m,d]=k.split("-").map(Number);let pt1=0;
   D.ev.forEach(e=>{if(e.t=="sm"){out.push({sim:true,k:"sim|"+k,ds:k,t0:Date.UTC(y,m-1,d,12)});return}
    if(e.t!="fl"||e.dh||!e.dep||!e.arr)return;const A=AIR[e.from],B=AIR[e.to];if(!A||!B){[e.from,e.to].forEach(a=>{if(!AIR[a])miss.add(a)});return}
-   const[dh,dm]=e.dep.split(":").map(Number),[ah,am]=e.arr.split(":").map(Number),t0=lbUtc(A[3],y,m,d,dh,dm);
+   const[dh,dm]=e.dep.split(":").map(Number),[ah,am]=e.arr.split(":").map(Number),t00=lbUtc(A[3],y,m,d,dh,dm);let t0=t00;
    let t1=lbUtc(B[3],y,m,d+(e.plus?1:0),ah,am);if(t1<=t0)t1+=864e5;
-   out.push({k:lbDate(t0).split("-").reverse().join("-")+"|"+e.fn,fn:e.fn,from:e.from,to:e.to,t0,t1,blk:Math.round((t1-t0)/6e4),ac:ACT[e.ac]||e.ac||"",ds:k})})}
+   // settore che parte dopo la mezzanotte locale nello stesso giorno di servizio: va al giorno dopo
+   if(pt1&&t0<pt1){t0+=864e5;t1+=864e5}pt1=t1;
+   // chiave stabile: giorno del roster + numero volo (la vecchia chiave usava la data UTC di partenza)
+   out.push({k:k+"|"+e.fn,ok:lbDate(t00).split("-").reverse().join("-")+"|"+e.fn,fn:e.fn,from:e.from,to:e.to,t0,t1,blk:Math.round((t1-t0)/6e4),ac:ACT[e.ac]||e.ac||"",ds:k})})}
  out.sort((a,b)=>a.t0-b.t0);out.miss=[...miss];return out}
+// sposta i dati del logbook salvati con la vecchia chiave (data UTC) sulla chiave nuova (giorno del roster)
+function lbMigrate(){const m=loadMeta(),L=m.lb;if(!L)return;let ch=0;try{for(const f of lbFlights()){if(f.sim||!f.ok||f.ok==f.k)continue;if(L[f.ok]&&!L[f.k]){L[f.k]=L[f.ok];delete L[f.ok];ch=1}}}catch(e){}if(ch)saveMeta(m)}
 function lbCfg(){const mt=loadMeta(),S0=Object.assign({},LBD,mt.lbS||{});if(!S0.start){let f1="";try{f1=Object.keys(days).filter(k=>((days[k]||{}).ev||[]).some(e=>e.t=="fl")).sort()[0]||""}catch(e){}S0.start=f1||new Date().toISOString().slice(0,10)}return{mt,S:S0,A:Object.assign({},LBA,mt.lbA||{}),M:Object.assign({},LBM,mt.lbM||{}),L:mt.lb||{}}}
 // ---- simulator sessions (EASA AMC1 FCL.050) + examiner signature
 const LBCUT=Date.UTC(2026,10,24,20);
@@ -1199,7 +1208,7 @@ function lbSimLine(r,c){const SE=(r.man?lbSimGet(r.k):c.L[r.k])||{},lk=!!r.sig,r
  +"<div class='llf two'><label class='lfi"+(r.st?"":" need")+"'><span>"+tt("FSTD type and qualification no.","FSTD: tipo e n. qualifica")+"</span><input data-sx='reg' placeholder='"+lbEsc(lbSimDef(c.M)||"FFS D A330")+"' value='"+lbEsc(SE.reg||"")+"' autocomplete='off' spellcheck='false'"+ro+"></label>"
  +"<label class='lfi"+(r.sdur?"":" need")+"'><span>"+tt("Logged time","Ore loggate")+"</span><input data-sx='dur' inputmode='numeric' placeholder='"+lbEsc(c.M.dur||"4:00")+"' maxlength='5' value='"+lbEsc(SE.dur||"")+"' autocomplete='off'"+ro+"></label></div>"
  +"<label class='lfi lrem'><span>Remarks</span><textarea data-sx='rem' rows='2' placeholder='"+tt("Free text: e.g. LPC, OPC, exercises","Testo libero: es. LPC, OPC, esercizi")+"'"+ro+">"+lbEsc(SE.rem||"")+"</textarea></label>"
- +(lk?"<div class='lsig'><img src='"+r.sig.img+"' alt=''><div class='lsgi'><b>"+lbEsc(r.sig.name)+"</b><span>"+lbEsc(r.sig.role)+" · "+lbEsc(r.sig.lic)+"</span><small>"+tt("Signed ","Firmato il ")+new Date(r.sig.at).toLocaleString(LOC(),{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})+"</small></div></div><button class='lsunl' data-sunl='1'>"+tt("Edit session (removes the signature)","Modifica sessione (cancella la firma)")+"</button>"
+ +(lk?"<div class='lsig'><img src='"+lbEsc(r.sig.img)+"' alt=''><div class='lsgi'><b>"+lbEsc(r.sig.name)+"</b><span>"+lbEsc(r.sig.role)+" · "+lbEsc(r.sig.lic)+"</span><small>"+tt("Signed ","Firmato il ")+new Date(r.sig.at).toLocaleString(LOC(),{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})+"</small></div></div><button class='lsunl' data-sunl='1'>"+tt("Edit session (removes the signature)","Modifica sessione (cancella la firma)")+"</button>"
   :"<button class='lsgn' data-sign='1'"+(r.done?"":" disabled")+">✍︎ "+tt("TRE / TRI signature","Firma TRE / TRI")+"</button>"+(r.sigBad?"<p class='lsbad'>"+tt("The signature was removed because the session data changed.","La firma è stata rimossa perché i dati della sessione sono cambiati.")+"</p>":""))
  +"</div></div>"}
 function lbSignOpen(k){const mt=loadMeta(),SG=mt.lbSigners||[];let d=document.getElementById("sgBg");if(!d){d=document.createElement("div");d.id="sgBg";d.className="donbg";document.body.appendChild(d)}
@@ -1238,7 +1247,7 @@ function lbRows(LFo){
  rows.sort((a,b)=>a.t0-b.t0);
  return{rows,S,A,M,miss:fl.miss,mode,LF,nm:FX.used.size,skip}}
 const lbCk=on=>"<span class='v' style='color:var(--ac);font-weight:700'>"+(on?"✓":"")+"</span>";
-function lbOpt(a,v,t,on,sub){return"<button class='row nl' data-a='"+a+"' data-v='"+v+"'><span class='bd'><span class='t'>"+t+"</span>"+(sub?"<span class='s'>"+sub+"</span>":"")+"</span>"+lbCk(on)+"</button>"}
+function lbOpt(a,v,t,on,sub){return"<button class='row nl' data-a='"+lbEsc(a)+"' data-v='"+lbEsc(v)+"'><span class='bd'><span class='t'>"+lbEsc(t)+"</span>"+(sub?"<span class='s'>"+lbEsc(sub)+"</span>":"")+"</span>"+lbCk(on)+"</button>"}
 let lbOpen=null,lbFil=null;
 const LBK=["prev","auto","sim"],LBTI={s:"Settings",c:"Missing data",p:"Generate"};
 function lbHead(){if(PG!="log")return;$("#ttl").textContent=lbTab?LBTI[lbTab]:"Logbook";const h=$("#hb");h.classList.toggle("back",!!lbTab);h.setAttribute("aria-label",lbTab?"Back":"Home")}
@@ -1376,7 +1385,7 @@ function lbLine(r,c){
  +(pic?"<label class='lfi"+(r.pn?"":" need")+"'><span>PIC name</span><input data-f='pic' list='lbpics' placeholder='Surname' value='"+lbEsc(E.pic||r.pn||"")+"' autocapitalize='characters' autocomplete='off' spellcheck='false'></label>":"<label class='lfi'><span>PIC</span><input disabled value='SELF'></label>")
  +"</div>"
  +"<div class='llf two'><label class='lfi"+(r.fuok||E.fs?"":" need")+"'><span>"+tt("Fuel start (kg)","Carburante iniziale (kg)")+"</span><input data-f='fs' inputmode='numeric' placeholder='0' value='"+lbEsc(E.fs||"")+"' autocomplete='off'></label><label class='lfi"+(r.fuok||E.fe?"":" need")+"'><span>"+tt("Fuel end (kg)","Carburante finale (kg)")+"</span><input data-f='fe' inputmode='numeric' placeholder='0' value='"+lbEsc(E.fe||"")+"' autocomplete='off'></label></div>"
- +"<div class='llf two'><label class='lfi"+(r.pxok?"":" need")+"'><span>"+tt("Passengers","Passeggeri")+"</span><input data-f='pax' inputmode='numeric' placeholder='"+(r.fx&&r.fx.pax||0)+"' value='"+lbEsc(E.pax!=null?E.pax:"")+"' autocomplete='off'></label><div class='lfi lfb"+(E.fs&&E.fe&&!(+E.fs>=+E.fe)?" bad":"")+"'><span>"+tt("Fuel burned (kg)","Carburante bruciato (kg)")+"</span><b>"+(E.fuel!=null&&E.fuel!==""?th(+E.fuel):E.fs&&E.fe?tt("check values","controlla i valori"):r.fx&&+r.fx.fuel>0?th(+r.fx.fuel):"—")+"</b></div></div>"
+ +"<div class='llf two'><label class='lfi"+(r.pxok?"":" need")+"'><span>"+tt("Passengers","Passeggeri")+"</span><input data-f='pax' inputmode='numeric' placeholder='"+lbEsc(r.fx&&r.fx.pax||0)+"' value='"+lbEsc(E.pax!=null?E.pax:"")+"' autocomplete='off'></label><div class='lfi lfb"+(E.fs&&E.fe&&!(+E.fs>=+E.fe)?" bad":"")+"'><span>"+tt("Fuel burned (kg)","Carburante bruciato (kg)")+"</span><b>"+(E.fuel!=null&&E.fuel!==""?th(+E.fuel):E.fs&&E.fe?tt("check values","controlla i valori"):r.fx&&+r.fx.fuel>0?th(+r.fx.fuel):"—")+"</b></div></div>"
  +(cp.length?"<button class='lchip' data-cp='"+lbEsc(pv.k)+"'>↺ "+lbEsc(cp.join(" · "))+" <small>("+lbEsc(pv.fn)+")</small></button>":"")
  +(r.conf?"":"<div class='lcf'>⏱ "+tt("Block times to confirm: import the duty plan again after landing (after ","Orari da confermare: reimporta il duty plan dopo l'atterraggio (dopo le ")+lbHm(f.t1)+"Z "+tt("on ","del ")+lbDate(f.t1)+")</div>")+(r.role?"<div class='llt'><span>"+(r.to=="N"?"☾":"☀︎")+" T/O</span><span>"+(r.ld=="N"?"☾":"☀︎")+" LDG</span><span>Night "+fm(r.night)+"</span></div>":"<div class='llt mute'>Choose PF or PM to log takeoff and landing</div>")
  +"</div></div>"}
@@ -1391,7 +1400,7 @@ function lbHub(c){const tT=c.fl.reduce((a,r)=>a+r.tt,0),pv=pm(c.S.tot)||0,set=LB
  +"<button class='lsadd lshub' data-sadd='1'><span class='ti' style='background:var(--pri)'><svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='#fff' stroke-width='2' stroke-linecap='round'><rect x='3' y='5' width='18' height='12' rx='2'/><path d='M8 21h8M12 17v4M12 8v6M9 11h6'/></svg></span><span><b>"+tt("Add simulator session","Aggiungi sessione al simulatore")+"</b><small>"+tt("FSTD, logged time, remarks and TRE/TRI signature","FSTD, ore loggate, remarks e firma TRE/TRI")+"</small></span></button>"}
 function lbSum(k,c){const{S,A,M}=c;
  if(k=="prev")return(c.mode=="file"?tt("File","File")+" · ":"")+(S.tot?"TOT "+S.tot+(S.night?" · Night "+S.night:""):"Not set");
- if(k=="auto")return[A.ac=="AUTO"?"Type from roster":A.ac,A.cls=="MP"?"Multi-pilot":A.cls=="SE"?"Single-pilot SE":"Single-pilot ME",A.ifr?"IFR":"",{PIC:"PIC",COP:"Co-pilot",DUAL:"Dual",INS:"Instructor"}[A.fn],A.nc=="6"?"Civil twilight":A.nc=="12"?"Nautical twilight":"Sunset–sunrise"].filter(Boolean).join(" · ");
+ if(k=="auto")return[A.ac=="AUTO"?"Type from roster":lbEsc(A.ac),A.cls=="MP"?"Multi-pilot":A.cls=="SE"?"Single-pilot SE":"Single-pilot ME",A.ifr?"IFR":"",{PIC:"PIC",COP:"Co-pilot",DUAL:"Dual",INS:"Instructor"}[A.fn],A.nc=="6"?"Civil twilight":A.nc=="12"?"Nautical twilight":"Sunset–sunrise"].filter(Boolean).join(" · ");
  return lbEsc(M.tipo+(M.code?" ("+M.code+")":""))+(M.dur?" · "+lbEsc(M.dur):"")}
 function lbAccHead(k,i,t,c){const ok=c.ok[k];return"<button class='ach'><span class='ic' style='background:"+(ok?"var(--grn)":"#8e8e93")+"'>"+(ok?"✓":i)+"</span><span class='bd'><span class='t'>"+t+"</span><span class='s'>"+lbSum(k,c)+"</span></span></button>"}
 function lbSet(c){const{S,A,M}=c,f=(k,l,ph)=>"<label class='row nl'><span class='bd'>"+l+"</span><input class='sv' data-s='"+k+"' value='"+lbEsc(S[k])+"'"+(ph?" placeholder='"+ph+"'":"")+" autocomplete='off'></label>";
@@ -1558,7 +1567,7 @@ function rcRender(){const c=rcCalc(),R=(t,v,cl,s)=>'<div class="row nl"><span cl
 /* ===== CREW REST: same rules as "Turni di riposo" (start TO+30 min, end LDG-1 h, split equally) ===== */
 const RSC=["#1F5BD6","#2E9A64","#E39B2D","#8E5BD8","#D9577A","#2BA59A","#C9A028","#6E62E0","#D64545","#4A90E2","#9C6B3F","#5A6B85"];
 function rsGet(){const m=loadMeta(),r=m.rest||{};const N=(v,d)=>{v=parseInt(v,10);return isNaN(v)||v<0?d:v};return{n:Math.min(6,Math.max(3,parseInt(r.n,10)||3)),dep:r.dep||"08:00",arr:r.arr||"20:00",lab:r.lab||"",ft:r.ft||"",rf:r.rf||null,so:40,eo:60,ord:Array.isArray(r.ord)?r.ord:null}}
-function rsSet(o){const m=loadMeta();m.rest=Object.assign(rsGet(),o);try{localStorage.setItem("turni_meta_v1",JSON.stringify(m))}catch(e){}}
+function rsSet(o){const m=loadMeta();m.rest=Object.assign(rsGet(),o);saveMeta(m)}
 const rsM=t=>{const a=String(t||"").split(":").map(Number);return isNaN(a[0])||isNaN(a[1])?null:a[0]*60+a[1]};
 const rsT=x=>{const f=Math.floor(x+1e-6),d=Math.floor(f/1440),r=(f%1440+1440)%1440;return p2(Math.floor(r/60))+":"+p2(r%60)+(d>0?" (+1)":"")};
 const rsO=m=>m%60?(m>=60?Math.floor(m/60)+" h "+m%60+"′":m+"′"):m/60+" h";
@@ -1739,8 +1748,8 @@ function bpCalc(P,I,y){
  const dn=+I.dn||0,dnh=+I.dnh||0,de=+I.de||0,deh=+I.deh||0,dx=+I.dx||0;
  const I24=47*dn+47*dnh,I25=56*de+56*deh+77*dx,H54=(47-46.48)*dn+(47-30.99)*dnh+(56-51.65)*deh;
  /* premio di risultato */
- const pb=(COM?(anz<20?2000:2500):(anz<20?1500:1800))*(I.pdr=="6"?.5:1),eb=+I.eb||1;
- const D93=I.pdr=="6"||I.pdr=="12"?(eb<=1?(0.15+eb-0.85)*3.333333*pb:eb<=1.25?eb*pb:eb<=1.4?((eb-1.25)*2+1.25)*pb:eb<1.5?((eb-1.4)*3+1.55)*pb:eb==1.5?((eb-1.4)*3+1.55)*pb:pb*2):0;
+ const pb=(COM?(anz<20?2000:2500):(anz<20?1500:1800))*(I.pdr=="6"?.5:1),eb=I.eb===""||I.eb==null||isNaN(+I.eb)?1:+I.eb;
+ const D93=I.pdr=="6"||I.pdr=="12"?(eb<=1?Math.max(0,(0.15+eb-0.85)*3.333333)*pb:eb<=1.25?eb*pb:eb<=1.4?((eb-1.25)*2+1.25)*pb:eb<1.5?((eb-1.4)*3+1.55)*pb:eb==1.5?((eb-1.4)*3+1.55)*pb:pb*2):0;
  const I26=m13?B24+B25:0;
  const H24=Math.round(B24-D24+(B25-D25+F8+E33+F88+I58)/2+(m13?B24+B25/2:0)+G3+D93+F42+H54+I59+J61);
  const MIX=P.inps=="MISTO",NI=P.fond=="NON ISCRITTO",base=(B24-D24+B25-D25)*(m13?2:1);
@@ -2239,16 +2248,16 @@ document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go)
 const SY={col:null,last:0,err:0,busy:false,tm:null};
 function syncUi(){const t=$("#syt"),u=$("#sys");if(!t)return;if(!SY.col){t.textContent="Not active";u.textContent="Available when you open Rotate from claude.ai while signed in";return}
  t.textContent=SY.err?"Sync error":"Active";u.textContent=SY.last?"Last saved at "+new Date(SY.last).toLocaleTimeString(LOC(),{hour:"2-digit",minute:"2-digit"}):"Data saved to your account"}
-async function syncPush(){if(!SY.col||SY.busy)return;SY.busy=true;
+async function syncPush(){if(!SY.col||!SY.ready)return;if(SY.busy){SY.again=true;return}SY.busy=true;SY.again=false;
  try{const d=JSON.parse(localStorage.getItem("turni_v1")||"{}"),by={};for(const k in d)(by[k.slice(0,7)]=by[k.slice(0,7)]||{})[k]=d[k];
   for(const m in by){const x=JSON.stringify(by[m]);if(SY.h["m-"+m]!==x){await SY.col.doc("m-"+m).set({s:x});SY.h["m-"+m]=x}}
   const ms=localStorage.getItem("turni_meta_v1")||"{}",ts=+localStorage.getItem("turni_ts")||Date.now();
   await SY.col.doc("meta").set({s:ms,ts});SY.last=Date.now();SY.err=0}catch(e){SY.err=1}
- SY.busy=false;syncUi()}
+ SY.busy=false;syncUi();if(SY.again)setTimeout(syncPush,500)}
 SY.h={};
 function syncDirty(){try{localStorage.setItem("turni_ts",String(Date.now()))}catch(e){}if(typeof gdDirty=="function")gdDirty();if(!SY.col)return;clearTimeout(SY.tm);SY.tm=setTimeout(syncPush,2500)}
-const _save=save;save=function(){_save();syncDirty()};
-const _saveMeta=saveMeta;saveMeta=function(o){_saveMeta(o);syncDirty()};
+const _save=save;save=function(){const r=_save();if(r)syncDirty();return r};
+const _saveMeta=saveMeta;saveMeta=function(o){const r=_saveMeta(o);if(r)syncDirty();return r};
 async function syncInit(){
  try{const db=window.claude?await window.claude.use("db"):null,us=window.claude?await window.claude.use("user"):null;if(!db||!us){syncUi();return}
   const id=await us.id();if(!id){syncUi();return}SY.col=db.collection("data/users/"+id+"/sync");
@@ -2256,14 +2265,14 @@ async function syncInit(){
   if(mr.exists&&(rts>lts||!hasLocal)){
    const q=await SY.col.get(),all={};q.docs.forEach(dc=>{if(dc.id.startsWith("m-")){try{Object.assign(all,JSON.parse(dc.data().s));SY.h[dc.id]=dc.data().s}catch(e){}}});
    localStorage.setItem("turni_v1",JSON.stringify(all));localStorage.setItem("turni_meta_v1",mr.data().s||"{}");localStorage.setItem("turni_ts",String(rts));
-   load();const ks=Object.keys(days).sort();if(ks.length){const[a,b]=ks[ks.length-1].split("-").map(Number);view=new Date(a,b-1,1)}render();SY.last=Date.now();syncUi();return}
-  if(hasLocal||lts){await syncPush()}else syncUi()
- }catch(e){SY.err=1;syncUi()}}
+   load();const ks=Object.keys(days).sort();if(ks.length){const[a,b]=ks[ks.length-1].split("-").map(Number);view=new Date(a,b-1,1)}render();SY.ready=true;SY.last=Date.now();syncUi();return}
+  SY.ready=true;if(hasLocal||lts){await syncPush()}else syncUi()
+ }catch(e){SY.err=1;SY.ready=false;syncUi();setTimeout(syncInit,60000)}}
 async function syncWipe(){if(!SY.col)return;try{const q=await SY.col.get();for(const dc of q.docs)await SY.col.doc(dc.id).delete()}catch(e){}}
 $("#syn").onclick=async()=>{if(!SY.col){syncUi();return}await syncPush()};
 
 links();
-load();
+load();lbMigrate();
 const ks=Object.keys(days).sort();
 if(ks.length){const t=new Date(),tk=key(t.getFullYear(),t.getMonth(),t.getDate());const k0=days[tk]?tk:ks[0];const[a,b]=k0.split("-").map(Number);view=new Date(a,b-1,1)}
 render();
@@ -2314,15 +2323,15 @@ async function gzip(str){if(!window.CompressionStream)return null;try{return awa
 async function gunzip(buf){return await new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream("gzip"))).text()}
 function gdJson(){const P=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}};return JSON.stringify({v:2,days:P("turni_v1")||{},meta:P("turni_meta_v1")||{},lbf:P("turni_lbf_v1"),ts:+localStorage.getItem("turni_ts")||Date.now()})}
 function gdKeep(){try{localStorage.setItem("rot_gdl",JSON.stringify({t:GD.last,s:GD.size}))}catch(e){}}
-async function gdPush(){if(GD.busy)return false;GD.busy=true;gdUi();let ok=false;try{
+async function gdPush(){if(GD.busy){GD.again=true;return false}GD.busy=true;GD.again=false;gdUi();let ok=false;const seq=GD.seq||0;try{
   const json=gdJson();let blob=await gzip(json),name=GD_GZ,type="application/gzip";if(!blob){blob=new Blob([json]);name=GD_FILE;type="application/json"}
   const old=await gdList(),b="rot"+Date.now(),m=JSON.stringify({name,parents:["appDataFolder"]});
   const body=new Blob(["--"+b+"\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"+m+"\r\n--"+b+"\r\nContent-Type: "+type+"\r\n\r\n",blob,"\r\n--"+b+"--"]);
   const r=await gdApi("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,size,modifiedTime",{method:"POST",headers:{"Content-Type":"multipart/related; boundary="+b},body}),nf=await r.json();
   for(const f of old)if(f.id!=nf.id){try{await gdApi("https://www.googleapis.com/drive/v3/files/"+f.id,{method:"DELETE"})}catch(e){}}
-  GD.last=Date.now();GD.size=+nf.size||blob.size;GD.pend=false;GD.err=0;gdKeep();ok=true}
- catch(e){GD.err=1;GD.pend=true}finally{GD.busy=false;gdUi()}return ok}
-function gdDirty(){if(!GD.ok||!gdOn())return;GD.pend=true;gdUi();if(!gdAuto())return;clearTimeout(GD.tm);GD.tm=setTimeout(()=>{if(GD.tok&&Date.now()<GD.exp-60000)gdPush()},3000)}
+  GD.last=Date.now();GD.size=+nf.size||blob.size;GD.pend=(GD.seq||0)!==seq;GD.err=0;gdKeep();ok=true}
+ catch(e){GD.err=1;GD.pend=true}finally{GD.busy=false;gdUi();if((GD.again||GD.pend)&&ok&&gdAuto()&&GD.tok&&Date.now()<GD.exp-60000)setTimeout(gdPush,1000)}return ok}
+function gdDirty(){if(!GD.ok||!gdOn())return;GD.seq=(GD.seq||0)+1;GD.pend=true;gdUi();if(!gdAuto())return;clearTimeout(GD.tm);GD.tm=setTimeout(()=>{if(GD.tok&&Date.now()<GD.exp-60000)gdPush()},3000)}
 const kb=n=>n<1024?n+" B":(n/1024).toFixed(n<10240?1:0).replace(".",LANG=="it"?",":".")+" KB";
 function gdUi(){const on=gdOn();
  if(typeof drUi=="function")try{drUi()}catch(e){}
@@ -2334,7 +2343,7 @@ function gdUi(){const on=gdOn();
  $("#gdAuto").classList.toggle("on",gdAuto());$("#gdAuto").setAttribute("aria-pressed",gdAuto());
  const h=$("#gdh");h.hidden=!(on&&GD.pend&&!GD.busy);{const hd=$("#hqDot");if(hd)hd.hidden=h.hidden}h.textContent=tt("Drive backup pending · tap to save","Backup su Drive in sospeso · tocca per salvare")}
 $("#gdc").onclick=async()=>{try{await gdToken(true,true);try{localStorage.setItem("rot_gd","1")}catch(e){}
-  const f=await gdFind(),hasLocal=Object.keys(days).length>0;
+  const f=await gdFind(),mt0=loadMeta(),hasLocal=Object.keys(days).length>0||!!(mt0.lb&&Object.keys(mt0.lb).length||mt0.lbSim||mt0.name||mt0.pfAt);
   if(f&&!hasLocal){await gdRestore(f);return}
   if(!f){await gdPush()}else{GD.pend=false;GD.last=Date.parse(f.modifiedTime)||Date.now();GD.size=+f.size||0;gdKeep()}
   toast(tt("Google Drive connected","Google Drive collegato"),f&&hasLocal?tt("A backup exists: use Sync or Back up","C'è già un backup: usa Sincronizza o Backup"):"")}

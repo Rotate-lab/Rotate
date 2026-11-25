@@ -36,18 +36,21 @@ async function networkFirst(req) {
     const t = setTimeout(() => ctl.abort(), 4000); // rete lenta: dopo 4 s usa la copia salvata
     const res = await fetch(req, { signal: ctl.signal, cache: "no-store" });
     clearTimeout(t);
-    if (res.ok) c.put("./index.html", res.clone());
+    const p = new URL(req.url).pathname;
+    if (res.ok && /\/(index\.html)?$/.test(p)) c.put("./index.html", res.clone());
     return res;
   } catch (_) {
     return (await c.match("./index.html")) || (await c.match("./")) || Response.error();
   }
 }
 
-async function staleWhileRevalidate(req) {
+async function staleWhileRevalidate(req, ev) {
   const c = await caches.open(CACHE);
   const hit = await c.match(req);
-  const net = fetch(req).then(res => { if (res && (res.ok || res.type === "opaque")) c.put(req, res.clone()); return res; }).catch(() => null);
-  return hit || (await net) || Response.error();
+  // solo risposte valide e leggibili: una risposta opaca potrebbe essere una pagina di errore della CDN
+  const net = fetch(req).then(async res => { if (res && res.ok) { try { await c.put(req, res.clone()); } catch (_) {} } return res; }).catch(() => null);
+  if (hit) { ev.waitUntil(net); return hit; }
+  return (await net) || Response.error();
 }
 
 self.addEventListener("fetch", e => {
@@ -55,7 +58,7 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (req.mode === "navigate" && url.origin === location.origin) return e.respondWith(networkFirst(req));
-  if (url.origin === location.origin && /\.(png|json|svg|ico)$/.test(url.pathname)) return e.respondWith(staleWhileRevalidate(req));
-  if (STATIC_HOSTS.includes(url.hostname)) return e.respondWith(staleWhileRevalidate(req));
+  if (url.origin === location.origin && /\.(png|json|svg|ico)$/.test(url.pathname)) return e.respondWith(staleWhileRevalidate(req, e));
+  if (STATIC_HOSTS.includes(url.hostname)) return e.respondWith(staleWhileRevalidate(req, e));
   // tutto il resto (meteo, Google, portali) passa direttamente alla rete
 });
