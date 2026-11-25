@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rotate Ops Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=B612+Mono:wght@400;700&family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
+<style>
+/* ===== Direction A "Ops Sheet" tokens (same names as index.html) ===== */
+:root{
+ --bg:#F3F1EA;--card:#FBFAF6;--tx:#15191E;--tx2:#5D6168;--sep:#D8D3C6;--sel:#E9E5D9;--empty:#EEEBE2;
+ --ac:#B0127A;--sig:#B0127A;--blue:#15191E;--org:#A85F00;--yel:#A85F00;--red:#B8322A;--pink:#B8322A;--grn:#2E7A4A;--lgrn:#2E7A4A;
+ --lb:#0B7285;--mint:#0B7285;--pur:#5D6168;--ind:#0B7285;--pri:#15191E;--prit:#FBFAF6;--hero:#15191E;--sh:none;--tint:10%;
+ --hatch:repeating-linear-gradient(135deg,color-mix(in srgb,var(--tx2) 22%,transparent) 0 1px,transparent 1px 6px);
+ --fb:Barlow,-apple-system,system-ui,sans-serif;--ff:"Barlow Semi Condensed",Barlow,system-ui,sans-serif;--fm:"B612 Mono",ui-monospace,Menlo,monospace;--fn:"Barlow Semi Condensed",Barlow,system-ui,sans-serif;
+ --r1:2px;--r2:4px;--r3:8px;
+ color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+ --bg:#0A0C0F;--card:#121519;--tx:#E7E5DF;--tx2:#8B9098;--sep:#262B32;--sel:#1B1F25;--empty:#0F1215;
+ --ac:#FF5CC6;--sig:#FF5CC6;--blue:#E7E5DF;--org:#F5A623;--yel:#F5A623;--red:#FF5A4F;--pink:#FF5A4F;--grn:#4FD18B;--lgrn:#4FD18B;
+ --lb:#3CC8DC;--mint:#3CC8DC;--pur:#8B9098;--ind:#3CC8DC;--pri:#E7E5DF;--prit:#0A0C0F;--hero:#121519;--tint:14%;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0;background:#c9c6bd}
+@media (prefers-color-scheme:dark){html,body{background:#000}}
+body{font:15px/1.35 var(--fb);color:var(--tx);-webkit-font-smoothing:antialiased;display:flex;flex-wrap:wrap;gap:24px;justify-content:center;padding:24px 0}
+.scr{width:390px;min-height:844px;background:var(--bg);position:relative;overflow:hidden;padding-bottom:72px}
+.m{font-family:var(--fn);font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:0}
+.lab{font:600 11px/1 var(--ff);letter-spacing:.12em;text-transform:uppercase;color:var(--tx2)}
+/* top bar */
+.tb{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid var(--sep)}
+.wm{font:700 15px/1 var(--ff);letter-spacing:.22em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.wm i{width:10px;height:10px;border:2px solid var(--tx);border-radius:50%;display:block;position:relative}
+.wm i:after{content:"";position:absolute;right:-4px;top:-4px;width:5px;height:5px;background:var(--sig)}
+.clk{display:flex;gap:14px;align-items:baseline}
+.clk div{text-align:right}.clk b{display:block;font:700 15px/1.1 var(--fm)}.clk small{font:600 9.5px/1 var(--ff);letter-spacing:.14em;color:var(--tx2)}
+.ib{width:36px;height:36px;border:1px solid var(--sep);border-radius:var(--r2);display:grid;place-items:center;background:none;color:var(--tx)}
+/* status line */
+.sl{display:flex;gap:16px;padding:8px 16px;border-bottom:1px solid var(--sep);font:600 10.5px/1 var(--ff);letter-spacing:.14em;text-transform:uppercase;color:var(--tx2)}
+.sl span{display:flex;align-items:center;gap:6px}.sl i{width:6px;height:6px;background:var(--grn);display:block}
+.sl .w i{background:var(--org)}.sl .w{color:var(--org)}
+.sl .r{margin-left:auto}
+/* date header */
+.dh{padding:18px 16px 10px;display:flex;justify-content:space-between;align-items:flex-end}
+.dh h1{margin:0;font:700 28px/1 var(--ff);letter-spacing:.02em;text-transform:uppercase}
+.dh p{margin:6px 0 0;color:var(--tx2);font-size:14px}
+/* next duty: flight strip */
+.nd{margin:6px 16px 0;background:var(--card);border:1px solid var(--sep);border-radius:var(--r2);position:relative}
+.nd:before{content:"";position:absolute;left:-1px;top:-1px;bottom:-1px;width:4px;background:var(--sig);border-radius:var(--r2) 0 0 var(--r2)}
+.ndh{display:flex;justify-content:space-between;align-items:center;padding:10px 14px 0 18px}
+.ndh .t{font:700 12px/1 var(--fm);color:var(--sig)}
+.rt{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;padding:10px 14px 12px 18px;gap:8px}
+.rt .ap{font:700 38px/1 var(--fm);letter-spacing:-.02em}
+.rt .ct{font-size:12.5px;color:var(--tx2);margin-top:4px}
+.rt .r{text-align:right}
+.rt .mid{display:flex;flex-direction:column;align-items:center;gap:4px;padding-bottom:20px;color:var(--tx2);font:600 11px/1 var(--fm)}
+.rt .mid i{display:block;width:56px;height:1px;background:var(--tx2);position:relative}
+.rt .mid i:after{content:"";position:absolute;right:-1px;top:-3px;border-left:6px solid var(--tx2);border-top:3.5px solid transparent;border-bottom:3.5px solid transparent}
+.tt{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--sep)}
+.tt div{padding:9px 0 10px 12px}.tt div:first-child{padding-left:18px}.tt div+div{border-left:1px solid var(--sep)}
+.tt b{display:block;font:700 17px/1.15 var(--fm);margin-top:5px}.tt small{display:block;font:400 11px/1.2 var(--fm);color:var(--tx2);margin-top:2px}
+.tt .s b{color:var(--sig)}
+.na{display:flex;border-top:1px solid var(--sep)}
+.na a{flex:1;text-align:center;padding:11px 0;font:600 12px/1 var(--ff);letter-spacing:.14em;text-transform:uppercase;color:var(--tx);text-decoration:none}
+.na a+a{border-left:1px solid var(--sep)}
+.na a b{color:var(--sig);font-weight:700}
+/* section heads */
+.sh{display:flex;justify-content:space-between;align-items:baseline;padding:22px 16px 8px}
+.sh a{font:600 12px/1 var(--ff);letter-spacing:.1em;text-transform:uppercase;color:var(--tx);text-decoration:none;border-bottom:1px solid var(--tx)}
+/* timetable */
+.tbl{margin:0 16px;border-top:1px solid var(--tx)}
+.tr{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--sep)}
+.tr .d{font:600 11px/1.1 var(--ff);letter-spacing:.1em;color:var(--tx2)}.tr .d b{display:block;font:700 16px/1.1 var(--fm);color:var(--tx);letter-spacing:0}
+.tr .w{font-size:15px;font-weight:500}.tr .w small{display:block;font:400 12px/1.3 var(--fm);color:var(--tx2);margin-top:2px}
+.tr .v{font:700 14px/1 var(--fm);text-align:right}.tr .v small{display:block;font:400 10px/1.4 var(--ff);letter-spacing:.12em;color:var(--tx2)}
+.tr.now .d b{color:var(--sig)}
+.tr.off .w{color:var(--tx2)}
+.tr.lv .w{color:var(--tx2);background:var(--hatch);padding:2px 6px;margin-left:-6px;width:max-content}
+.code{font:700 11px/1 var(--fm);border:1px solid currentColor;padding:2px 4px;border-radius:var(--r1);margin-right:6px;vertical-align:1px}
+/* status board */
+.sb .tr{grid-template-columns:1fr auto}
+.sb .k{font:600 12px/1 var(--ff);letter-spacing:.12em;text-transform:uppercase;color:var(--tx2)}
+.sb .k small{display:block;font:400 13px/1.3 var(--fb);letter-spacing:0;text-transform:none;color:var(--tx2);margin-top:4px}
+.sb .v{font-size:16px}.sb .amb{color:var(--org)}
+.cl{display:flex;margin:0 16px;border:1px solid var(--sep);border-radius:var(--r2);background:var(--card)}
+.cl a{flex:1;padding:10px 4px;text-align:center;font:600 11.5px/1.15 var(--ff);letter-spacing:.06em;text-transform:uppercase;color:var(--tx);text-decoration:none}
+.cl a+a{border-left:1px solid var(--sep)}.cl svg{display:block;margin:0 auto 5px;color:var(--tx2)}
+/* tab bar */
+.tab{position:absolute;left:0;right:0;bottom:0;height:64px;background:var(--card);border-top:1px solid var(--sep);display:grid;grid-template-columns:repeat(4,1fr)}
+.tab a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font:600 10.5px/1 var(--ff);letter-spacing:.12em;text-transform:uppercase;color:var(--tx2);text-decoration:none;position:relative}
+.tab a.on{color:var(--tx)}.tab a.on:before{content:"";position:absolute;top:-1px;left:30%;right:30%;height:2px;background:var(--sig)}
+/* ===== roster ===== */
+.rh{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px}
+.rh h1{margin:0;font:700 26px/1 var(--ff);text-transform:uppercase;letter-spacing:.02em;display:flex;align-items:center;gap:12px}
+.rh h1 button{border:1px solid var(--sep);background:none;color:var(--tx);width:30px;height:30px;border-radius:var(--r2);font:600 16px/1 var(--fm)}
+.seg{display:flex;border:1px solid var(--tx);border-radius:var(--r2);overflow:hidden}
+.seg span{padding:6px 9px;font:700 11px/1 var(--fm)}.seg .on{background:var(--tx);color:var(--bg)}
+.wk,.gd{display:grid;grid-template-columns:repeat(7,1fr);margin:0 8px}
+.wk span{font:600 10.5px/1 var(--ff);letter-spacing:.14em;color:var(--tx2);padding:0 0 6px 5px}
+.wk span:nth-child(n+6){color:var(--tx)}
+.gd{border-top:1px solid var(--sep);border-left:1px solid var(--sep)}
+.c{height:74px;border-right:1px solid var(--sep);border-bottom:1px solid var(--sep);padding:4px 3px 0 5px;position:relative;background:var(--card);overflow:hidden;min-width:0}
+.c.e{background:transparent}
+.c .n{font:700 11px/1 var(--fm);color:var(--tx2);display:flex;justify-content:space-between;padding-right:2px}
+.c .n em{font-style:normal;font-weight:400;font-size:9px}
+.c b{display:block;font:700 15px/1 var(--fm);margin-top:6px;letter-spacing:-.02em}
+.c u{display:block;text-decoration:none;font:400 10px/1.25 var(--fm);color:var(--tx2);white-space:nowrap;overflow:hidden}
+.c.fl:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--tx)}
+.c.fl .n{color:var(--tx)}
+.c.lo{background:var(--empty)}.c.lo b{font-weight:400;color:var(--tx2)}
+.c.off b{font-size:11px;font-weight:400;color:var(--tx2);margin-top:8px}
+.c.sb:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--org)}.c.sb b{color:var(--org);font-size:12px}
+.c.sim:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:repeating-linear-gradient(var(--lb) 0 4px,transparent 4px 7px)}.c.sim b{color:var(--lb);font-size:12px}
+.c.co b{font-size:11px;font-weight:400;color:var(--tx2)}
+.c.td{box-shadow:inset 0 0 0 2px var(--sig)}.c.td .n{color:var(--sig)}
+.c.on{background:var(--sel)}
+/* detail */
+.dt{margin:10px 8px 0;border:1px solid var(--tx);border-radius:var(--r2);background:var(--card)}
+.dth{display:flex;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--sep)}
+.dth b{font:700 14px/1 var(--ff);letter-spacing:.08em;text-transform:uppercase}
+.lg{display:grid;grid-template-columns:40px 1fr auto;gap:10px;padding:9px 12px;align-items:baseline;border-bottom:1px solid var(--sep)}
+.lg .k{font:700 11px/1 var(--fm);color:var(--tx2)}
+.lg .w{font-weight:500}.lg .w small{display:block;font:400 12px/1.35 var(--fm);color:var(--tx2)}
+.lg .v{font:700 15px/1 var(--fm);text-align:right}.lg .v small{display:block;font:400 11px/1.5 var(--fm);color:var(--tx2)}
+.lg.f .k{color:var(--tx)}
+.dtf{display:flex;gap:18px;padding:9px 12px;font:400 12px/1 var(--fm);color:var(--tx2)}.dtf b{color:var(--tx)}
+/* month line */
+.ms{display:grid;grid-template-columns:repeat(4,1fr);margin:14px 8px 0;border-top:1px solid var(--tx)}
+.ms div{padding:9px 0 8px 6px;border-bottom:1px solid var(--sep)}.ms div:nth-child(4n+1){padding-left:0}
+.ms b{display:block;font:700 18px/1.1 var(--fm)}.ms span{font:600 10px/1 var(--ff);letter-spacing:.12em;text-transform:uppercase;color:var(--tx2)}
+.key{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 8px 0;font:600 10px/1 var(--ff);letter-spacing:.12em;text-transform:uppercase;color:var(--tx2)}
+.key span{display:flex;align-items:center;gap:5px}.key i{width:10px;height:10px;display:block;border:1px solid var(--sep)}
+.ft{margin:10px 8px 0;font-size:12px;color:var(--tx2)}
+/* times: tabular condensed sans (mono colons are too wide); codes stay in B612 Mono */
+.clk b,.rt .mid,.tt b,.tt small,.tr .v,.ms b,.lg .v,.lg .v small,.dtf b{font-family:var(--fn);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.clk b{font-size:17px;font-weight:600}.tt b{font-size:20px;font-weight:600}.tt small{font-size:12.5px;font-weight:500}.tr .v{font-size:16px;font-weight:600}.ms b{font-size:21px;font-weight:600}.lg .v{font-size:17px;font-weight:600}.rt .mid{font-size:13px;font-weight:600}.dtf b{font-size:13px;font-weight:600}
+.lg .w small{font-family:var(--fn);font-size:13px;letter-spacing:.02em}
+</style>
+</head>
+<body>
+
+<!-- ================= HOME ================= -->
+<section class="scr" id="home">
+ <div class="tb">
+  <div class="wm"><i></i>Rotate</div>
+  <div class="clk"><div><b>07:40Z</b><small>UTC</small></div><div><b>08:40</b><small>FCO LT</small></div>
+   <button class="ib" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button></div>
+ </div>
+ <div class="sl"><span><i></i>Online</span><span><i></i>CrewLink</span><span class="w"><i></i>Recency</span><span class="r m">v1.2.7</span></div>
+
+ <div class="dh"><div><h1>Wed 25 Nov</h1><p>Flight day · report in 3 h 25 min</p></div><span class="lab">FO · A350 · FCO</span></div>
+
+ <div class="nd">
+  <div class="ndh"><span class="lab">Next duty</span><span class="t">AZ 784 · A359</span></div>
+  <div class="rt">
+   <div><div class="ap">FCO</div><div class="ct">Roma Fiumicino</div></div>
+   <div class="mid">11:45<i></i>BLK</div>
+   <div class="r"><div class="ap">HND</div><div class="ct">Tokyo Haneda</div></div>
+  </div>
+  <div class="tt">
+   <div><span class="lab">RPT</span><b>12:05</b><small>11:05Z</small></div>
+   <div><span class="lab">STD</span><b>13:35</b><small>12:35Z</small></div>
+   <div><span class="lab">STA</span><b>09:20<sup style="font-size:9px">+1</sup></b><small>00:20Z</small></div>
+   <div class="s"><span class="lab">In</span><b>03:25</b><small>to report</small></div>
+  </div>
+  <div class="na"><a href="#">Briefing</a><a href="#">Wx <b>·</b> METAR/TAF</a><a href="#">Rest</a></div>
+ </div>
+
+ <div class="sh"><span class="lab">Next 7 days</span><a href="#">Roster</a></div>
+ <div class="tbl">
+  <div class="tr now"><div class="d">WED<b>25</b></div><div class="w">FCO – HND<small>AZ 784 · A359</small></div><div class="v">12:05<small>RPT</small></div></div>
+  <div class="tr off"><div class="d">THU<b>26</b></div><div class="w">Layover HND<small>Hotel Grand Arc Hanzomon</small></div><div class="v"></div></div>
+  <div class="tr off"><div class="d">FRI<b>27</b></div><div class="w">Layover HND</div><div class="v"></div></div>
+  <div class="tr"><div class="d">SAT<b>28</b></div><div class="w">HND – FCO<small>AZ 785 · A359</small></div><div class="v">10:20<small>RPT</small></div></div>
+  <div class="tr off"><div class="d">SUN<b>29</b></div><div class="w"><span class="code">RPM</span>Monthly rest</div><div class="v"></div></div>
+  <div class="tr off"><div class="d">MON<b>30</b></div><div class="w"><span class="code">RPM</span>Monthly rest</div><div class="v"></div></div>
+  <div class="tr lv"><div class="d">TUE<b>01</b></div><div class="w"><span class="code">FEN</span>Leave · to 04 Dec</div><div class="v"></div></div>
+ </div>
+
+ <div class="sh"><span class="lab">Status · November</span></div>
+ <div class="tbl sb">
+  <div class="tr"><div class="k">Block time<small>8 flight days · 10 sectors</small></div><div class="v m">74:10</div></div>
+  <div class="tr"><div class="k">Recency<small>0/3 T/O · 0/3 LDG in 90 days</small></div><div class="v m amb">LAPSED</div></div>
+  <div class="tr"><div class="k">Logbook<small>Entries missing PF/PM</small></div><div class="v m amb">13</div></div>
+  <div class="tr"><div class="k">Payslip Nov<small>Estimated net</small></div><div class="v m">≈ 3 243 €</div></div>
+ </div>
+
+ <div class="sh"><span class="lab">CrewLink</span></div>
+ <div class="cl">
+  <a href="#"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Check-in</a>
+  <a href="#"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5h4"/></svg>Notices</a>
+  <a href="#"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4.5h16v15H4zM4 9h16M9 9v10.5"/></svg>Duty plan</a>
+  <a href="#"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h14l-3-3M20 16H6l3 3"/></svg>Trades</a>
+ </div>
+
+ <nav class="tab">
+  <a class="on" href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11h18M12 3v18"/><circle cx="12" cy="11" r="3"/></svg>Today</a>
+  <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.5 5h17v15h-17zM3.5 10h17M8 3v4M16 3v4"/></svg>Roster</a>
+  <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 3.5h12l2 2v15H5zM9 8h6M9 12h6M9 16h3"/></svg>Logbook</a>
+  <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Tools</a>
+ </nav>
+</section>
+
+<!-- ================= ROSTER ================= -->
+<section class="scr" id="roster">
+ <div class="tb">
+  <div class="wm"><i></i>Rotate</div>
+  <div class="clk"><div><b>07:40Z</b><small>UTC</small></div>
+   <button class="ib" aria-label="Import"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 20h14"/></svg></button></div>
+ </div>
+ <div class="rh"><h1><button>‹</button>Nov 2026<button>›</button></h1><div class="seg"><span class="on">LT</span><span>UTC</span></div></div>
+ <div class="wk"><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span></div>
+ <div class="gd">
+  <div class="c e"></div><div class="c e"></div><div class="c e"></div><div class="c e"></div><div class="c e"></div><div class="c e"></div>
+  <div class="c off"><div class="n">01</div><b>RPM</b></div>
+  <div class="c off"><div class="n">02</div><b>RPM</b></div>
+  <div class="c fl"><div class="n">03</div><b>JFK</b><u>AZ608</u><u>0855</u></div>
+  <div class="c lo"><div class="n">04</div><b>JFK</b><u>L/O</u></div>
+  <div class="c fl"><div class="n">05</div><b>FCO</b><u>AZ609</u><u>1605</u></div>
+  <div class="c co"><div class="n">06</div><b>C/O</b><u>0815</u></div>
+  <div class="c off"><div class="n">07</div><b>RPM</b></div>
+  <div class="c off"><div class="n">08</div><b>RPM</b></div>
+  <div class="c off"><div class="n">09</div><b>GLS</b></div>
+  <div class="c sb"><div class="n">10</div><b>HSBY</b><u>0600</u><u>1800</u></div>
+  <div class="c fl"><div class="n">11<em>×2</em></div><b>ATH</b><u>AZ720</u><u>0615</u></div>
+  <div class="c fl"><div class="n">12<em>×2</em></div><b>CDG</b><u>AZ318</u><u>0610</u></div>
+  <div class="c off"><div class="n">13</div><b>GLS</b></div>
+  <div class="c off"><div class="n">14</div><b>RPM</b></div>
+  <div class="c off"><div class="n">15</div><b>RPM</b></div>
+  <div class="c sim"><div class="n">16</div><b>SIB</b><u>1400</u><u>1800</u></div>
+  <div class="c fl"><div class="n">17</div><b>BOS</b><u>AZ630</u><u>0845</u></div>
+  <div class="c lo"><div class="n">18</div><b>BOS</b><u>L/O</u></div>
+  <div class="c fl"><div class="n">19</div><b>FCO</b><u>AZ631</u><u>1455</u></div>
+  <div class="c co"><div class="n">20</div><b>C/O</b><u>0710</u></div>
+  <div class="c off"><div class="n">21</div><b>RPM</b></div>
+  <div class="c off"><div class="n">22</div><b>RPM</b></div>
+  <div class="c sb"><div class="n">23</div><b>ASBY</b><u>0500</u><u>1300</u></div>
+  <div class="c off"><div class="n">24</div><b>GLS</b></div>
+  <div class="c fl td on"><div class="n">25</div><b>HND</b><u>AZ784</u><u>1205</u></div>
+  <div class="c lo"><div class="n">26</div><b>HND</b><u>L/O</u></div>
+  <div class="c lo"><div class="n">27</div><b>HND</b><u>L/O</u></div>
+  <div class="c fl"><div class="n">28</div><b>FCO</b><u>AZ785</u><u>1020</u></div>
+  <div class="c off"><div class="n">29</div><b>RPM</b></div>
+  <div class="c off"><div class="n">30</div><b>RPM</b></div>
+  <div class="c e"></div><div class="c e"></div><div class="c e"></div><div class="c e"></div><div class="c e"></div><div class="c e"></div>
+ </div>
+
+ <div class="dt">
+  <div class="dth"><b>Wed 25 Nov</b><span class="lab">Today</span></div>
+  <div class="lg"><span class="k">RPT</span><span class="w">Report · FCO<small>Crew centre T3</small></span><span class="v">12:05<small>11:05Z</small></span></div>
+  <div class="lg f"><span class="k">FLT</span><span class="w">AZ 784 · FCO – HND<small>A359 · STD 13:35 · STA 09:20+1</small></span><span class="v">11:45<small>BLK</small></span></div>
+  <div class="lg"><span class="k">HTL</span><span class="w">Grand Arc Hanzomon<small>+81 3 3288 0111</small></span><span class="v">3<small>NIGHTS</small></span></div>
+  <div class="dtf"><span>FDP <b>14:55</b></span><span>FT <b>11:45</b></span><span>EXT <b>—</b></span></div>
+ </div>
+
+ <div class="ms">
+  <div><b>74:10</b><span>Block</span></div><div><b>98:45</b><span>Duty</span></div><div><b>10</b><span>Sectors</span></div><div><b>13</b><span>Off</span></div>
+ </div>
+ <div class="key"><span><i style="background:var(--tx)"></i>Flight</span><span><i style="background:var(--empty)"></i>Layover</span><span><i style="background:var(--org)"></i>Standby</span><span><i style="background:repeating-linear-gradient(var(--lb) 0 3px,transparent 3px 5px)"></i>Sim</span><span><i style="box-shadow:inset 0 0 0 2px var(--sig)"></i>Today</span></div>
+ <p class="ft">Local times as published in CrewLink. Toggle UTC for rest and FTL maths.</p>
+
+ <nav class="tab">
+  <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11h18M12 3v18"/><circle cx="12" cy="11" r="3"/></svg>Today</a>
+  <a class="on" href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.5 5h17v15h-17zM3.5 10h17M8 3v4M16 3v4"/></svg>Roster</a>
+  <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 3.5h12l2 2v15H5zM9 8h6M9 12h6M9 16h3"/></svg>Logbook</a>
+  <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Tools</a>
+ </nav>
+</section>
+</body>
+</html>

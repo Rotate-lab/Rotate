@@ -2,8 +2,8 @@
 // - pagina: prima la rete (così gli aggiornamenti arrivano subito), senza rete la copia salvata
 // - librerie e caratteri: copia salvata, aggiornata in background
 // - meteo, Google Drive, portali: sempre e solo dalla rete (mai in cache)
-const CACHE = "rotate-v1.2";
-const CORE = ["./", "./index.html", "./manifest.json", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
+const CACHE = "rotate-v1.2.8"; // keep equal to VER in index.html
+const CORE = ["./", "./manifest.json", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 const LIBS = [
   "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
@@ -34,20 +34,23 @@ async function networkFirst(req) {
   try {
     const ctl = new AbortController();
     const t = setTimeout(() => ctl.abort(), 4000); // rete lenta: dopo 4 s usa la copia salvata
-    const res = await fetch(req, { signal: ctl.signal, cache: "no-store" });
+    const res = await fetch(req, { signal: ctl.signal, cache: "no-cache" }); // always asks the server; 304 when unchanged
     clearTimeout(t);
-    if (res.ok) c.put("./index.html", res.clone());
+    const p = new URL(req.url).pathname;
+    if (res.ok && /\/(index\.html)?$/.test(p)) c.put("./index.html", res.clone());
     return res;
   } catch (_) {
     return (await c.match("./index.html")) || (await c.match("./")) || Response.error();
   }
 }
 
-async function staleWhileRevalidate(req) {
+async function staleWhileRevalidate(req, ev) {
   const c = await caches.open(CACHE);
   const hit = await c.match(req);
-  const net = fetch(req).then(res => { if (res && (res.ok || res.type === "opaque")) c.put(req, res.clone()); return res; }).catch(() => null);
-  return hit || (await net) || Response.error();
+  // solo risposte valide e leggibili: una risposta opaca potrebbe essere una pagina di errore della CDN
+  const net = fetch(req).then(async res => { if (res && res.ok) { try { await c.put(req, res.clone()); } catch (_) {} } return res; }).catch(() => null);
+  if (hit) { ev.waitUntil(net); return hit; }
+  return (await net) || Response.error();
 }
 
 self.addEventListener("fetch", e => {
@@ -55,7 +58,7 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (req.mode === "navigate" && url.origin === location.origin) return e.respondWith(networkFirst(req));
-  if (url.origin === location.origin && /\.(png|json|svg|ico)$/.test(url.pathname)) return e.respondWith(staleWhileRevalidate(req));
-  if (STATIC_HOSTS.includes(url.hostname)) return e.respondWith(staleWhileRevalidate(req));
+  if (url.origin === location.origin && /\.(png|json|svg|ico)$/.test(url.pathname)) return e.respondWith(staleWhileRevalidate(req, e));
+  if (STATIC_HOSTS.includes(url.hostname)) return e.respondWith(staleWhileRevalidate(req, e));
   // tutto il resto (meteo, Google, portali) passa direttamente alla rete
 });
