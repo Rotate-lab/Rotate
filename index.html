@@ -643,6 +643,9 @@ async function pdfLines(buf){
  if(!await needLib("pdfjsLib"))throw new Error("pdf.js not loaded");
  pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
  const pdf=await pdfjsLib.getDocument({data:buf}).promise,out=[];
+ // data di creazione del PDF: un file vecchio reimportato non deve passare per "aggiornato dopo il volo"
+ try{const md=await pdf.getMetadata(),cd=md&&md.info&&md.info.CreationDate,m=cd&&String(cd).match(/D:(\d{4})(\d\d)(\d\d)(\d\d)?(\d\d)?(\d\d)?(?:([Z+-])(\d\d)?'?(\d\d)?)?/);
+  if(m){let t=Date.UTC(+m[1],m[2]-1,+m[3],+m[4]||0,+m[5]||0,+m[6]||0);if(m[7]=="+"||m[7]=="-")t-=(m[7]=="+"?1:-1)*((+m[8]||0)*60+(+m[9]||0))*6e4;if(t>Date.UTC(2015,0,1))out.gen=t}}catch(e){}
  for(let n=1;n<=pdf.numPages;n++){
   const pg=await pdf.getPage(n),vp=pg.getViewport({scale:1}),w=vp.width,tc=await pg.getTextContent();
   const all=tc.items.filter(i=>i.str.trim()).map(i=>{const t=pdfjsLib.Util.transform(vp.transform,i.transform);return{x:t[4],y:t[5],w:i.width||0,s:i.str.trim()}}),hd=all.find(i=>/^date\b/.test(i.s));if(!out.length){const row=re=>{const a=all.find(i=>re.test(i.s));return a?all.filter(i=>Math.abs(i.y-a.y)<3&&i.x<w*.55).sort((p,q)=>p.x-q.x).map(i=>i.s).join(" "):""};const nl=row(/Individual duty plan/),pl=row(/^Period/);if(nl)out.push(nl);if(pl)out.push(pl)}if(!hd)continue;const hy=hd.y;
@@ -658,9 +661,9 @@ async function pdfLines(buf){
 function ingest(res,label,ls){
  const ks=Object.keys(res.days).sort();
  if(!ks.length){if(ls){const q=document.createElement("pre");q.style.cssText="font-size:11px;white-space:pre-wrap";q.textContent=ls.length+" lines read:\n"+ls.slice(0,18).join("\n");setTimeout(()=>$("#msg").appendChild(q))}$("#msg").textContent="No duties recognised. Check that it is the “Individual duty plan” PDF.";return 0}
- const IT=Date.now(),P0=res.per,inPer=k=>!P0||(k>=key(P0.y,P0.m,P0.d)&&k<=key(P0.y2,P0.m2,P0.d2));
+ const IT=Math.min(Date.now(),(ls&&ls.gen)||Date.now()),P0=res.per,inPer=k=>!P0||(k>=key(P0.y,P0.m,P0.d)&&k<=key(P0.y2,P0.m2,P0.d2));
  // un PDF elenca anche i primi giorni del mese dopo: quei giorni non sostituiscono quelli importati dal loro duty plan
- Object.keys(res.days).forEach(k=>{const N=res.days[k];if(!N||typeof N!="object")return;N.imp=IT;N.own=inPer(k)?1:0;const O=days[k];if(!N.own&&O&&O.own)return;days[k]=N});try{lbMigrate()}catch(e){}if(!save()){$("#msg").textContent=tt("Not saved: this device's storage is full.","Non salvato: memoria del dispositivo piena.");return 0}
+ Object.keys(res.days).forEach(k=>{const N=res.days[k];if(!N||typeof N!="object")return;N.imp=IT;N.gen=IT;N.own=inPer(k)?1:0;const O=days[k];if(!N.own&&O&&O.own)return;if(O&&O.gen&&O.gen>IT)return;days[k]=N});try{lbMigrate()}catch(e){}if(!save()){$("#msg").textContent=tt("Not saved: this device's storage is full.","Non salvato: memoria del dispositivo piena.");return 0}
  const mt=loadMeta(),P=res.per;if(res.name)mt.name=res.name;if(res.idn)mt.id=res.idn;
  if(P&&P.d==1&&P.m2===P.m&&P.y2===P.y&&P.d2===new Date(P.y,P.m+1,0).getDate()&&res.sum.ft)mt.sums[P.y+"-"+p2(P.m+1)]=res.sum;
  saveMeta(mt);
@@ -2336,7 +2339,9 @@ trAll();langUi();
 /* ===== Google Drive backup ===== */
 const GD_ID="757897370743-fan10mr568n7gopvl1m92pes2tpcjcvc.apps.googleusercontent.com",GD_FILE="rotate-backup.json",GD_GZ="rotate-backup.json.gz",GD_SC="https://www.googleapis.com/auth/drive.appdata";
 const GD={ok:location.origin==="https://rotate-lab.github.io",tok:null,exp:0,tc:null,pend:false,tm:null,busy:false,last:0,size:0,err:0};
-try{const l=JSON.parse(localStorage.getItem("rot_gdl")||"{}");GD.last=+l.t||0;GD.size=+l.s||0}catch(e){}
+try{const l=JSON.parse(localStorage.getItem("rot_gdl")||"{}");GD.last=+l.t||0;GD.size=+l.s||0;GD.rmt=l.r||""}catch(e){}
+// modifiche fatte dopo l'ultimo backup (anche in una sessione precedente): restano "da salvare"
+try{if(localStorage.getItem("rot_gd")=="1"&&(+localStorage.getItem("turni_ts")||0)>GD.last+2000)GD.pend=true}catch(e){}
 function gdOn(){try{return localStorage.getItem("rot_gd")=="1"}catch(e){return false}}
 function gdAuto(){try{return localStorage.getItem("rot_gda")!="0"}catch(e){return true}}
 function gdLoad(){return new Promise((res,rej)=>{if(window.google&&google.accounts&&google.accounts.oauth2)return res();const x=document.createElement("script");x.src="https://accounts.google.com/gsi/client";x.onload=()=>res();x.onerror=()=>rej(new Error("load"));document.head.appendChild(x)})}
@@ -2352,15 +2357,18 @@ async function gdFind(){return(await gdList())[0]||null}
 async function gzip(str){if(!window.CompressionStream)return null;try{return await new Response(new Blob([str]).stream().pipeThrough(new CompressionStream("gzip"))).blob()}catch(e){return null}}
 async function gunzip(buf){return await new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream("gzip"))).text()}
 function gdJson(){const P=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}};return JSON.stringify({v:2,days:P("turni_v1")||{},meta:P("turni_meta_v1")||{},lbf:P("turni_lbf_v1"),ts:+localStorage.getItem("turni_ts")||Date.now()})}
-function gdKeep(){try{localStorage.setItem("rot_gdl",JSON.stringify({t:GD.last,s:GD.size}))}catch(e){}}
-async function gdPush(){if(GD.busy){GD.again=true;return false}GD.busy=true;GD.again=false;gdUi();let ok=false;const seq=GD.seq||0;try{
+function gdKeep(){try{localStorage.setItem("rot_gdl",JSON.stringify({t:GD.last,s:GD.size,r:GD.rmt||""}))}catch(e){}}
+async function gdPush(force){if(GD.busy){GD.again=true;return false}GD.busy=true;GD.again=false;gdUi();let ok=false;const seq=GD.seq||0;try{
   const json=gdJson();let blob=await gzip(json),name=GD_GZ,type="application/gzip";if(!blob){blob=new Blob([json]);name=GD_FILE;type="application/json"}
-  const old=await gdList(),b="rot"+Date.now(),m=JSON.stringify({name,parents:["appDataFolder"]});
+  const old=await gdList();
+  // un altro dispositivo ha salvato un backup dopo l'ultimo che questo telefono conosce: niente sovrascrittura automatica
+  if(!force&&GD.rmt&&old[0]&&old[0].modifiedTime!==GD.rmt){GD.conflict=1;throw new Error("conflict")}
+  const b="rot"+Date.now(),m=JSON.stringify({name,parents:["appDataFolder"]});
   const body=new Blob(["--"+b+"\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"+m+"\r\n--"+b+"\r\nContent-Type: "+type+"\r\n\r\n",blob,"\r\n--"+b+"--"]);
   const r=await gdApi("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,size,modifiedTime",{method:"POST",headers:{"Content-Type":"multipart/related; boundary="+b},body}),nf=await r.json();
   for(const f of old)if(f.id!=nf.id){try{await gdApi("https://www.googleapis.com/drive/v3/files/"+f.id,{method:"DELETE"})}catch(e){}}
-  GD.last=Date.now();GD.size=+nf.size||blob.size;GD.pend=(GD.seq||0)!==seq;GD.err=0;gdKeep();ok=true}
- catch(e){GD.err=1;GD.pend=true}finally{GD.busy=false;gdUi();if((GD.again||GD.pend)&&ok&&gdAuto()&&GD.tok&&Date.now()<GD.exp-60000)setTimeout(gdPush,1000)}return ok}
+  GD.last=Date.now();GD.size=+nf.size||blob.size;GD.pend=(GD.seq||0)!==seq;GD.err=0;GD.conflict=0;GD.rmt=nf.modifiedTime||"";gdKeep();ok=true}
+ catch(e){GD.err=GD.conflict?0:1;GD.pend=true}finally{GD.busy=false;gdUi();if((GD.again||GD.pend)&&ok&&gdAuto()&&GD.tok&&Date.now()<GD.exp-60000)setTimeout(gdPush,1000)}return ok}
 function gdDirty(){if(!GD.ok||!gdOn())return;GD.seq=(GD.seq||0)+1;GD.pend=true;gdUi();if(!gdAuto())return;clearTimeout(GD.tm);GD.tm=setTimeout(()=>{if(GD.tok&&Date.now()<GD.exp-60000)gdPush()},3000)}
 const kb=n=>n<1024?n+" B":(n/1024).toFixed(n<10240?1:0).replace(".",LANG=="it"?",":".")+" KB";
 function gdUi(){const on=gdOn();
@@ -2368,25 +2376,25 @@ function gdUi(){const on=gdOn();
  const t=document.getElementById("gdt");if(!t)return;
  if(!GD.ok){$("#gdA").hidden=true;$("#gdNa").hidden=false;$("#gds").textContent=tt("Not available inside Claude","Non disponibile dentro Claude");$("#gdh").hidden=true;return}
  $("#gdA").hidden=false;$("#gdNa").hidden=true;
- $("#gds").textContent=!on?tt("Not connected","Non collegato"):GD.busy?tt("Backing up…","Backup in corso…"):GD.err?tt("Last backup failed","Ultimo backup non riuscito"):GD.pend?tt("Changes not backed up yet","Modifiche non ancora salvate"):GD.last?tt("Last backup ","Ultimo backup ")+fmtAt(GD.last)+(GD.size?" · "+kb(GD.size):""):tt("Connected","Collegato");
+ $("#gds").textContent=!on?tt("Not connected","Non collegato"):GD.busy?tt("Backing up…","Backup in corso…"):GD.conflict?tt("Drive has a newer backup from another device","Su Drive c'è un backup più recente di un altro dispositivo"):GD.err?tt("Last backup failed","Ultimo backup non riuscito"):GD.pend?tt("Changes not backed up yet","Modifiche non ancora salvate"):GD.last?tt("Last backup ","Ultimo backup ")+fmtAt(GD.last)+(GD.size?" · "+kb(GD.size):""):tt("Connected","Collegato");
  $("#gdc").hidden=on;$("#gdr").hidden=!on;$("#gdb").hidden=!on;$("#gdAuto").hidden=!on;$("#gdDg").hidden=!on;
  $("#gdAuto").classList.toggle("on",gdAuto());$("#gdAuto").setAttribute("aria-pressed",gdAuto());
- const h=$("#gdh");h.hidden=!(on&&GD.pend&&!GD.busy);{const hd=$("#hqDot");if(hd)hd.hidden=h.hidden}h.textContent=tt("Drive backup pending · tap to save","Backup su Drive in sospeso · tocca per salvare")}
+ const h=$("#gdh");h.hidden=!(on&&GD.pend&&!GD.busy);{const hd=$("#hqDot");if(hd)hd.hidden=h.hidden}h.textContent=GD.conflict?tt("Newer backup on Drive · open Backup","Backup più recente su Drive · apri Backup"):tt("Drive backup pending · tap to save","Backup su Drive in sospeso · tocca per salvare")}
 $("#gdc").onclick=async()=>{try{await gdToken(true,true);try{localStorage.setItem("rot_gd","1")}catch(e){}
   const f=await gdFind(),mt0=loadMeta(),hasLocal=Object.keys(days).length>0||!!(mt0.lb&&Object.keys(mt0.lb).length||mt0.lbSim||mt0.name||mt0.pfAt);
   if(f&&!hasLocal){await gdRestore(f);return}
-  if(!f){await gdPush()}else{GD.pend=false;GD.last=Date.parse(f.modifiedTime)||Date.now();GD.size=+f.size||0;gdKeep()}
+  if(!f){await gdPush(true)}else{GD.pend=false;GD.last=Date.parse(f.modifiedTime)||Date.now();GD.size=+f.size||0;GD.rmt="?";GD.conflict=1;gdKeep()}
   toast(tt("Google Drive connected","Google Drive collegato"),f&&hasLocal?tt("A backup exists: use Sync or Back up","C'è già un backup: usa Sincronizza o Backup"):"")}
  catch(e){toast(tt("Could not connect to Google Drive","Impossibile collegare Google Drive"))}gdUi()};
-$("#gdb").onclick=async()=>{try{await gdToken(true);const ok=await gdPush();toast(ok?tt("Backup saved to Drive","Backup salvato su Drive"):tt("Could not back up to Drive","Impossibile salvare il backup su Drive"),ok?kb(GD.size):"")}catch(e){toast(tt("Could not back up to Drive","Impossibile salvare il backup su Drive"))}};
-$("#gdh").onclick=()=>$("#gdb").onclick();
+let gdbc=0;$("#gdb").onclick=async()=>{if(GD.conflict&&!gdbc){gdbc=1;setTimeout(()=>gdbc=0,5000);toast(tt("Drive has a newer backup from another device","Su Drive c'è un backup più recente di un altro dispositivo"),tt("Tap Back up again to replace it, or Sync to get it","Tocca di nuovo Backup per sostituirlo, o Sincronizza per prenderlo"));return}gdbc=0;try{await gdToken(true);const ok=await gdPush(true);toast(ok?tt("Backup saved to Drive","Backup salvato su Drive"):tt("Could not back up to Drive","Impossibile salvare il backup su Drive"),ok?kb(GD.size):"")}catch(e){toast(tt("Could not back up to Drive","Impossibile salvare il backup su Drive"))}};
+$("#gdh").onclick=()=>{if(GD.conflict)go("dati");else $("#gdb").onclick()};
 $("#gdAuto").onclick=()=>{try{localStorage.setItem("rot_gda",gdAuto()?"0":"1")}catch(e){}gdUi();if(gdAuto()&&GD.pend&&GD.tok)gdPush()};
 async function gdRestore(f){try{await gdToken(true);f=f||await gdFind();if(!f){toast(tt("No backup found on Drive","Nessun backup trovato su Drive"));return}
   const r=await gdApi("https://www.googleapis.com/drive/v3/files/"+f.id+"?alt=media");
   const txt=/\.gz$/.test(f.name||"")?await gunzip(await r.arrayBuffer()):await r.text(),d=JSON.parse(txt);
   if(!d||!(d.v===1||d.v===2))throw 0;const S=x=>typeof x=="string"?x:JSON.stringify(x);
   if(d.days)localStorage.setItem("turni_v1",S(d.days));if(d.meta)localStorage.setItem("turni_meta_v1",S(d.meta));if(d.lbf)localStorage.setItem("turni_lbf_v1",S(d.lbf));localStorage.setItem("turni_ts",String(Date.now()));
-  GD.pend=false;GD.last=Date.parse(f.modifiedTime)||GD.last;GD.size=+f.size||GD.size;gdKeep();
+  GD.pend=false;GD.conflict=0;GD.rmt=f.modifiedTime||"";GD.last=Date.now();GD.size=+f.size||GD.size;gdKeep();
   toast(tt("Synced from Drive","Sincronizzato da Drive"),tt("Reloading…","Ricarico…"));setTimeout(()=>location.reload(),900)}catch(e){toast(tt("Could not sync from Drive","Impossibile sincronizzare da Drive"))}}
 let gdrc=0;$("#gdr").onclick=()=>{const s2=$("#gdrs");if(!gdrc){gdrc=1;s2.textContent=tt("Tap again to replace the data on this phone","Tocca ancora per sostituire i dati di questo telefono");s2.style.color="var(--red)";setTimeout(()=>{gdrc=0;s2.style.color="";s2.textContent=tt("Replace the data on this phone with the Drive backup","Sostituisce i dati del telefono con il backup su Drive")},4000);return}gdrc=0;s2.style.color="";gdRestore()};
 $("#gdd").onclick=async()=>{try{if(GD.tok&&window.google)google.accounts.oauth2.revoke(GD.tok,()=>{})}catch(e){}GD.tok=null;GD.pend=false;try{localStorage.removeItem("rot_gd")}catch(e){}toast(tt("Disconnected from Google Drive","Google Drive scollegato"),tt("The backup stays in your Drive","Il backup resta nel tuo Drive"));gdUi()};
