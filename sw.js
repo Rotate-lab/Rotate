@@ -2,8 +2,8 @@
 // - pagina: prima la rete (così gli aggiornamenti arrivano subito), senza rete la copia salvata
 // - librerie e caratteri: copia salvata, aggiornata in background
 // - meteo, Google Drive, portali: sempre e solo dalla rete (mai in cache)
-const CACHE = "rotate-v1.2";
-const CORE = ["./", "./index.html", "./manifest.json", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
+const CACHE = "rotate-v1.2.8"; // keep equal to VER in index.html
+const CORE = ["./", "./manifest.json", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 const LIBS = [
   "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
@@ -34,7 +34,7 @@ async function networkFirst(req) {
   try {
     const ctl = new AbortController();
     const t = setTimeout(() => ctl.abort(), 4000); // rete lenta: dopo 4 s usa la copia salvata
-    const res = await fetch(req, { signal: ctl.signal, cache: "no-store" });
+    const res = await fetch(req, { signal: ctl.signal, cache: "no-cache" }); // always asks the server; 304 when unchanged
     clearTimeout(t);
     const p = new URL(req.url).pathname;
     if (res.ok && /\/(index\.html)?$/.test(p)) c.put("./index.html", res.clone());
