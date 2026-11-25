@@ -959,6 +959,10 @@ main{padding-bottom:calc(var(--tabh,56px) + 40px)}
 .mh b{flex:1 0 auto;min-width:max-content}.tzs{margin-left:auto}
 .hhi{flex-wrap:wrap;row-gap:6px}.hhi>div{flex:1 1 220px;min-width:0}.hrole{margin-left:auto}
 @media (max-width:359px){.nxbar button{letter-spacing:.04em;font-size:11px}.nxa{font-size:34px}.nxt b{font-size:19px}}
+.brp a:not(.brl),.brn a,.brf a{color:var(--tx);text-decoration:underline;text-underline-offset:2px}
+.wks div.wd{cursor:default}
+.wks div.wd{grid-template-columns:1fr}.wks div.wd .d,.wks div.wd .v{display:none}
+#drDon .ic svg,#drDon .ic svg *{fill:none!important;stroke:currentColor;stroke-width:1.7}
 </style>
 </head>
 <body>
@@ -2515,7 +2519,7 @@ function hOpenDay(k){const[y,m]=k.split("-").map(Number),t=new Date();view=new D
  const fin=now=>{clearTimeout(hDayT);hDayFin=null;if(PG!="roster"||sel!=k)return;sel=null;view=new Date(t.getFullYear(),t.getMonth(),1);render();if(now)window.scrollTo(0,0);else smoothTo(0)};
  hDayFin=fin;hDayT=setTimeout(()=>fin(false),5000)}
 /* home: date header, next duty as a flight strip, 7-day timetable, status table */
-const hDur=ms=>{const m=Math.max(0,Math.round(ms/6e4)),d=Math.floor(m/1440),h=Math.floor(m%1440/60),mi=m%60;return d?d+(LANG=="it"?" g ":" d ")+h+" h":h?h+" h "+mi+" min":mi+" min"};
+const hDur=ms=>{const m=Math.max(0,Math.round(ms/6e4)),d=Math.floor(m/1440),h=Math.floor(m%1440/60),mi=m%60;return d?d+(LANG=="it"?" g ":" d ")+h+" h":h?h+" h"+(mi?" "+mi+" min":""):mi+" min"};
 const hDW=k=>{const[y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d).toLocaleDateString(LOC(),{weekday:"short",day:"numeric",month:"short"}).replace(/\./g,"").replace(/,/g,"").toUpperCase()};
 function hRow(k,D){const cb=c=>'<span class="code">'+esc(c)+'</span>';
  if(!D||(!D.ev.length&&!D.lay))return{w:tt("No duty","Nessun servizio"),c:"off"};
@@ -2557,8 +2561,9 @@ function homeRender(){{const v=$("#hVer");if(v)v.textContent=/^Beta/i.test(VER)?
    +'<span class="nxs n3">'+TC(tt("Start","Inizio"),esc(N.s||"—"),Z(zs))+TC(tt("End","Fine"),esc(N.e||"—"),Z(ze))+IN(on)+'</span></button>'}
  el.onclick=e=>{const a=e.target.closest&&e.target.closest("[data-nx]");if(a){e.stopPropagation();if(a.dataset.nx=="rest")go("rest");else{briefOpen();setTimeout(()=>{const l=document.getElementById("brLive");if(l)l.scrollIntoView({block:"start"})},150)}return}if(e.target.closest&&e.target.closest(".nxbar"))return;if(N)hOpenDay(N.k);else go("roster")};
  /* next 7 days: timetable rows */
- let w="";for(let i=0;i<7;i++){const d=new Date(t.getFullYear(),t.getMonth(),t.getDate()+i),k=key(d.getFullYear(),d.getMonth(),d.getDate()),D=days[k],r=hRow(k,D);
+ let w="",anyD=false;for(let i=0;i<7;i++){const d=new Date(t.getFullYear(),t.getMonth(),t.getDate()+i),k=key(d.getFullYear(),d.getMonth(),d.getDate()),D=days[k],r=hRow(k,D);if(D&&(D.ev.length||D.lay))anyD=true;
   w+='<button type="button" class="wd'+(i?"":" now")+(r.c?" "+r.c:"")+'" data-wk="'+k+'" aria-label="'+esc(d.toLocaleDateString(LOC(),{weekday:"long",day:"numeric",month:"long"})+(D?" · "+hDayLabel(D):""))+'"><span class="d">'+esc(d.toLocaleDateString(LOC(),{weekday:"short"}).replace(".","").slice(0,3).toUpperCase())+'<b>'+p2(d.getDate())+'</b></span><span class="w">'+r.w+'</span><span class="v">'+(r.v?esc(r.v)+'<small>'+esc(r.k)+'</small>':'')+'</span></button>'}
+ if(!anyD)w='<div class="wd off"><span class="d"></span><span class="w">'+tt("No duties in the next 7 days","Nessun servizio nei prossimi 7 giorni")+'</span><span class="v"></span></div>';
  const W=$("#hWeek");W.innerHTML=w;W.querySelectorAll("[data-wk]").forEach(b=>b.onclick=()=>hOpenDay(b.dataset.wk));
  /* status table */
  const ym=t.getFullYear()+"-"+p2(t.getMonth()+1),mn=t.toLocaleDateString(LOC(),{month:"long"}),su=mt.sums&&mt.sums[ym];
