@@ -1,0 +1,62 @@
+/* ===== Rotate · Direction A "Ops Sheet" tokens =====
+   Paste at the END of the <style> block in index.html (after the "BOARDING PASS THEME" block,
+   which redefines :root later in the file). Selectors mirror the existing ones, including the
+   .gd overrides, so specificity matches. Replace the Google Fonts <link> with:
+   https://fonts.googleapis.com/css2?family=B612+Mono:wght@400;700&family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap
+*/
+:root,:root[data-theme="light"] .gd{
+ /* surfaces + ink */
+ --bg:#F3F1EA;      /* chart paper */
+ --card:#FBFAF6;
+ --empty:#EEEBE2;   /* layover / inactive cell */
+ --sel:#E9E5D9;     /* pressed, inputs, segmented track */
+ --sep:#D8D3C6;     /* hairlines */
+ --tx:#15191E;      /* ink */
+ --tx2:#5D6168;
+ /* one signal colour: magenta = active / next / today (FMS active-leg convention) */
+ --ac:#B0127A;
+ --sig:#B0127A;
+ /* semantic (ECAM-derived): normal / caution / warning / info */
+ --grn:#2E7A4A; --lgrn:#2E7A4A;
+ --org:#A85F00; --yel:#A85F00;
+ --red:#B8322A; --pink:#B8322A;
+ --lb:#0B7285;  --mint:#0B7285; --ind:#0B7285;
+ /* collapsed legacy hues: flights are ink, not blue; purple retired */
+ --blue:#15191E;
+ --pur:#5D6168;
+ /* primaries + heroes become ink, not navy */
+ --pri:#15191E; --prit:#FBFAF6; --hero:#15191E;
+ --sh:none;                   /* no drop shadows: hairlines only */
+ --tint:10%;
+ --hatch:repeating-linear-gradient(135deg,color-mix(in srgb,var(--tx2) 22%,transparent) 0 1px,transparent 1px 6px);
+ /* type */
+ --fb:Barlow,-apple-system,"SF Pro Text",system-ui,sans-serif;                     /* body */
+ --ff:"Barlow Semi Condensed",Barlow,-apple-system,system-ui,sans-serif;           /* headings, labels, numbers (tnum) */
+ --fm:"B612 Mono",ui-monospace,Menlo,monospace;                                     /* codes: IATA/ICAO, flight no., duty codes */
+ /* scales */
+ --r1:2px; --r2:4px; --r3:8px;                 /* chip / card / sheet */
+ --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
+ --dur:140ms; --ease:cubic-bezier(.2,0,0,1);
+}
+@media (prefers-color-scheme:dark){
+ :root:not([data-theme="light"]),:root:not([data-theme="light"]) .gd{
+  --bg:#0A0C0F; --card:#121519; --empty:#0F1215; --sel:#1B1F25; --sep:#262B32;
+  --tx:#E7E5DF; --tx2:#8B9098;
+  --ac:#FF5CC6; --sig:#FF5CC6;
+  --grn:#4FD18B; --lgrn:#4FD18B; --org:#F5A623; --yel:#F5A623; --red:#FF5A4F; --pink:#FF5A4F;
+  --lb:#3CC8DC; --mint:#3CC8DC; --ind:#3CC8DC;
+  --blue:#E7E5DF; --pur:#8B9098;
+  --pri:#E7E5DF; --prit:#0A0C0F; --hero:#121519;
+  --sh:none; --tint:14%; color-scheme:dark;
+ }
+}
+:root[data-theme="dark"],:root[data-theme="dark"] .gd{
+ --bg:#0A0C0F; --card:#121519; --empty:#0F1215; --sel:#1B1F25; --sep:#262B32;
+ --tx:#E7E5DF; --tx2:#8B9098;
+ --ac:#FF5CC6; --sig:#FF5CC6;
+ --grn:#4FD18B; --lgrn:#4FD18B; --org:#F5A623; --yel:#F5A623; --red:#FF5A4F; --pink:#FF5A4F;
+ --lb:#3CC8DC; --mint:#3CC8DC; --ind:#3CC8DC;
+ --blue:#E7E5DF; --pur:#8B9098;
+ --pri:#E7E5DF; --prit:#0A0C0F; --hero:#121519;
+ --sh:none; --tint:14%; color-scheme:dark;
+}
