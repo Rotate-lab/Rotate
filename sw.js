@@ -2,13 +2,13 @@
 // - pagina: prima la rete (così gli aggiornamenti arrivano subito), senza rete la copia salvata
 // - librerie e caratteri: copia salvata, aggiornata in background
 // - meteo, Google Drive, portali: sempre e solo dalla rete (mai in cache)
-const CACHE = "rotate-v1.3.0"; // keep equal to VER in index.html
+const CACHE = "rotate-v1.2.13"; // keep equal to VER in index.html
 const CORE = ["./", "./manifest.json", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 const LIBS = [
   "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js",
-  "https://fonts.googleapis.com/css2?family=B612+Mono:wght@400;700&family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap",
+  "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap",
 ];
 const STATIC_HOSTS = ["cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com", "fonts.gstatic.com"];
 
