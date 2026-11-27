@@ -10,7 +10,7 @@
  */
 (() => {
   "use strict";
-  const C = window.__rotate || {}, H = "crewlink.ita-airways.com", AUTO = !!C.a, BV = 8;
+  const C = window.__rotate || {}, H = "crewlink.ita-airways.com", AUTO = !!C.a, BV = 9;
   let IT = /^it/i.test(C.l || navigator.language || "");
   const T = (e, i) => (IT ? i : e);
   if (window.__rotateRun) return;
@@ -107,47 +107,44 @@
   }
   const retry = async (fn, n = 2) => { for (let i = 0; ; i++) { try { return await fn(); } catch (e) { if (e.message === "login" || i >= n) throw e; await sleep(900); } } };
 
-  /* riquadro grande al centro: CrewLink è una pagina da computer rimpicciolita sull'iPhone, quindi le misure sono in vw del frame */
+  /* tutta la pagina diventa scura con l'avanzamento: i frame di CrewLink si tolgono (non servono per scaricare) e alla fine
+     si va comunque alla pagina "Finito". Misure in vw: CrewLink è una pagina da computer, rimpicciolita sull'iPhone. */
   let o = null;
   const ui = {
-    box() {
-      if (!o || !o.isConnected) {
-        const D = host();
-        o = D.createElement("div");
-        o.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);font-family:-apple-system,system-ui,sans-serif";
-        (D.body || D.documentElement).appendChild(o);
-      }
+    page() {
+      if (o && o.isConnected) return o;
+      const D = document;
+      if (D.body && D.body.tagName === "FRAMESET") D.documentElement.replaceChild(D.createElement("body"), D.body);
+      if (!D.body) D.documentElement.appendChild(D.createElement("body"));
+      try { if (!D.querySelector("meta[name=viewport]")) { const mv = D.createElement("meta"); mv.name = "viewport"; mv.content = "width=device-width,initial-scale=1"; (D.head || D.documentElement).appendChild(mv); } } catch (e) {}
+      o = D.createElement("div");
+      o.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;z-index:2147483647;background:#0b0d10;color:#fff;display:flex;flex-direction:column;justify-content:center;padding:0 7vw;box-sizing:border-box;font-family:-apple-system,system-ui,sans-serif;-webkit-text-size-adjust:100%";
+      D.body.appendChild(o);
       return o;
     },
-    msg(t, s, p, bg) {
-      const b = this.box(), D = b.ownerDocument, c = D.createElement("div");
+    msg(t, s, p, bg, btn) {
+      const b = this.page(), D = b.ownerDocument;
       b.textContent = "";
-      c.style.cssText = "width:88vw;box-sizing:border-box;background:" + (bg || "#111") + ";color:#fff;border-radius:3vw;padding:5.5vw 5.5vw 5vw;box-shadow:0 2vw 8vw rgba(0,0,0,.45)";
-      const h = D.createElement("div");
-      h.style.cssText = "font-size:max(24px,6.6vw);font-weight:800;line-height:1.15";
-      h.textContent = t;
-      c.appendChild(h);
+      b.style.background = bg || "#0b0d10";
+      const el = (css, txt) => { const x = D.createElement("div"); x.style.cssText = css; if (txt != null) x.textContent = txt; b.appendChild(x); return x; };
+      el("font-size:max(15px,3.6vw);font-weight:800;letter-spacing:.12em;opacity:.6;margin-bottom:4vw", "ROTATE · CREWLINK");
+      el("font-size:max(28px,8.5vw);font-weight:800;line-height:1.1", t);
       if (p != null) {
-        const tr = D.createElement("div"), fl = D.createElement("div");
-        tr.style.cssText = "margin-top:3.2vw;height:max(12px,2.6vw);border-radius:2vw;background:rgba(255,255,255,.22);overflow:hidden";
+        const tr = el("margin-top:6vw;height:max(12px,3vw);border-radius:2vw;background:rgba(255,255,255,.18);overflow:hidden");
+        const fl = D.createElement("div");
         fl.style.cssText = "height:100%;border-radius:2vw;background:#fff;width:" + Math.round(Math.max(0.05, Math.min(1, p)) * 100) + "%";
         tr.appendChild(fl);
-        c.appendChild(tr);
+        el("margin-top:2.4vw;font-size:max(14px,3.6vw);opacity:.7;text-align:right", Math.round(Math.max(0, Math.min(1, p)) * 100) + "%");
       }
-      (Array.isArray(s) ? s : [s]).filter(Boolean).forEach((x, i) => {
-        const q = D.createElement("div");
-        q.style.cssText = "margin-top:" + (i ? "1.6vw" : "3vw") + ";font-size:max(16px," + (i ? "3.6vw" : "4.4vw") + ");line-height:1.3;opacity:" + (i ? ".8" : ".95");
-        q.textContent = x;
-        c.appendChild(q);
-      });
-      b.appendChild(c);
+      (Array.isArray(s) ? s : [s]).filter(Boolean).forEach((x, i) => el("margin-top:" + (i ? "2.4vw" : "5vw") + ";font-size:max(16px," + (i ? "4.2vw" : "5.2vw") + ");line-height:1.35;opacity:" + (i ? ".75" : ".95"), x));
+      if (btn) { const k = D.createElement("button"); k.textContent = btn[0]; k.style.cssText = "margin-top:8vw;font:inherit;font-size:max(17px,5vw);font-weight:800;padding:4vw 6vw;border:0;border-radius:3vw;background:#fff;color:#111"; k.onclick = btn[1]; b.appendChild(k); }
     },
-    done(ok, t, s, ms) { this.msg(t, s, null, ok ? "#0a6b34" : "#a3221a"); const b = o; setTimeout(() => { if (b) b.remove(); }, ms || 15000); },
+    done(ok, t, s) { this.msg(t, s, null, ok ? "#0a6b34" : "#8f1d14", [T("Back to CrewLink", "Torna a CrewLink"), () => location.reload()]); },
   };
 
   /* invio di modulo verso la cassetta postale: porta alla pagina "Fatto" (o, senza richiesta, a recuperarla) */
   const submit = (path, fl) => {
-    const D = host(), f = D.createElement("form");
+    const D = o && o.isConnected ? document : host(), f = D.createElement("form");
     /* la politica di CrewLink sui referrer farebbe partire il modulo con "Origin: null": per questo invio si dichiara l'origine */
     try { const m = D.createElement("meta"); m.name = "referrer"; m.content = "origin"; (D.head || D.documentElement).appendChild(m); } catch (e) {}
     f.method = "POST"; f.action = BOX + path; f.target = "_top"; f.acceptCharset = "utf-8"; f.style.display = "none";
@@ -162,7 +159,7 @@
     if (raw) { try { sessionStorage.setItem("rotate-req", raw); } catch (e) {} }
     else { try { raw = sessionStorage.getItem("rotate-req") || ""; } catch (e) {} }
     if (AUTO) { if (!raw) return; try { if (sessionStorage.getItem("rotate-done") === raw) return; } catch (e) {} }
-    if (loginPage()) { ui.done(0, T("Rotate: log in to CrewLink", "Rotate: fai il login a CrewLink"), AUTO ? T("After the login Rotate continues by itself.", "Dopo il login Rotate continua da solo.") : T("Then tap the bookmark again.", "Poi tocca di nuovo il segnalibro."), 8000); return; }
+    if (loginPage()) { if (!AUTO) alert(T("Rotate: log in to CrewLink first, then tap the bookmark again.", "Rotate: fai prima il login a CrewLink, poi tocca di nuovo il segnalibro.")); return; }
     if (!raw) {
       /* aperto senza passare da Rotate, o la richiesta si è persa con il login: si recupera dalla cassetta e si torna qui */
       alert(T("Rotate fetches its request now. When CrewLink reloads, tap the Rotate bookmark again.", "Rotate recupera la sua richiesta. Quando CrewLink si ricarica, tocca di nuovo il segnalibro Rotate."));
@@ -204,7 +201,7 @@
   }
 
   run().catch(e => {
-    if (e && e.message === "login") { ui.done(0, T("Rotate: log in to CrewLink", "Rotate: fai il login a CrewLink"), AUTO ? T("After the login Rotate continues by itself.", "Dopo il login Rotate continua da solo.") : T("Then tap the bookmark again.", "Poi tocca di nuovo il segnalibro."), 8000); return; }
-    ui.done(0, T("Rotate: something went wrong", "Rotate: qualcosa non ha funzionato"), (step ? step + ": " : "") + ((e && e.message) || e));
+    if (e && e.message === "login") { ui.done(0, T("Log in to CrewLink", "Fai il login a CrewLink"), [T("CrewLink logged you out. Go back, log in, then tap the Rotate bookmark again.", "CrewLink ti ha disconnesso. Torna indietro, fai il login, poi tocca di nuovo il segnalibro Rotate.")]); return; }
+    ui.done(0, T("Something went wrong", "Qualcosa non ha funzionato"), [(step ? step + ": " : "") + ((e && e.message) || e), T("Go back to CrewLink and tap the Rotate bookmark again.", "Torna a CrewLink e tocca di nuovo il segnalibro Rotate.")]);
   }).finally(() => { window.__rotateRun = 0; });
 })();

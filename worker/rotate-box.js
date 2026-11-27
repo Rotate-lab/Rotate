@@ -128,7 +128,7 @@ export default {
             push = await sendPush(env, m.push, { title: "Rotate", body: String(d.note || "").slice(0, 160) || "CrewLink ✓", tag: "rotate-clb" }).catch(() => "error");
             if (push === 404 || push === 410) { delete m.push; await env.BOX.put("m:" + id, JSON.stringify(m), { expirationTtl: BOX_TTL }); }
           }
-          if (form) return page("ok", form.get("l"), "", String(form.get("w") || d.note || ""), back);
+          if (form) return page("ok", form.get("l"), "", String(form.get("w") || d.note || ""), back, push === 201 || push === 200);
           return J({ ok: true, n: it.n, push });
         }
         if (req.method === "GET" && R) return J((await env.BOX.get("d:" + id, { type: "json" })) || []);
@@ -172,7 +172,8 @@ const escH = s => String(s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<":
 const CSS = 'body{margin:0;padding:0 22px 48px;font:18px/1.5 -apple-system,system-ui,sans-serif;color:#fff;-webkit-text-size-adjust:100%}'
   + '.up{display:flex;align-items:center;gap:10px;padding:12px 0 0;font-weight:700;font-size:16px}.up span{font-size:40px;line-height:1}'
   + 'h1{font-size:32px;line-height:1.15;margin:26px 0 8px}.sum{font-size:18px;opacity:.92;margin:0 0 26px}'
-  + '.cta{background:#fff;border-radius:16px;padding:20px 16px;font-size:30px;line-height:1.1;font-weight:900;letter-spacing:.02em;text-align:center;margin:0 0 16px}'
+  + '.cta{background:#fff;border-radius:16px;padding:20px 16px;font-size:26px;line-height:1.15;font-weight:900;text-align:center;margin:0 0 12px}'
+  + '.cta2{border:3px solid #fff;border-radius:16px;padding:16px;font-size:22px;line-height:1.2;font-weight:800;text-align:center;margin:0 0 22px}.or{text-align:center;font-weight:700;opacity:.85;margin:0 0 12px}'
   + 'p{margin:0 0 16px}.sub{font-size:17px}.btn{display:block;text-align:center;background:rgba(255,255,255,.16);border-radius:12px;padding:14px;color:#fff;font-weight:700;text-decoration:none;margin:0 0 12px}'
   + 'a{color:#fff}.small{font-size:15px;opacity:.85}';
 function html(bg, title, body, extraHead) {
@@ -180,15 +181,17 @@ function html(bg, title, body, extraHead) {
     + '<title>Rotate · ' + escH(title) + '</title><style>' + CSS + 'body{background:' + bg + '}.cta{color:' + bg + '}</style></head><body>' + body + '</body></html>';
 }
 const reply = (h, status) => new Response(h, { status: status || 200, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
-function page(kind, lang, code, info, back) {
+function page(kind, lang, code, info, back, pushed) {
   const it = String(lang || "it") !== "en", T = (e, i) => (it ? i : e), bk = escH(back || HOME);
   if (kind === "ok") {
     const sum = escH(String(info || "").replace(/^(Pronti|Ready):\s*/, "").replace(/\.?\s*(Tocca per aprire Rotate|Tap to open Rotate)\.?$/, ""));
-    return reply(html("#0a6b34", T("Done", "Fatto"),
-      '<div class="up"><span>↖</span>' + T("Tap «◀ Rotate» up here", "Tocca «◀ Rotate» qui in alto") + '</div>'
-      + '<h1>✓ ' + T("Done", "Fatto") + '</h1>' + (sum ? '<p class="sum">' + sum + '</p>' : "")
-      + '<div class="cta">' + T("GO BACK TO ROTATE", "TORNA A ROTATE") + '</div>'
-      + '<p class="sub">' + T("Tap <b>◀ Rotate</b> at the top left, or the notification, or open Rotate from the Home Screen. Duty plan and crew are imported by themselves.", "Tocca <b>◀ Rotate</b> in alto a sinistra, oppure la notifica, oppure apri Rotate dalla schermata Home. Duty plan ed equipaggio si importano da soli.") + '</p>'
+    return reply(html("#0a6b34", T("Finished", "Finito"),
+      '<h1 style="margin-top:44px">✓ ' + T("Finished", "Finito") + '</h1>'
+      + '<p class="sum">' + (sum ? sum + "<br>" : "") + T("Rotate has received everything.", "Rotate ha ricevuto tutto.") + '</p>'
+      + (pushed
+        ? '<div class="cta">↑ ' + T("Open the notification up here", "Apri la notifica qua sopra") + '</div><p class="or">' + T("or", "oppure") + '</p><div class="cta2">' + T("Open Rotate again from the Home Screen", "Riapri Rotate dalla schermata Home") + '</div>'
+        : '<div class="cta">' + T("Open Rotate again from the Home Screen", "Riapri Rotate dalla schermata Home") + '</div><p class="sub">' + T("Turn on notifications in Rotate › Settings › CrewLink: next time Rotate will tell you when it is done.", "Attiva le notifiche in Rotate › Impostazioni › CrewLink: la prossima volta Rotate ti avvisa quando ha finito.") + '</p>')
+      + '<p class="sub">' + T("Duty plan and crew are imported by themselves as soon as Rotate opens.", "Duty plan ed equipaggio si importano da soli appena Rotate si apre.") + '</p>'
       + '<p class="small"><a href="' + bk + '">' + T("Back to CrewLink", "Torna a CrewLink") + '</a></p>'));
   }
   if (kind === "lost") return reply(html("#8a4b00", T("Link to redo", "Collegamento da rifare"),
