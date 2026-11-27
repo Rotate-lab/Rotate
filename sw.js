@@ -58,7 +58,8 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (req.mode === "navigate" && url.origin === location.origin) return e.respondWith(networkFirst(req));
-  if (url.origin === location.origin && /\.(png|json|svg|ico)$/.test(url.pathname)) return e.respondWith(staleWhileRevalidate(req, e));
+  // immagini e dati dell'app (anche le foto delle destinazioni, salvate alla prima visualizzazione)
+  if (url.origin === location.origin && /\.(png|json|svg|ico|webp|jpg)$/.test(url.pathname)) return e.respondWith(staleWhileRevalidate(req, e));
   if (STATIC_HOSTS.includes(url.hostname)) return e.respondWith(staleWhileRevalidate(req, e));
   // tutto il resto (meteo, Google, portali) passa direttamente alla rete
 });
