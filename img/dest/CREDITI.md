@@ -91,3 +91,7 @@ Foto da [Wikimedia Commons](https://commons.wikimedia.org), ritagliate a 960×40
 | Vienna | [Oberes_Belvedere_Wien,_Panorama_Variante.jpg](https://commons.wikimedia.org/wiki/File:Oberes_Belvedere_Wien,_Panorama_Variante.jpg) | Böhringer Friedrich | CC BY-SA 3.0 at |
 | Washington | [US_Capitol_east_side.JPG](https://commons.wikimedia.org/wiki/File:US_Capitol_east_side.JPG) | Martin Falbisoner | CC BY-SA 3.0 |
 | Zurich | [Zürich_view_Quaibrücke_20200702.jpg](https://commons.wikimedia.org/wiki/File:Z%C3%BCrich_view_Quaibr%C3%BCcke_20200702.jpg) | Daniel Kraft | CC BY-SA 3.0 |
+
+## Globo di Stats
+
+`img/earth-night.webp`: [The earth at night](https://commons.wikimedia.org/wiki/File:The_earth_at_night.jpg), NASA Earth Observatory (dati Suomi NPP, 2012), pubblico dominio. Ridotta a 4096×2048 e compressa in WebP.

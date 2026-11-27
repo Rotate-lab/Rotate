@@ -165,7 +165,7 @@ input[type=file]{display:none}
 .rgs{display:grid;grid-template-columns:repeat(3,1fr);padding:14px 4px 12px;background:var(--card)}.rg{display:flex;flex-direction:column;align-items:center;gap:2px}.rg b{font-size:14px;margin-top:4px}.rg span{font-size:12px;color:var(--tx2)}
 .mapc{border-radius:20px;overflow:hidden;background:radial-gradient(120% 140% at 50% 0%,#14284d 0%,#0a1428 60%,#060b18 100%);padding:10px 6px 6px;box-shadow:0 8px 26px rgba(0,0,0,.28)}.mapc canvas{width:100%;display:block}.mcap{color:#9fb6e0;font-size:13px;text-align:center;padding:2px 0 6px}
 .ych{display:flex;gap:6px;overflow-x:auto;padding:12px 16px 0;scrollbar-width:none}.ych::-webkit-scrollbar{display:none}.ych button{flex:none;border:0;border-radius:99px;padding:6px 12px;font:600 13px var(--fb);background:var(--sel);color:var(--tx2)}.ych button.on{background:var(--pri);color:#fff}.mc12{gap:4px;padding:14px 12px 8px}.ytot{padding:0 16px 12px;font-size:13px;color:var(--tx2);text-align:right}.ytot b{color:var(--tx)}.stold{display:block;width:100%;border:0;text-align:left;margin:0 0 12px;padding:12px 14px;border-radius:14px;background:rgba(255,159,10,.15);color:var(--org);font:600 14px var(--fb)}
-.glb{position:relative;padding:0;background:#03060f;overflow:hidden}.glb canvas{display:block;width:100%;touch-action:none;cursor:grab}.glb .gbt{position:absolute;top:10px;right:10px;display:flex;gap:8px;z-index:2}.glb .gbt button{width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(10,20,40,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;font-size:18px;display:grid;place-items:center;padding:0}.glb .mcap{position:absolute;left:0;right:0;bottom:6px;pointer-events:none;text-shadow:0 1px 4px #000}.glb.gfs{position:fixed;inset:0;z-index:300;border-radius:0;margin:0}.glb.gfs .gbt{top:calc(env(safe-area-inset-top) + 10px)}.glb.gfs .mcap{bottom:calc(env(safe-area-inset-bottom) + 10px)}
+.glb{position:relative;padding:0;background:#03060f;overflow:hidden}.glb canvas{display:block;width:100%;touch-action:none;cursor:grab}.glb .stgl{position:absolute;left:0;top:0;pointer-events:none}.glb #stmap{position:relative;z-index:1}.glb .gbt{position:absolute;top:10px;right:10px;display:flex;gap:8px;z-index:2}.glb .gbt button{width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(10,20,40,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;font-size:18px;display:grid;place-items:center;padding:0}.glb .mcap{position:absolute;left:0;right:0;bottom:6px;pointer-events:none;text-shadow:0 1px 4px #000}.glb.gfs{position:fixed;inset:0;z-index:300;border-radius:0;margin:0}.glb.gfs .gbt{top:calc(env(safe-area-inset-top) + 10px)}.glb.gfs .mcap{bottom:calc(env(safe-area-inset-bottom) + 10px)}
 .mc{display:flex;align-items:flex-end;gap:8px;height:128px;padding:14px 16px 8px}.mc div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%;font-size:11px;color:var(--tx2)}.mc i{width:100%;background:linear-gradient(180deg,#64d2ff,#0a84ff);border-radius:8px 8px 3px 3px}
 .st2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stt{background:var(--card);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:2px}.stt b{font-size:21px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:6px}.stt>span:last-child{font-size:12px;color:var(--tx2)}.sti{width:30px;height:30px;border-radius:9px;color:#fff;display:grid;place-items:center;font-size:15px;font-weight:700}
 .stk{display:flex;height:12px;border-radius:6px;overflow:hidden;gap:2px}.stk i{display:block;min-width:4px}.sr u{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;text-decoration:none}
@@ -553,8 +553,8 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 
 <div id="brief" role="dialog" aria-modal="true" aria-label="Flight briefing" hidden></div>
 <script>
-const VER="v1.2.26";
-const BUILD="202611280200";
+const VER="v1.2.27";
+const BUILD="202611280300";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME);try{bgColors();bgDraw(performance.now())}catch(e){}}
 themeApply();
@@ -2165,6 +2165,49 @@ function glPolys(){if(GPL)return GPL;const toA=P=>Array.isArray(P)?P:String(P).s
  GPL=LAND.map(P=>{const A=toA(P),o=[];for(let i=0;i<A.length;i++){const a=A[i],b=A[(i+1)%A.length],n=Math.max(1,Math.ceil(Math.max(Math.abs(b[0]-a[0]),Math.abs(b[1]-a[1]))/1.5));
   for(let j=0;j<n;j++){const lo=lbRad(a[0]+(b[0]-a[0])*j/n),la=lbRad(a[1]+(b[1]-a[1])*j/n);o.push([Math.cos(la),Math.sin(la),Math.cos(lo),Math.sin(lo)])}}return o});return GPL}
 const GSTAR=(()=>{let s=7;const r=()=>(s=(s*16807)%2147483647)/2147483647,a=[];for(let i=0;i<160;i++)a.push([r(),r(),r()*1.1+.2,r()*.6+.15]);return a})();
+/* globo 3D: la Terra di notte (NASA Earth Observatory, pubblico dominio: img/earth-night.webp) disegnata in WebGL;
+   rotte, aeroporti e nomi restano sul canvas 2D sopra. Senza WebGL resta il globo disegnato */
+const EARTH={img:null,wait:[]};
+function earthImg(cb){if(EARTH.img){cb(EARTH.img);return}EARTH.wait.push(cb);if(EARTH.wait.length>1)return;const i=new Image();i.decoding="async";i.onload=()=>{EARTH.img=i;EARTH.wait.splice(0).forEach(f=>{try{f(i)}catch(e){}})};i.onerror=()=>{EARTH.wait.length=0};i.src="img/earth-night.webp"}
+function glEarth(gc){let gl=null;try{gl=gc.getContext("webgl",{alpha:false,antialias:false})}catch(e){}if(!gl)return null;
+ const der=!!gl.getExtension("OES_standard_derivatives");
+ const sh=(t,src)=>{const o=gl.createShader(t);gl.shaderSource(o,src);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(o));return o};
+ const FS=(der?"#extension GL_OES_standard_derivatives : enable\n":"")+"precision highp float;uniform vec2 uC;uniform float uR,uLo,uLa,uD;uniform sampler2D uT;"
+  +"float hs(vec2 v){return fract(sin(dot(v,vec2(12.9898,78.233)))*43758.5453);}"
+  +"void main(){vec2 q=gl_FragCoord.xy,p=(q-uC)/uR;float r=length(p);"
+  +"vec3 col=mix(vec3(.010,.018,.045),vec3(.035,.07,.15),clamp(1.-length(q-uC)/(max(uC.x,uC.y)*2.4),0.,1.));"
+  +"vec2 sc=floor(q/(2.*uD));float st=hs(sc);if(st>.9966)col+=vec3(.5+.5*hs(sc+3.7))*((st-.9966)/.0034);"
+  +"if(r<1.){float z=sqrt(max(0.,1.-r*r)),sl=cos(uLa)*p.y+sin(uLa)*z,cc=-sin(uLa)*p.y+cos(uLa)*z,lat=asin(clamp(sl,-1.,1.)),u=(uLo+atan(p.x,cc))/6.2831853+.5,v=.5-lat/3.1415927;"
+  +(der?"float u1=fract(u),u2=fract(u+.5)-.5;u=fwidth(u1)<fwidth(u2)+1e-6?u1:u2;":"u=fract(u);")
+  +"vec3 e=texture2D(uT,vec2(u,v)).rgb*1.18+vec3(.003,.01,.028);e*=.42+.58*z;e+=vec3(.22,.48,1.)*pow(1.-z,2.6)*.55;"
+  +"col=mix(col,e,clamp((1.-r)*uR/1.6,0.,1.));}"
+  +"else col+=vec3(.3,.58,1.)*.62*exp(-(r-1.)*uR/9./uD);"
+  +"gl_FragColor=vec4(col,1.);}";
+ const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,"attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}"));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(pr);
+ if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(pr));gl.useProgram(pr);
+ const bf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,bf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+ const ap=gl.getAttribLocation(pr,"p");gl.enableVertexAttribArray(ap);gl.vertexAttribPointer(ap,2,gl.FLOAT,false,0,0);
+ const U={};["uC","uR","uLo","uLa","uD","uT"].forEach(k=>U[k]=gl.getUniformLocation(pr,k));
+ const E={has:false,gl,
+  setImg(img){let src=img;const mx=gl.getParameter(gl.MAX_TEXTURE_SIZE)||4096;if(img.width>mx){const c=document.createElement("canvas");c.width=mx;c.height=mx/2;c.getContext("2d").drawImage(img,0,0,mx,mx/2);src=c}
+   const t=gl.createTexture();gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,t);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,src);
+   const pot=(src.width&(src.width-1))==0&&(src.height&(src.height-1))==0;
+   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,pot?gl.REPEAT:gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+   if(pot){gl.generateMipmap(gl.TEXTURE_2D);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR)}else gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+   const an=gl.getExtension("EXT_texture_filter_anisotropic");if(an)gl.texParameterf(gl.TEXTURE_2D,an.TEXTURE_MAX_ANISOTROPY_EXT,Math.min(8,gl.getParameter(an.MAX_TEXTURE_MAX_ANISOTROPY_EXT)));
+   gl.uniform1i(U.uT,0);E.has=true},
+  draw(W,H,dpr,R,lo,la){gl.viewport(0,0,gl.drawingBufferWidth,gl.drawingBufferHeight);gl.uniform2f(U.uC,W*dpr/2,H*dpr/2);gl.uniform1f(U.uR,R*dpr);gl.uniform1f(U.uLo,lbRad(lo));gl.uniform1f(U.uLa,lbRad(la));gl.uniform1f(U.uD,dpr);gl.drawArrays(gl.TRIANGLES,0,6)}};
+ return E}
+/* nomi di continenti e oceani, come sulle mappe */
+const GLAB=[[54,18,"EUROPE","EUROPA",0],[6,19,"AFRICA","AFRICA",0],[48,92,"ASIA","ASIA",0],[50,-100,"NORTH AMERICA","AMERICA SETTENTRIONALE",0],[-12,-58,"SOUTH AMERICA","AMERICA MERIDIONALE",0],[-24,134,"OCEANIA","OCEANIA",0],[-79,20,"ANTARCTICA","ANTARTIDE",0],
+ [84,-20,"Arctic Ocean","Oceano Glaciale Artico",1],[31,-42,"North Atlantic Ocean","Oceano Atlantico settentrionale",1],[-26,-14,"South Atlantic Ocean","Oceano Atlantico meridionale",1],[-21,78,"Indian Ocean","Oceano Indiano",1],[12,-148,"Pacific Ocean","Oceano Pacifico",1],[-12,-125,"Pacific Ocean","Oceano Pacifico",1],[22,152,"Pacific Ocean","Oceano Pacifico",1]];
+function glLabels(c,cx,cy,R,C0,S0,cL,sL){const fs=Math.max(9,Math.min(16,R*.034)),ls="letterSpacing"in c;c.textAlign="center";c.textBaseline="middle";c.save();c.shadowColor="rgba(0,0,0,.85)";c.shadowBlur=4;
+ for(const[la,lo,en,it,oc]of GLAB){const L=lbRad(la),O=lbRad(lo),cl=Math.cos(L),sl=Math.sin(L),co=Math.cos(O),so=Math.sin(O),cd=co*C0+so*S0,z=sL*sl+cL*cl*cd;if(z<.3)continue;
+  const px=cx+R*cl*(so*C0-co*S0),py=cy-R*(cL*sl-sL*cl*cd),A=Math.min(1,(z-.3)/.3)*.95,f=oc?fs*.9:fs,lines=(LANG=="it"?it:en).split(" "),lh=f*1.22;
+  c.font=(oc?"italic 600 ":"700 ")+f+"px Inter,-apple-system,sans-serif";if(ls)c.letterSpacing=(oc?f*.06:f*.32)+"px";c.fillStyle=oc?"rgba(150,220,255,"+A+")":"rgba(255,255,255,"+A+")";
+  lines.forEach((t,i)=>c.fillText(t,px,py+(i-(lines.length-1)/2)*lh))}
+ if(ls)c.letterSpacing="0px";c.restore()}
 function stMap(cv,fl){
  const box=cv.parentNode,ap={},pr={};fl.forEach(f=>{const a=[f.from,f.to].sort().join("-");pr[a]=(pr[a]||0)+1;[f.from,f.to].forEach(x=>ap[x]=(ap[x]||0)+1)});
  const AP=Object.keys(ap).map(k=>{const A=stA(k);if(!A)return null;const L=lbRad(A[1]),O=lbRad(A[2]);return{k,n:ap[k],cl:Math.cos(L),sl:Math.sin(L),co:Math.cos(O),so:Math.sin(O),la:A[1],lo:A[2]}}).filter(Boolean).sort((a,b)=>b.n-a.n);
@@ -2178,9 +2221,14 @@ function stMap(cv,fl){
   const la=Math.atan2(z,Math.hypot(x,y)),lo=Math.atan2(y,x);let md=0;AP.forEach(a=>{const c=Math.sin(la)*a.sl+Math.cos(la)*a.cl*Math.cos(lbRad(a.lo)-lo);md=Math.max(md,Math.acos(Math.max(-1,Math.min(1,c))))});
   return{lo:lo*180/Math.PI,la:la*180/Math.PI,z:Math.max(1,Math.min(6,1.02/Math.sin(Math.min(Math.PI/2,md+.08)))),spin:1}})());
  const D=glDots();let W=1,H=1,dpr=1,dirty=true,run=false,vx=0,vy=0,last=0;
- function size(){const fs=box.classList.contains("gfs");W=box.clientWidth||340;H=fs?window.innerHeight:Math.round(W*.95);dpr=Math.min(3,window.devicePixelRatio||1);cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+"px";dirty=true}
- function draw(c,W,H){const R=Math.min(W,H)*.43*V.z,cx=W/2,cy=H/2,lo0=lbRad(V.lo),la0=lbRad(V.la),C0=Math.cos(lo0),S0=Math.sin(lo0),cL=Math.cos(la0),sL=Math.sin(la0);
-  let g=c.createRadialGradient(cx,cy*.6,0,cx,cy,Math.max(W,H)*.9);g.addColorStop(0,"#0d1b38");g.addColorStop(1,"#03060f");c.fillStyle=g;c.fillRect(0,0,W,H);
+ let E=null;const gc=document.createElement("canvas");gc.className="stgl";gc.setAttribute("aria-hidden","true");gc.style.visibility="hidden";box.insertBefore(gc,cv);
+ /* immagine già in memoria: la callback arriva subito, quindi si rimanda a dopo la preparazione del globo */
+ const gli=()=>{try{E=glEarth(gc)}catch(e){E=null}if(E)earthImg(i=>Promise.resolve().then(()=>{if(!E)return;try{E.setImg(i);gc.style.visibility=""}catch(e){E=null}dirty=true;go_()}))};gli();
+ gc.addEventListener("webglcontextlost",e=>{e.preventDefault();E=null;gc.style.visibility="hidden";dirty=true;go_()});gc.addEventListener("webglcontextrestored",()=>{gli();dirty=true;go_()});
+ function size(){const fs=box.classList.contains("gfs");W=box.clientWidth||340;H=fs?window.innerHeight:Math.round(W*.95);dpr=Math.min(3,window.devicePixelRatio||1);cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.height=H+"px";gc.width=cv.width;gc.height=cv.height;gc.style.height=H+"px";dirty=true}
+ function draw(c,W,H,keep){const R=Math.min(W,H)*.43*V.z,cx=W/2,cy=H/2,lo0=lbRad(V.lo),la0=lbRad(V.la),C0=Math.cos(lo0),S0=Math.sin(lo0),cL=Math.cos(la0),sL=Math.sin(la0);
+  let g;const gle=!!(E&&E.has);if(gle){if(!keep)c.clearRect(0,0,W,H)}else{
+  g=c.createRadialGradient(cx,cy*.6,0,cx,cy,Math.max(W,H)*.9);g.addColorStop(0,"#0d1b38");g.addColorStop(1,"#03060f");c.fillStyle=g;c.fillRect(0,0,W,H);
   c.fillStyle="#fff";GSTAR.forEach(s=>{c.globalAlpha=s[3];c.fillRect(s[0]*W,s[1]*H,s[2],s[2])});c.globalAlpha=1;
   g=c.createRadialGradient(cx,cy,R*.96,cx,cy,R*1.22);g.addColorStop(0,"rgba(80,160,255,.45)");g.addColorStop(.35,"rgba(60,130,255,.14)");g.addColorStop(1,"rgba(40,100,255,0)");c.fillStyle=g;c.beginPath();c.arc(cx,cy,R*1.22,0,6.3);c.fill();
   g=c.createRadialGradient(cx-R*.35,cy-R*.4,R*.05,cx,cy,R*1.05);g.addColorStop(0,"#1b3a72");g.addColorStop(.6,"#0b1a3a");g.addColorStop(1,"#050c1e");c.fillStyle=g;c.beginPath();c.arc(cx,cy,R,0,6.3);c.fill();
@@ -2188,15 +2236,16 @@ function stMap(cv,fl){
   const ds=Math.max(1,Math.min(4,R*.0062));c.fillStyle="#8fb8ff";
   for(let i=0;i<D.length;i+=4){const cl=D[i],sl=D[i+1],co=D[i+2],so=D[i+3],cd=co*C0+so*S0,z=sL*sl+cL*cl*cd;if(z<=.02)continue;
    const px=cx+R*cl*(so*C0-co*S0),py=cy-R*(cL*sl-sL*cl*cd);if(px<-4||px>W+4||py<-4||py>H+4)continue;c.globalAlpha=.18+.62*z;c.fillRect(px-ds/2,py-ds/2,ds,ds)}
-  c.globalAlpha=1;c.strokeStyle="rgba(140,190,255,.35)";c.lineWidth=1;c.beginPath();c.arc(cx,cy,R,0,6.3);c.stroke();
+  c.globalAlpha=1;c.strokeStyle="rgba(140,190,255,.35)";c.lineWidth=1;c.beginPath();c.arc(cx,cy,R,0,6.3);c.stroke()}
   const pj=p=>{const cd=p[2]*C0+p[3]*S0,x=p[4]*p[0]*(p[3]*C0-p[2]*S0),y=p[4]*(cL*p[1]-sL*p[0]*cd),z=p[4]*(sL*p[1]+cL*p[0]*cd);return[cx+R*x,cy-R*y,z>0||x*x+y*y>1]};
   c.globalCompositeOperation="lighter";c.lineCap="round";c.lineJoin="round";const lw=Math.max(.8,Math.min(2.4,R*.004));
-  for(const r of RT){const Q=r.P.map(pj);for(const [st,w] of [["rgba(255,140,40,"+(.10+.18*r.w)+")",lw*(3.2+3*r.w)],["rgba(255,200,110,"+(.5+.45*r.w)+")",lw*(.7+1.1*r.w)]]){c.strokeStyle=st;c.lineWidth=w;c.beginPath();let on=false;
+  for(const r of RT){const Q=r.P.map(pj);for(const [st,w] of [["rgba(255,255,255,"+(.05+.1*r.w)+")",lw*(2.6+2.4*r.w)],["rgba(255,255,255,"+(.55+.4*r.w)+")",lw*(.55+.8*r.w)]]){c.strokeStyle=st;c.lineWidth=w;c.beginPath();let on=false;
     for(const q of Q){if(q[2]){on?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1]);on=true}else on=false}c.stroke()}}
+  c.globalCompositeOperation="source-over";glLabels(c,cx,cy,R,C0,S0,cL,sL);c.globalCompositeOperation="lighter";
   const vis=[];for(const a of AP){const cd=a.co*C0+a.so*S0,z=sL*a.sl+cL*a.cl*cd;if(z<=0)continue;const px=cx+R*a.cl*(a.so*C0-a.co*S0),py=cy-R*(cL*a.sl-sL*a.cl*cd);if(px<-10||px>W+10||py<-10||py>H+10)continue;vis.push([a,px,py,z]);
-   const rr=(1.6+2.6*Math.sqrt(a.n/amx))*Math.max(.8,Math.min(1.8,R/220));g=c.createRadialGradient(px,py,0,px,py,rr*4);g.addColorStop(0,"rgba(110,210,255,.75)");g.addColorStop(1,"rgba(110,210,255,0)");c.fillStyle=g;c.beginPath();c.arc(px,py,rr*4,0,6.3);c.fill()}
+   const rr=(1.6+2.6*Math.sqrt(a.n/amx))*Math.max(.8,Math.min(1.8,R/220));g=c.createRadialGradient(px,py,0,px,py,rr*2.6);g.addColorStop(0,"rgba(255,255,255,.28)");g.addColorStop(1,"rgba(255,255,255,0)");c.fillStyle=g;c.beginPath();c.arc(px,py,rr*2.6,0,6.3);c.fill()}
   c.globalCompositeOperation="source-over";c.fillStyle="#fff";for(const v of vis){const rr=(1.6+2.6*Math.sqrt(v[0].n/amx))*Math.max(.8,Math.min(1.8,R/220));c.globalAlpha=.35+.65*v[3];c.beginPath();c.arc(v[1],v[2],rr,0,6.3);c.fill()}
-  c.globalAlpha=1;const fsz=Math.max(10,Math.min(13,R*.03));c.font="600 "+fsz+"px Inter,-apple-system,sans-serif";c.textAlign="center";const used=[],lim=Math.round(6+7*V.z);let nl=0;
+  c.globalAlpha=1;const fsz=Math.max(10,Math.min(13,R*.03));c.font="600 "+fsz+"px Inter,-apple-system,sans-serif";c.textAlign="center";const used=[],lim=V.z<1.6?0:Math.round(6+7*V.z);let nl=0;
   for(const v of vis){if(nl>=lim)break;if(v[3]<.2)continue;const x=v[1],y=v[2]-fsz*.9;if(used.some(u=>Math.abs(u[0]-x)<fsz*2.6&&Math.abs(u[1]-y)<fsz*1.1))continue;used.push([x,y]);nl++;
    c.fillStyle="rgba(3,8,20,.55)";const tw=c.measureText(v[0].k).width;c.fillRect(x-tw/2-3,y-fsz*.85,tw+6,fsz*1.15);c.fillStyle="rgba(255,255,255,"+(.5+.5*v[3])+")";c.fillText(v[0].k,x,y)}
   return R}
@@ -2205,7 +2254,7 @@ function stMap(cv,fl){
   const dt=last?Math.min(50,t-last):16;last=t;
   if(Math.abs(vx)>.002||Math.abs(vy)>.002){V.lo-=vx*dt;V.la=Math.max(-80,Math.min(80,V.la+vy*dt));vx*=Math.pow(.94,dt/16);vy*=Math.pow(.94,dt/16);dirty=true}
   else if(V.spin&&!P.size&&!rm){V.lo-=.0025*dt;dirty=true}
-  if(dirty){const c=cv.getContext("2d");c.setTransform(dpr,0,0,dpr,0,0);draw(c,W,H);dirty=false}else if(!P.size){run=false;return}requestAnimationFrame(frame)}
+  if(dirty){if(E&&E.has)E.draw(W,H,dpr,Rn(),V.lo,V.la);const c=cv.getContext("2d");c.setTransform(dpr,0,0,dpr,0,0);draw(c,W,H);dirty=false}else if(!P.size){run=false;return}requestAnimationFrame(frame)}
  const go_=()=>{if(!run){run=true;last=0;requestAnimationFrame(frame)}};
  const P=new Map();let pd=0,lt=0;const Rn=()=>Math.min(W,H)*.43*V.z;
  cv.onpointerdown=e=>{cv.setPointerCapture(e.pointerId);P.set(e.pointerId,[e.clientX,e.clientY]);V.spin=0;vx=vy=0;lt=performance.now();if(P.size==2){const[a,b]=[...P.values()];pd=Math.hypot(a[0]-b[0],a[1]-b[1])}go_()};
@@ -2217,7 +2266,9 @@ function stMap(cv,fl){
  cv.ondblclick=()=>{V.z=Math.min(12,V.z*1.8);V.spin=0;dirty=true;go_()};
  const fsb=box.querySelector("#gFs"),shb=box.querySelector("#gSh");
  if(fsb)fsb.onclick=()=>{const on=!box.classList.contains("gfs");box.classList.toggle("gfs",on);document.body.style.overflow=on?"hidden":"";fsb.innerHTML=on?"✕":"⤢";size();go_()};
- if(shb)shb.onclick=async()=>{try{shb.disabled=true;const k=Math.min(4,3200/Math.max(W,H)),oc=document.createElement("canvas");oc.width=Math.round(W*k);oc.height=Math.round(H*k);const c=oc.getContext("2d");c.scale(k,k);draw(c,W,H);
+ if(shb)shb.onclick=async()=>{try{shb.disabled=true;const k=Math.min(4,3200/Math.max(W,H)),oc=document.createElement("canvas");oc.width=Math.round(W*k);oc.height=Math.round(H*k);const c=oc.getContext("2d");
+   if(E&&E.has){gc.width=oc.width;gc.height=oc.height;E.draw(W,H,k,Rn(),V.lo,V.la);c.drawImage(gc,0,0);gc.width=Math.round(W*dpr);gc.height=Math.round(H*dpr);dirty=true}
+   c.scale(k,k);draw(c,W,H,true);
    const st=window.__gst||{},m=Math.max(14,Math.min(W,H)*.05);c.textAlign="left";c.fillStyle="rgba(255,255,255,.6)";c.font="700 "+Math.round(m*.55)+"px 'Space Grotesk',Inter,sans-serif";c.fillText("ROTATE",m,m*1.4);
    c.fillStyle="#fff";c.font="700 "+Math.round(m*1.05)+"px 'Space Grotesk',Inter,sans-serif";c.fillText(tt("My flight network","Il mio network di volo"),m,m*2.6);
    const ln=[st.n+" "+tt("flights","voli"),st.r+" "+tt("routes","rotte"),st.a+" "+tt("airports","aeroporti"),th(st.km||0)+" km"].join("  ·  ");
@@ -2468,6 +2519,7 @@ function drUi(){const m=loadMeta(),n=(m.name||"").trim(),ini=n?n.split(/\s+/).ma
 
 /* ===== Changelog ===== */
 const CHLOG=[
+ ["v1.2.27","27/11/2026",["Stats: the routes map is now a real 3D globe — the Earth at night from NASA with city lights, atmosphere and stars; white routes and airports, names of continents and oceans. Drag to turn it, pinch to zoom (airport codes appear when zoomed in)."],["Stats: la mappa delle rotte ora è un vero globo 3D — la Terra di notte della NASA con le luci delle città, l'atmosfera e le stelle; rotte e aeroporti bianchi, nomi di continenti e oceani. Trascina per girarlo, pizzica per lo zoom (i codici degli aeroporti compaiono zoomando)."]],
  ["v1.2.26","27/11/2026",["Home: the greeting has more room under the logo; the Roster / CrewLink / Logbook / Utilities bar stays at the bottom of the screen, easy to reach with the thumb.","Flight briefing (tap the plane on the boarding pass): the weather of takeoff and landing opens and closes like a drop-down menu; closed, it still shows airport, window, hazards and VFR/IFR."],["Home: il saluto ha più spazio sotto il logo; la barra Roster / CrewLink / Logbook / Utilities resta in fondo allo schermo, comoda da raggiungere col pollice.","Briefing del volo (tocca l'aereo sulla carta d'imbarco): il meteo di decollo e atterraggio si apre e si chiude come un menu a tendina; chiuso mostra comunque aeroporto, finestra, pericoli e VFR/IFR."]],
  ["v1.2.25","27/11/2026",["Home in a new order: greeting, boarding pass of the next flight, week, and the Roster / CrewLink / Logbook / Utilities bar at the bottom."],["Home in un nuovo ordine: saluto, carta d'imbarco del prossimo volo, settimana e in fondo la barra Roster / CrewLink / Logbook / Utilities."]],
  ["v1.2.24","27/11/2026",["New home: under the logo a bar with Roster, CrewLink, Logbook and Utilities, then the week and the boarding pass of the next flight. The date and the status row are gone: the dot next to the version turns orange or red when something needs a look (tap it).","New Utilities page: In-flight rest, Recency, Payslip, Contacts and Stats, with their summaries."],["Nuova home: sotto il logo una barra con Roster, CrewLink, Logbook e Utilities, poi la settimana e la carta d'imbarco del prossimo volo. Data e riga di stato non ci sono più: il pallino accanto alla versione diventa arancione o rosso quando c'è qualcosa da controllare (toccalo).","Nuova pagina Utilities: Riposi in volo, Recency, Busta paga, Contatti e Stats, con i loro riepiloghi."]],
