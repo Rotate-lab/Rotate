@@ -2,7 +2,7 @@
 // - pagina: prima la rete (così gli aggiornamenti arrivano subito), senza rete la copia salvata
 // - librerie e caratteri: copia salvata, aggiornata in background
 // - meteo, Google Drive, portali: sempre e solo dalla rete (mai in cache)
-const CACHE = "rotate-v1.2.22"; // keep equal to VER in index.html
+const CACHE = "rotate-v1.2.23"; // keep equal to VER in index.html
 const CORE = ["./", "./manifest.json", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 const LIBS = [
   "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js",
@@ -58,7 +58,8 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (req.mode === "navigate" && url.origin === location.origin) return e.respondWith(networkFirst(req));
-  if (url.origin === location.origin && /\.(png|json|svg|ico)$/.test(url.pathname)) return e.respondWith(staleWhileRevalidate(req, e));
+  // immagini e dati dell'app (anche le foto delle destinazioni, salvate alla prima visualizzazione)
+  if (url.origin === location.origin && /\.(png|json|svg|ico|webp|jpg)$/.test(url.pathname)) return e.respondWith(staleWhileRevalidate(req, e));
   if (STATIC_HOSTS.includes(url.hostname)) return e.respondWith(staleWhileRevalidate(req, e));
   // tutto il resto (meteo, Google, portali) passa direttamente alla rete
 });
