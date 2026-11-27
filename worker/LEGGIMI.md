@@ -36,7 +36,7 @@ Quando questo file cambia: Worker `rotate-box` › **Edit code** › cancella tu
 
 ## In Rotate
 
-1. **Duty plan › Individuale › Collegamento CrewLink › Collega**.
+1. **Impostazioni › CrewLink › Collega**.
 2. **Copia segnalibro**: in Safari aggiungi un segnalibro a una pagina qualsiasi, poi modificalo con nome `Rotate` e come indirizzo il testo copiato. Il segnalibro contiene tutto il codice: quando Rotate avvisa che è vecchio, ricopialo. I vecchi segnalibri *Rotate Roster* e *Rotate Crew* si possono cancellare.
 3. **Attiva le notifiche** (Rotate deve essere installato sulla schermata Home, iOS 16.4 o successivo).
 4. Facoltativo: **Userscripts** (app gratuita dall'App Store) per non toccare nemmeno il segnalibro: *Copia script* e incollalo in un nuovo JavaScript di Userscripts.
@@ -47,8 +47,8 @@ Quando questo file cambia: Worker `rotate-box` › **Edit code** › cancella tu
 - **Duty plan › Individuale › Scarica e importa**: periodo scelto + equipaggio dei suoi voli.
 - **Roster › giorno › Mostra equipaggio**: equipaggio di quel volo.
 
-Rotate apre CrewLink: tocca il segnalibro **Rotate** e aspetta (al centro dello schermo compare l'avanzamento). Sulla pagina verde **TORNA A ROTATE** tocca ◀ Rotate in alto a sinistra, o la notifica: i dati sono già importati.
-Se il server non riconosce più il segnalibro (per esempio dopo aver ricreato lo spazio dati), compare una pagina arancione: in Rotate tocca **Ricollega** e ricopia il segnalibro.
+Rotate apre CrewLink: tocca il segnalibro **Rotate** e aspetta (al centro dello schermo compare l'avanzamento). Mentre lavora la pagina di CrewLink diventa scura con l'avanzamento. Sulla pagina verde **Finito** apri la notifica, oppure riapri Rotate dalla schermata Home: i dati sono già importati.
+Se il server non riconosce più il segnalibro (per esempio dopo aver ricreato lo spazio dati), compare una pagina arancione: in Rotate tocca **Impostazioni › CrewLink › Ricollega** e ricopia il segnalibro.
 Se CrewLink chiede il login, l'indirizzo con la richiesta si perde: dopo il login tocca il segnalibro, Rotate recupera la richiesta dal Worker e ricarica CrewLink; poi tocca di nuovo il segnalibro.
 Se il duty plan contiene voli nuovi, Rotate lascia pronta la richiesta del loro equipaggio per il giro successivo (con Userscripts parte da sola alla prossima apertura di CrewLink).
 
