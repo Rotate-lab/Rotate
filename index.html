@@ -312,7 +312,7 @@ body{font-family:var(--fb);letter-spacing:-.005em}
 .hcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .hc{display:flex;flex-direction:column;gap:6px;min-height:96px;background:var(--card);border:0;border-radius:18px;padding:14px;color:var(--tx);font:inherit;text-align:left;cursor:pointer;box-shadow:var(--sh)}.hc:active,.wd:active,.nx:active{opacity:.75}
 .nx.ph .nxph{background-color:#0b2545;background-image:linear-gradient(180deg,rgba(4,10,22,.62) 0%,rgba(4,10,22,.18) 38%,rgba(4,10,22,.24) 58%,rgba(4,10,22,.78) 100%),var(--ph);background-size:cover;background-position:center var(--phy,50%);background-repeat:no-repeat;color:#fff}
-.nx.ph .nxh{background:none}.nx.ph .nxb{padding-top:26px;padding-bottom:14px}.nx.ph .nxb small,.nx.ph .nxm small{color:rgba(255,255,255,.86)}.nx.ph .nxa{color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.45)}.nx.ph .nxb em{color:#fff}.nx.ph .nxm{color:#fff}
+.nx.ph .nxh{background:none}.nx.ph .nxb{padding-top:26px;padding-bottom:14px}.nx.ph .nxb small,.nx.ph .nxm small{color:rgba(255,255,255,.9)}.nx.ph .nxb small,.nx.ph .nxb em,.nx.ph .nxm small,.nx.ph .nxh{text-shadow:0 1px 6px rgba(0,0,0,.55)}.nx.ph .nxa{color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.45)}.nx.ph .nxb em{color:#fff}.nx.ph .nxm{color:#fff}
 .nx.ph .nxm i{background:repeating-linear-gradient(90deg,rgba(255,255,255,.75) 0 5px,transparent 5px 10px)}.nx.ph .nxbr{color:#fff;background:rgba(255,255,255,.2)}
 .dphl{margin-top:12px}.dphl a{display:flex;flex-direction:column;gap:2px;padding:10px 0;border-bottom:1px solid rgba(127,127,127,.2);color:var(--tx);text-decoration:none}.dphl a b{font-size:16px}.dphl a span{font-size:13px;color:var(--tx2,#666)}
 .hc>span:first-child{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:15px}.hc>span:first-child svg{color:var(--ac)}
@@ -554,8 +554,8 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 
 <div id="brief" role="dialog" aria-modal="true" aria-label="Flight briefing" hidden></div>
 <script>
-const VER="v1.2.22";
-const BUILD="202611272200";
+const VER="v1.2.23";
+const BUILD="202611272300";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME);try{bgColors();bgDraw(performance.now())}catch(e){}}
 themeApply();
@@ -1934,8 +1934,8 @@ function hOpenDay(k){const[y,m]=k.split("-").map(Number),t=new Date();view=new D
  const fin=now=>{clearTimeout(hDayT);hDayFin=null;if(PG!="roster"||sel!=k)return;sel=null;view=new Date(t.getFullYear(),t.getMonth(),1);render();if(now)window.scrollTo(0,0);else smoothTo(0)};
  hDayFin=fin;hDayT=setTimeout(()=>fin(false),5000)}
 /* foto delle destinazioni sulla carta d'imbarco: img/dest/<città>.webp (Wikimedia Commons, crediti in img/dest/credits.json) */
-const DPH={}; /* aeroporto → città: si riempie quando le foto sono in img/dest */
-const DPHY={};
+const DPH={FCO:"rome",MXP:"milan",LIN:"milan",BGY:"bergamo",VCE:"venice",NAP:"naples",FLR:"florence",BLQ:"bologna",TRN:"turin",BRI:"bari",CTA:"catania",PMO:"palermo",CAG:"cagliari",OLB:"olbia",PSA:"pisa",GOA:"genoa",VRN:"verona",AHO:"alghero",SUF:"calabria",NCE:"nice",CDG:"paris",ORY:"paris",LHR:"london",FRA:"frankfurt",MUC:"munich",BER:"berlin",ZRH:"zurich",GVA:"geneva",VIE:"vienna",AMS:"amsterdam",BRU:"brussels",MAD:"madrid",BCN:"barcelona",LIS:"lisbon",ATH:"athens",IST:"istanbul",MLA:"malta",TLV:"telaviv",CAI:"cairo",DXB:"dubai",DOH:"doha",RUH:"riyadh",MRU:"mauritius",JNB:"johannesburg",ACC:"accra",DKR:"dakar",NBO:"nairobi",ADD:"addisababa",ALG:"algiers",TUN:"tunis",DEL:"delhi",BOM:"mumbai",NRT:"tokyo",HND:"tokyo",KIX:"osaka",ICN:"seoul",PEK:"beijing",PVG:"shanghai",HKG:"hongkong",SIN:"singapore",BKK:"bangkok",JFK:"newyork",EWR:"newyork",BOS:"boston",IAD:"washington",DCA:"washington",PHL:"philadelphia",MIA:"miami",FLL:"fortlauderdale",MCO:"orlando",ATL:"atlanta",YYZ:"toronto",YUL:"montreal",ORD:"chicago",IAH:"houston",DFW:"dallas",MEX:"mexicocity",DEN:"denver",LAX:"losangeles",SFO:"sanfrancisco",SEA:"seattle",LAS:"lasvegas",PTY:"panama",BOG:"bogota",LIM:"lima",SCL:"santiago",EZE:"buenosaires",GRU:"saopaulo",GIG:"rio",CCS:"caracas",HAV:"havana",PUJ:"puntacana"};
+const DPHY={venice:45,turin:55,calabria:40,paris:35,munich:40,geneva:40,madrid:40,barcelona:45,lisbon:55,istanbul:45,malta:45,cairo:55,nairobi:40,beijing:45,shanghai:55,hongkong:45,bangkok:45,newyork:40,washington:55,toronto:45,chicago:45,seattle:45,santiago:85,rio:55,havana:55,milan:45};
 function dphOn(){try{return localStorage.getItem("rot_dph")!=="0"}catch(e){return true}}
 function dphUi(){const t=$("#dphT");if(t)t.classList.toggle("on",dphOn())}
 function homeRender(){{const v=$("#hVer");if(v)v.textContent=/^Beta/i.test(VER)?"Beta":VER}const el=document.getElementById("hNext");if(!el)return;const t=new Date(),tk=key(t.getFullYear(),t.getMonth(),t.getDate()),mt=loadMetaRO();
@@ -2458,6 +2458,7 @@ function drUi(){const m=loadMeta(),n=(m.name||"").trim(),ini=n?n.split(/\s+/).ma
 
 /* ===== Changelog ===== */
 const CHLOG=[
+ ["v1.2.23","27/11/2026",["Boarding pass on the home page: the photo of the arrival city of your next flight in the background (87 cities, all the airports in Rotate). The photos are inside the app and also work offline.","Settings › Rotate App: Destination photos switch and Photo credits (authors and licences, from Wikimedia Commons)."],["Carta d'imbarco nella home: sullo sfondo la foto della città di arrivo del prossimo volo (87 città, tutti gli aeroporti di Rotate). Le foto sono dentro l'app e funzionano anche offline.","Impostazioni › Rotate App: interruttore Foto delle destinazioni e Crediti foto (autori e licenze, da Wikimedia Commons)."]],
  ["v1.2.22","27/11/2026",["Payslip now goes to the ADP HCM portal (hcm.it.adp.com). The old MultiDocs address ended with server errors after the login."],["Busta paga ora porta al portale ADP HCM (hcm.it.adp.com). Il vecchio indirizzo MultiDocs finiva con errori del server dopo il login."]],
  ["v1.2.21","27/11/2026",["Payslip (CrewLink › Portals) now opens in Safari: in the window inside the app the ADP login stopped with an error."],["Busta paga (CrewLink › Portali) ora si apre in Safari: nella finestra interna dell'app il login ADP si fermava con un errore."]],
  ["v1.2.20","27/11/2026",["Roster wheel, Duty plan › Download and import and Show crew: if the CrewLink setup is not complete, they take you to Settings › CrewLink, with the missing steps highlighted.","At the top of Settings › CrewLink a list shows what is missing (notifications, link, bookmark). When everything is ready, Continue starts the download you asked for.","Without server: Paste from CrewLink is now in Settings › CrewLink › Advanced."],["Rotella del Roster, Duty plan › Scarica e importa e Mostra equipaggio: se la configurazione CrewLink non è completa, ti portano in Impostazioni › CrewLink, con i passi mancanti evidenziati.","In cima a Impostazioni › CrewLink un elenco mostra cosa manca (notifiche, collegamento, segnalibro). Quando è tutto pronto, Continua fa partire il download che avevi chiesto.","Senza server: Incolla da CrewLink ora è in Impostazioni › CrewLink › Avanzate."]],
