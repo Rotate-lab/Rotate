@@ -210,7 +210,7 @@ a.row{text-decoration:none;color:inherit}
 .dpi{display:flex;gap:10px;align-items:flex-start;color:var(--tx2);font-size:15px;margin:18px 4px 0;line-height:1.35}.dpi svg{flex:none;margin-top:1px}
 .dpb{text-decoration:none;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:12px;width:100%;margin-top:22px;border:0;border-radius:999px;background:var(--blue);color:#fff;font:inherit;font-size:19px;font-weight:700;padding:17px;cursor:pointer}.dpb:active{opacity:.85}
 .toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 60px);transform:translate(-50%,-30px) scale(.96);opacity:0;pointer-events:none;transition:transform .35s cubic-bezier(.2,.9,.3,1.15),opacity .25s;z-index:60;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 32px);padding:10px 16px 10px 10px;border-radius:18px;background:color-mix(in srgb,var(--card) 86%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);box-shadow:0 10px 30px rgba(0,0,0,.22),0 0 0 .5px color-mix(in srgb,var(--tx) 12%,transparent);color:var(--tx);cursor:pointer}
-.toast.on{transform:translate(-50%,0) scale(1);opacity:1;pointer-events:auto}.toast i{flex:none;width:26px;height:26px;border-radius:13px;background:var(--grn);color:#fff;display:grid;place-items:center;font-style:normal;font-size:14px;font-weight:700}
+.toast.on{transform:translate(-50%,0) scale(1);opacity:1;pointer-events:auto}.toast i{flex:none;width:26px;height:26px;border-radius:13px;background:var(--grn);color:#fff;display:grid;place-items:center;font-style:normal;font-size:14px;font-weight:700}.toast i.w{background:#d97a00;font-weight:800}
 .toast b{display:block;font-size:15px;font-weight:600}.toast small{display:block;font-size:13px;color:var(--tx2);margin-top:1px;white-space:nowrap}
 .lbat{margin:-4px 10px 14px;text-align:center;font-size:12px;color:var(--tx2)}.lbms{text-align:center;margin-top:8px}
 @keyframes flash{0%{color:var(--grn)}100%{color:var(--tx2)}}.lbat.fl,.lbms.fl{animation:flash 1.6s ease-out}
@@ -550,8 +550,8 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 
 <div id="brief" role="dialog" aria-modal="true" aria-label="Flight briefing" hidden></div>
 <script>
-const VER="v1.2.19";
-const BUILD="202611271800";
+const VER="v1.2.20";
+const BUILD="202611272000";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME);try{bgColors();bgDraw(performance.now())}catch(e){}}
 themeApply();
@@ -573,8 +573,8 @@ async function getDl(){let d=null;try{d=window.claude?await window.claude.use("d
 let LANG="en";try{LANG=localStorage.getItem("rot_lang")=="it"?"it":"en"}catch(e){}
 const LOC=()=>LANG=="it"?"it-IT":"en-US";
 const tt=(en,it)=>LANG=="it"?it:en;
-function toast(t,s){let el=document.getElementById("toast");if(!el){el=document.createElement("div");el.id="toast";el.className="toast";el.setAttribute("role","status");el.onclick=()=>el.classList.remove("on");document.body.appendChild(el)}
- el.innerHTML="<i>✓</i><span><b></b><small></small></span>";el.querySelector("b").textContent=t;const sm=el.querySelector("small");sm.textContent=s||"";sm.hidden=!s;
+function toast(t,s,w){let el=document.getElementById("toast");if(!el){el=document.createElement("div");el.id="toast";el.className="toast";el.setAttribute("role","status");el.onclick=()=>el.classList.remove("on");document.body.appendChild(el)}
+ el.innerHTML=(w?'<i class="w">!</i>':"<i>✓</i>")+"<span><b></b><small></small></span>";el.querySelector("b").textContent=t;const sm=el.querySelector("small");sm.textContent=s||"";sm.hidden=!s;
  el.classList.remove("on");void el.offsetWidth;el.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("on"),3200)}
 const fmtAt=ms=>new Date(ms).toLocaleString(LOC(),{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
 const DTFC=new Map(),fmtD=(d,o)=>{const k=LOC()+JSON.stringify(o);let f=DTFC.get(k);if(!f)DTFC.set(k,f=new Intl.DateTimeFormat(LOC(),o));return f.format(d)};
@@ -2255,7 +2255,7 @@ function donOpen(){let d=document.getElementById("donBg");if(!d){d=document.crea
  d.hidden=false;requestAnimationFrame(()=>d.classList.add("on"))}
 function donClose(){const d=document.getElementById("donBg");if(d){d.classList.remove("on");setTimeout(()=>d.hidden=true,250)}}
 function menu(o){if(o&&typeof drUi=="function")drUi();const was=dr.classList.contains("open");dr.classList.toggle("open",o);bk.hidden=!o;dr.inert=!o;mb.setAttribute("aria-expanded",o);if(o)(dr.querySelector(".cur")||dr.querySelector(".row")).focus();else if(was)mb.focus()}
-let PG="home",setTab="setapp";function go(p){window.scrollTo(0,0);if(p=="set"){setFrom=null;p=setTab}if(p=="setapp"||p=="setlb"||p=="setcl")setTab=p;PG=p;if(/^(roster|log|rest|dp|cl)$/.test(p))setTimeout(()=>{needLib("PDFLib");if(p!="log"&&p!="rest")needLib("pdfjsLib")},400);document.querySelector(".top").hidden=p=="home";for(const k in PGS)$("#p-"+k).hidden=k!=p;$("#ttl").textContent=p=="home"?"":PGS[p];mb.hidden=true;$("#hb").hidden=p=="home";if(p=="acc")accLoad();if(p=="set"){langUi();verUi()}if(p=="stats")stRender();if(p=="rc")rcRender();if(p=="rest")rsRender();if(p=="bp")bpRender();if(p=="ct"){ctQ="";$("#ctS").value="";ctRender()}if(p=="setcl")try{setclRender()}catch(e){console.log(e)}if(p=="home"){sysUp();try{homeRender()}catch(e){console.log(e)}try{hMerge()}catch(e){}}else{try{hMergeFinal&&hStatusReset()}catch(e){}}if(p=="set")setFrom=null;const par=p=="dp"?"cl":p=="bp"?"roster":p=="setlb"||p=="setcl"?(setFrom||null):null;$("#hb").classList.toggle("back",!!par);$("#hb").setAttribute("aria-label",par?"Back":"Home");if(p=="setlb"){const ok=loadMetaRO().lbOk||{};lbOpen=LBK.find(x=>!ok[x])||null;slbRender()}if(p=="setapp"){langUi();verUi()}if(p=="dp")dpUi();if(p=="dati"&&typeof gdUi=="function")gdUi();const hs=false;$("#sm").hidden=!hs;$("#sp").hidden=hs;$("#rtb").hidden=p!="roster";ddo(false);dr.querySelectorAll(".row").forEach(b=>b.classList.toggle("cur",b.dataset.p==p||(b.dataset.p=="set"&&/^set/.test(p))));if(p=="log"){lbTab="";lbRender()}if(p=="roster")requestAnimationFrame(fitCells);menu(false)}
+let PG="home",setTab="setapp";function go(p){window.scrollTo(0,0);if(p!="setcl")GATE=null;if(p=="set"){setFrom=null;p=setTab}if(p=="setapp"||p=="setlb"||p=="setcl")setTab=p;PG=p;if(/^(roster|log|rest|dp|cl)$/.test(p))setTimeout(()=>{needLib("PDFLib");if(p!="log"&&p!="rest")needLib("pdfjsLib")},400);document.querySelector(".top").hidden=p=="home";for(const k in PGS)$("#p-"+k).hidden=k!=p;$("#ttl").textContent=p=="home"?"":PGS[p];mb.hidden=true;$("#hb").hidden=p=="home";if(p=="acc")accLoad();if(p=="set"){langUi();verUi()}if(p=="stats")stRender();if(p=="rc")rcRender();if(p=="rest")rsRender();if(p=="bp")bpRender();if(p=="ct"){ctQ="";$("#ctS").value="";ctRender()}if(p=="setcl")try{setclRender()}catch(e){console.log(e)}if(p=="home"){sysUp();try{homeRender()}catch(e){console.log(e)}try{hMerge()}catch(e){}}else{try{hMergeFinal&&hStatusReset()}catch(e){}}if(p=="set")setFrom=null;const par=p=="dp"?"cl":p=="bp"?"roster":p=="setlb"||p=="setcl"?(setFrom||null):null;$("#hb").classList.toggle("back",!!par);$("#hb").setAttribute("aria-label",par?"Back":"Home");if(p=="setlb"){const ok=loadMetaRO().lbOk||{};lbOpen=LBK.find(x=>!ok[x])||null;slbRender()}if(p=="setapp"){langUi();verUi()}if(p=="dp")dpUi();if(p=="dati"&&typeof gdUi=="function")gdUi();const hs=false;$("#sm").hidden=!hs;$("#sp").hidden=hs;$("#rtb").hidden=p!="roster";ddo(false);dr.querySelectorAll(".row").forEach(b=>b.classList.toggle("cur",b.dataset.p==p||(b.dataset.p=="set"&&/^set/.test(p))));if(p=="log"){lbTab="";lbRender()}if(p=="roster")requestAnimationFrame(fitCells);menu(false)}
 function ddo(o){$("#sm").setAttribute("aria-expanded",false)}
 $("#sm").onclick=e=>{e.stopPropagation();ddo($("#dd").hidden)};
 document.addEventListener("click",e=>{if(!e.target.closest(".dd,#sm"))ddo(false)});
@@ -2443,6 +2443,7 @@ function drUi(){const m=loadMeta(),n=(m.name||"").trim(),ini=n?n.split(/\s+/).ma
 
 /* ===== Changelog ===== */
 const CHLOG=[
+ ["v1.2.20","27/11/2026",["Roster wheel, Duty plan › Download and import and Show crew: if the CrewLink setup is not complete, they take you to Settings › CrewLink, with the missing steps highlighted.","At the top of Settings › CrewLink a list shows what is missing (notifications, link, bookmark). When everything is ready, Continue starts the download you asked for.","Without server: Paste from CrewLink is now in Settings › CrewLink › Advanced."],["Rotella del Roster, Duty plan › Scarica e importa e Mostra equipaggio: se la configurazione CrewLink non è completa, ti portano in Impostazioni › CrewLink, con i passi mancanti evidenziati.","In cima a Impostazioni › CrewLink un elenco mostra cosa manca (notifiche, collegamento, segnalibro). Quando è tutto pronto, Continua fa partire il download che avevi chiesto.","Senza server: Incolla da CrewLink ora è in Impostazioni › CrewLink › Avanzate."]],
  ["v1.2.19","27/11/2026",["New Settings › CrewLink: app notifications (important), CrewLink link through Cloudflare and the Userscripts guide, step by step. It is no longer in Duty plan.","Rotate bookmark: while it works the whole CrewLink page turns dark with the download progress. Copy the bookmark again (Settings › CrewLink › Copy bookmark).","Final green page: it says it is finished and to open the notification up there, or to open Rotate again from the Home Screen."],["Nuova Impostazioni › CrewLink: notifiche dell'app (importante), collegamento CrewLink tramite Cloudflare e guida Userscripts, passo per passo. Non è più in Duty plan.","Segnalibro Rotate: mentre lavora tutta la pagina di CrewLink diventa scura con l'avanzamento del download. Ricopia il segnalibro (Impostazioni › CrewLink › Copia segnalibro).","Pagina verde finale: dice che ha finito e di aprire la notifica qua sopra, oppure di riaprire Rotate dalla schermata Home."]],
  ["v1.2.18","27/11/2026",["CrewLink link: the progress of the Rotate bookmark is now big, in the middle of the screen, with a bar. The green page says clearly GO BACK TO ROTATE.","Clearer CrewLink link page: numbered steps for bookmark and notifications, and how to use it.","If the server no longer knows the link, Rotate says so and offers Link again. Copy the Rotate bookmark again to get the new progress."],["Collegamento CrewLink: l'avanzamento del segnalibro Rotate ora è grande, al centro dello schermo, con una barra. La pagina verde dice chiaramente TORNA A ROTATE.","Pagina Collegamento CrewLink più chiara: passi numerati per segnalibro e notifiche, e come si usa.","Se il server non riconosce più il collegamento, Rotate lo dice e propone Ricollega. Ricopia il segnalibro Rotate per avere il nuovo avanzamento."]],
  ["v1.2.17","27/11/2026",["CrewLink link: the last step (sending the data to Rotate) was refused because CrewLink sends forms to other sites as “anonymous”. Fixed in both the bookmark and the Cloudflare Worker: updating either one is enough."],["Collegamento CrewLink: l'ultimo passo (invio dei dati a Rotate) veniva rifiutato perché CrewLink fa partire i moduli verso altri siti come “anonimi”. Corretto sia nel segnalibro sia nel Worker Cloudflare: basta aggiornare uno dei due."]],
@@ -2543,12 +2544,9 @@ $("#dpMo").onchange=()=>{const[y,m]=$("#dpMo").value.split("-").map(Number);dpSe
 $("#dpF").onchange=()=>{if($("#dpT").value&&$("#dpT").value<$("#dpF").value)$("#dpT").value=$("#dpF").value;dpLabels()};
 $("#dpT").onchange=()=>{if($("#dpF").value&&$("#dpT").value<$("#dpF").value)$("#dpF").value=$("#dpT").value;dpLabels()};
 document.querySelectorAll("[data-dpt]").forEach(b=>b.onclick=()=>{dpTab=b.dataset.dpt;dpUi()});
-$("#dpGo").addEventListener("pointerdown",()=>{if(boxCfg()&&$("#dpF").value&&$("#dpT").value){const a=$("#dpF").value,b=$("#dpT").value;boxPrep("dp:"+a+":"+b,()=>perReq(a,b))}});
-$("#dpGo").addEventListener("click",e=>{dpLabels();if(boxCfg()){e.preventDefault();const a=$("#dpF").value,b=$("#dpT").value;if(a&&b)boxGo("dp:"+a+":"+b,()=>perReq(a,b),"dp");return}const u=$("#dpGo").dataset.u;
- if(IOS&&u){e.preventDefault();let left=false;const h=()=>{if(document.hidden)left=true};document.addEventListener("visibilitychange",h);
-  try{const a=document.createElement("a");a.href="x-safari-"+u;document.body.appendChild(a);a.click();a.remove()}catch(x){}
-  setTimeout(()=>{document.removeEventListener("visibilitychange",h);if(!left&&!document.hidden)window.open(u,"_blank")},1300)}
- setTimeout(()=>{dpTab="m";dpUi()},1500)});
+$("#dpGo").addEventListener("pointerdown",()=>{const a=$("#dpF").value,b=$("#dpT").value;if(a&&b&&boxReady())boxPrep("dp:"+a+":"+b,()=>perReq(a,b))});
+$("#dpGo").addEventListener("click",e=>{dpLabels();e.preventDefault();const a=$("#dpF").value,b=$("#dpT").value;if(!a||!b)return;
+ const key="dp:"+a+":"+b,rqf=()=>perReq(a,b);if(boxNeedSetup({key,rqf,what:"dp",lbl:perLbl(a,b)}))return;boxGo(key,rqf,"dp")});
 document.getElementById("pdf").addEventListener("change",()=>setTimeout(()=>{if(PG=="dp")dpUi()},2500));
 /* ===== Duty plan reload from CrewLink (bookmark in Safari + clipboard) =====
    Il segnalibro gira dentro CrewLink, nella sessione del pilota: scarica il suo duty plan (lo stesso PDF del flusso manuale)
@@ -2617,7 +2615,7 @@ function clbBridge(mode){const H="crewlink.ita-airways.com",IT=/^it/i.test(navig
  /* Safari: la scrittura negli appunti deve partire dentro il tocco; ClipboardItem accetta una Promise che si risolve dopo i download */
  try{navigator.clipboard.write([new ClipboardItem({"text/plain":job.then(s=>new Blob([s],{type:"text/plain"}))})]).then(()=>done(1,okMsg),()=>job.then(button,fail))}catch(e){job.then(button,fail)}}
 const clbCode=mode=>"javascript:("+encodeURIComponent(clbBridge.toString())+")("+encodeURIComponent(JSON.stringify(mode=="crew"?"crew":"dp"))+")";
-const CLB="ROTATE1 ",CLB_MAX=8e6,CLB_DL="https://crewlink.ita-airways.com/crewlink/clApp?crewlinkService=individualDutyPlan&crewlinkOperation=default";
+const CLB="ROTATE1 ",CLB_MAX=8e6;
 /* confronto prima/dopo: quanti giorni sono cambiati rispetto all'ultimo import */
 const clbSig=D=>D?JSON.stringify((D.ev||[]).map(e=>[e.t,e.fn,e.from,e.to,e.dep,e.arr,e.c,e.s,e.e,e.h])):"";
 const CLB_BV=5;let clbOld=false;
@@ -2688,17 +2686,9 @@ function crewPurge(){const lim=Date.now()-CREW_KEEP;let ch=0;Object.keys(days).f
 const noCrew=o=>{if(!o||typeof o!="object")return o;const c={};for(const k in o){const D=o[k];c[k]=D&&Array.isArray(D.ev)?Object.assign({},D,{ev:D.ev.map(e=>{if(!e||!e.crew)return e;const x=Object.assign({},e);delete x.crew;delete x.crewAt;return x})}):D}return c};
 const CL_HOME="https://crewlink.ita-airways.com/crewlink/clApp?crewlinkService=crewlinkForCrew&crewlinkOperation=loadMainFrameSet";
 /* ricerca di Show Crew con i campi del modulo searchFlightForm già compilati; l'hash dice al segnalibro quale volo scaricare */
-const crewUrl=q=>{const[a,n,d,ap]=q.split("|");return"https://crewlink.ita-airways.com/crewlink/clApp?"+new URLSearchParams({crewlinkService:"showCrew",crewlinkOperation:"showCrew",crewlinkSourcePage:"spCrew",depDatePeriodBegin:d,depDatePeriodEnd:d,fnAirline:a,fnNumber:n,depAp:ap||"",arrAp:""})+"#rotate-crew="+encodeURIComponent(q)};
 /* lista già scaricata: si apre e si chiude dallo stesso pulsante, chiusa ogni volta che apri il giorno */
 function crewHtml(e,k){if(e.crew&&e.crew.length)return'<details class="crw"><summary><span class="crs1">'+tt("Show crew","Mostra equipaggio")+' ('+e.crew.length+')</span><span class="crs2">'+tt("Hide crew","Nascondi equipaggio")+'</span></summary><div class="crwl" data-notr>'+e.crew.map(c=>'<div><b>'+esc(c.r)+'</b><span>'+esc(c.n)+'</span></div>').join("")+'</div><small>'+tt("From CrewLink, ","Da CrewLink, ")+fmtAt(e.crewAt)+' · <button type="button" class="crwb" data-crk="'+esc(k)+'" data-crf="'+esc(e.fn)+'">'+tt("Update","Aggiorna")+'</button></small></details>';
  return'<div class="crw"><button type="button" class="crwb" data-crk="'+esc(k)+'" data-crf="'+esc(e.fn)+'">'+tt("Show crew","Mostra equipaggio")+'</button></div>'}
-function clbSheet(mode,fn,q){let o=document.getElementById("clbS");if(o)o.remove();o=document.createElement("div");o.id="clbS";o.className="clbs";o.setAttribute("role","dialog");o.setAttribute("aria-modal","true");
- const cr=mode=="crew";
- o.innerHTML='<div class="clbsp"><b>'+(cr?tt("Crew of ","Equipaggio del ")+esc(fn):tt("Parsing from CrewLink","Parsing da CrewLink"))+'</b><p>'+(cr?tt("CrewLink opens on Show Crew, already searched for this flight. There tap the Rotate Crew bookmark: it adds the crew and gets the report by itself. Come back here and tap Paste. If CrewLink asks you to log in, log in, come back and tap Open CrewLink again.","CrewLink si apre su Show Crew, già con la ricerca di questo volo. Lì tocca il segnalibro Rotate Crew: aggiunge l'equipaggio e scarica il report da solo. Torna qui e tocca Incolla. Se CrewLink chiede il login, fallo, torna qui e tocca di nuovo Apri CrewLink."):tt("Open CrewLink and tap the Rotate Roster bookmark: your duty plan is copied. Come back here and tap Paste.","Apri CrewLink e tocca il segnalibro Rotate Roster: il duty plan viene copiato. Torna qui e tocca Incolla."))+'</p>'
-  +'<button class="dpb" type="button" id="clbSo">'+tt("Open CrewLink","Apri CrewLink")+'</button><button class="dpb alt" type="button" id="clbSp">'+tt("Paste from CrewLink","Incolla da CrewLink")+'</button><div id="clbM2"></div>'
-  +'<button class="clbsl" type="button" id="clbSs">'+tt("Set up the Rotate bookmarks","Configura i segnalibri Rotate")+'</button><button class="clbsl" type="button" id="clbSx">'+tt("Close","Chiudi")+'</button></div>';
- document.body.appendChild(o);const close=()=>o.remove();o.onclick=e=>{if(e.target==o)close()};$("#clbSx").onclick=close;
- $("#clbSo").onclick=()=>{clbStart();clbOpen(cr?(q?crewUrl(q):CL_HOME):CLB_DL)};$("#clbSp").onclick=()=>{close();clbPaste()};$("#clbSs").onclick=()=>{close();dpTab="r";go("dp");setTimeout(()=>{const d=document.querySelector("#dpR details");if(d)d.open=true},100)};$("#clbSo").focus()}
 function clbDiag(P){let o=document.getElementById("clbS");if(o)o.remove();o=document.createElement("div");o.id="clbS";o.className="clbs";const txt=JSON.stringify(P.diag||{}).slice(0,3000)+" "+(P.url||"");
  o.innerHTML='<div class="clbsp"><b>'+tt("Crew list not recognised","Lista equipaggio non riconosciuta")+'</b><p>'+tt("Send this page description (no names) to the developer so the reader can be adjusted to your CrewLink.","Manda questa descrizione della pagina (senza nomi) allo sviluppatore, così la lettura viene adattata al tuo CrewLink.")+'</p><textarea readonly rows="5" style="width:100%;box-sizing:border-box">'+esc(txt)+'</textarea><button class="clbsl" type="button" id="clbSx">'+tt("Close","Chiudi")+'</button></div>';
  document.body.appendChild(o);$("#clbSx").onclick=()=>o.remove()}
@@ -2706,11 +2696,9 @@ function clbDiag(P){let o=document.getElementById("clbS");if(o)o.remove();o=docu
 function crewQ(k,fn){const f=((days[k]||{}).ev||[]).find(e=>e.t=="fl"&&e.fn==fn);if(!f)return"";const m=String(fn).match(/^([A-Z0-9]{2})\s*0*(\d{1,4})/);if(!m)return"";
  let d=new Date(k+"T12:00:00Z");try{const A=AIR[f.from],[y,mo,dd]=k.split("-").map(Number),[h,mi]=f.dep.split(":").map(Number);if(A)d=new Date(lbUtc(A[3],y,mo,dd,h,mi))}catch(e){}
  return m[1]+"|"+m[2]+"|"+p2(d.getUTCDate())+DPM[d.getUTCMonth()]+String(d.getUTCFullYear()).slice(2)+"|"+f.from}
-document.addEventListener("pointerdown",e=>{const b=e.target.closest&&e.target.closest(".crwb");if(b&&boxCfg())boxPrep("cr:"+b.dataset.crk+":"+b.dataset.crf,()=>crewReq(b.dataset.crk,b.dataset.crf))});
+document.addEventListener("pointerdown",e=>{const b=e.target.closest&&e.target.closest(".crwb");if(b&&boxReady())boxPrep("cr:"+b.dataset.crk+":"+b.dataset.crf,()=>crewReq(b.dataset.crk,b.dataset.crf))});
 document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest(".crwb");if(!b)return;e.preventDefault();
- if(boxCfg()){boxGo("cr:"+b.dataset.crk+":"+b.dataset.crf,()=>crewReq(b.dataset.crk,b.dataset.crf),"crew");return}
- clbSheet("crew",b.dataset.crf,crewQ(b.dataset.crk,b.dataset.crf))});
-function clbStart(){try{localStorage.setItem("rot_clw",String(Date.now()))}catch(e){}}
+ const k=b.dataset.crk,f=b.dataset.crf,key="cr:"+k+":"+f,rqf=()=>crewReq(k,f);if(boxNeedSetup({key,rqf,what:"crew",lbl:tt("Crew of ","Equipaggio del ")+f}))return;boxGo(key,rqf,"crew")});
 function clbOpen(u){if(IOS){let left=false;const h=()=>{if(document.hidden)left=true};document.addEventListener("visibilitychange",h);
   try{const a=document.createElement("a");a.href="x-safari-"+u;document.body.appendChild(a);a.click();a.remove()}catch(x){}
   setTimeout(()=>{document.removeEventListener("visibilitychange",h);if(!left&&!document.hidden)window.open(u,"_blank")},1300)}else window.open(u,"_blank","noopener")}
@@ -2726,6 +2714,10 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)clbBar()})
  +".crw{margin:-2px 0 6px 52px;padding:2px 0 8px;font-size:14px}.crw summary{list-style:none;display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border-radius:4px;border:1.5px solid var(--tx2,#888);font-weight:600;cursor:pointer;-webkit-user-select:none;user-select:none}.crw summary::-webkit-details-marker{display:none}.crw[open] summary{margin-bottom:6px}.crw[open] .crs1,.crw:not([open]) .crs2,.crw:not([open]) .crwl,.crw:not([open]) small{display:none}@media (pointer:coarse){.rsp,.rso{font-size:16px}}.crwl>div{display:flex;gap:10px;padding:3px 0}.crwl>div b{min-width:42px;font-weight:700;color:var(--tx2,#555)}.crw small{display:block;color:var(--tx2,#666);margin-top:4px}.crwb{min-height:36px;padding:0 12px;border-radius:4px;border:1.5px solid var(--tx2,#888);background:none;color:var(--tx);font:inherit;font-weight:600}.crw small .crwb{min-height:28px;padding:0 8px;font-size:13px;margin-left:4px}"
  +".bximp{display:inline-block;margin-left:8px;vertical-align:1px;background:#d92d20;color:#fff;font-size:11px;font-weight:800;letter-spacing:.06em;padding:3px 8px;border-radius:999px}.grp.bxcard{padding:14px 16px 16px}.bxcard .bxhd b{font-size:17px}.bxcard .bxlead{font-size:15px}.bxcard .bxst:last-of-type{border-bottom:0}.bxcard p b,.bxcard li b{font-size:inherit;font-weight:700;color:var(--tx)}.bxcard .dpb{margin-top:12px}.bxcard .dpb+.dpb{margin-top:10px}.bxcard .ft{margin:8px 0 0;padding:0}.bxdet{margin-top:14px}.bxdet summary{font-weight:700;cursor:pointer;min-height:44px;display:flex;align-items:center}"
  +".clbsp p b,.clbsp li b,.clbsp summary b{font-size:inherit;font-weight:700}.bxhd{display:flex;align-items:center;justify-content:space-between;gap:12px}.bxhd b{font-size:20px}.bxbadge{flex:none;font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--sel,rgba(127,127,127,.15));color:var(--tx2,#555)}.bxbadge.on{background:rgba(48,168,88,.16);color:var(--grn,#1b7a3d)}.bxbadge.warn{background:rgba(230,140,20,.18);color:#b05f00}"
+ +".bxn.ok{background:#30a858;color:#fff}.bxflash{outline:3px solid #f59e0b;outline-offset:3px;animation:bxfl 1s ease-in-out 4}@keyframes bxfl{50%{outline-color:rgba(245,158,11,.2)}}@media (prefers-reduced-motion:reduce){.bxflash{animation:none}}"
+ +".grp.bxgate{box-shadow:inset 0 0 0 2px #f59e0b}.grp.bxgate.ok{box-shadow:inset 0 0 0 2px #30a858}.bxckl{margin-top:8px}.bxck{display:flex;align-items:center;gap:12px;width:100%;min-height:50px;padding:8px 0;margin:0;border:0;border-bottom:1px solid rgba(127,127,127,.2);background:none;color:var(--tx);font:inherit;font-size:16px;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}.bxck:last-child{border-bottom:0}"
+ +".bxci{flex:none;width:24px;height:24px;box-sizing:border-box;border-radius:50%;border:2px solid #f59e0b;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;line-height:1}.bxck.ok .bxci{background:#30a858;border-color:#30a858;color:#fff}.bxck.skip .bxci{border-color:var(--tx2,#888);color:var(--tx2,#888)}.bxct{flex:1;min-width:0;font-weight:600}.bxcs{flex:none;font-size:14px;color:var(--tx2,#555)}button.bxck .bxcs{color:#b05f00;font-weight:700}"
+ +".bxgo{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:61;display:flex;align-items:center;gap:12px;padding:12px 12px 12px 16px;background:#1b7a3d;color:#fff;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.3);font-size:15px;line-height:1.35}.bxgo span{flex:1;min-width:0}.bxgo b{font-size:17px}.bxgo button{flex:none;min-height:48px;padding:0 22px;border:0;border-radius:10px;background:#fff;color:#1b7a3d;font:inherit;font-size:17px;font-weight:800;cursor:pointer}#setclx.bxpad{padding-bottom:110px}"
  +".bxlead{margin:10px 0 2px;color:var(--tx2,#555);line-height:1.45}.bxst{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(127,127,127,.2)}.bxn{flex:none;width:30px;height:30px;border-radius:50%;background:var(--tx,#111);color:var(--bg,#fff);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;margin-top:1px}.bxsb{flex:1;min-width:0}.bxsb>b{display:block;font-size:17px;line-height:1.3;margin-top:4px}.bxsb p{margin:6px 0 0;color:var(--tx2,#555);line-height:1.45;font-size:15px}.bxsb p b{color:var(--tx)}.bxsb .dpb,.bxsb .bxsv{margin-top:12px}"
  +".bxuse{margin-top:18px;padding:14px 16px;border-radius:12px;background:var(--sel,rgba(127,127,127,.12))}.bxuse>b{font-size:16px}.bxuse ol{margin:8px 0 0;padding-left:20px;line-height:1.5;font-size:15px}.bxuse li+li{margin-top:6px}.clbsp details p{color:var(--tx2,#555);line-height:1.45;font-size:15px;margin:4px 0 0}"
  +".clbsp .dpb+.dpb{margin-top:12px}.clbsp ol{margin:8px 0 0;padding-left:22px;line-height:1.5}.clbsp details{margin-top:18px}.clbsp summary{font-weight:700;cursor:pointer;min-height:44px;display:flex;align-items:center}.bxsv{display:block;margin-top:12px}.bxsv span{display:block;font-size:13px;color:var(--tx2,#666);margin-bottom:4px}.bxsv input,#bxTx{width:100%;box-sizing:border-box;font-family:inherit;font-size:16px;padding:12px;border-radius:4px;border:1.5px solid var(--tx2,#888);background:var(--card,transparent);color:var(--tx)}#bxTx{margin-top:12px}"
@@ -2751,7 +2743,7 @@ async function boxKey(c){if(BOXK&&BOXK.k==c.k)return BOXK.key;const key=await cr
 async function boxSeal(c,o){const iv=crypto.getRandomValues(new Uint8Array(12)),ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},await boxKey(c),new TextEncoder().encode(JSON.stringify(o))));return{iv:b64std(iv),ct:b64std(ct)}}
 async function boxOpen(c,x){return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:u8of(x.iv)},await boxKey(c),u8of(x.ct))))}
 async function boxLink(server){const b=String(server||BOX_DEF).trim().replace(/\/+$/,"");if(!/^https:\/\/[^\s\/]+/.test(b))throw new Error(tt("invalid address","indirizzo non valido"));
- const c={b,i:rnd(16),r:rnd(32),w:rnd(32),k:rnd(32),at:Date.now()};
+ const c={b,i:rnd(16),r:rnd(32),w:rnd(32),k:rnd(32),at:Date.now(),bk:0};
  const r=await fetch(b+"/box",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:c.i,rt:c.r,wt:c.w})});
  if(r.status!=201)throw new Error("HTTP "+r.status);boxSave(c);return c}
 /* configurazione per il segnalibro / Userscripts: indirizzo, cassetta, codice di scrittura, chiave */
@@ -2775,7 +2767,7 @@ async function boxPrep(key,rqf){const c=boxCfg();if(!c)return null;const rq=rqf(
  const p={rid:rq.id,at:Date.now(),url:c.b+"/box/"+c.i+"/req",body:JSON.stringify(Object.assign({t:c.r},sl)),h:"v1."+uu(sl.iv)+"."+uu(sl.ct)};BOXPRE.set(key,p);return p}
 function boxPrepSoon(){clearTimeout(window.__bps);window.__bps=setTimeout(()=>{try{if(PG=="roster"&&boxCfg())boxPrep(rosterKey(),rosterReq)}catch(e){}},400)}
 /* la richiesta viaggia nell'indirizzo di CrewLink (#rotate-req=…) e, per il caso del login, anche sulla cassetta (sendBeacon) */
-function boxGo(key,rqf,what){const c=boxCfg();if(!c)return false;if(c.lost){toast(tt("CrewLink link to redo","Collegamento CrewLink da rifare"),tt("Settings › CrewLink › Link again","Impostazioni › CrewLink › Ricollega"));setFrom=PG;go("setcl");return true}
+function boxGo(key,rqf,what){const c=boxCfg();if(!c)return false;if(c.lost){toast(tt("CrewLink link to redo","Collegamento CrewLink da rifare"),tt("Settings › CrewLink › Link again","Impostazioni › CrewLink › Ricollega"),1);setFrom=PG;go("setcl");return true}
  const p=BOXPRE.get(key);
  if(p&&Date.now()-p.at<10*6e4){try{navigator.sendBeacon&&navigator.sendBeacon(p.url,new Blob([p.body],{type:"text/plain"}))}catch(e){}BOXPRE.delete(key);boxPending(p.rid,what);clbOpen(CL_HOME+"#rotate-req="+p.h);return true}
  toast(tt("Preparing the request…","Preparo la richiesta…"));
@@ -2795,12 +2787,13 @@ function boxNext(P){if(!P||P.t!="bundle"||!Array.isArray(P.dp)||!P.dp.length||!A
 const boxSum=(a,b)=>!a?b:!b?a:{next:(a.next||0)+(b.next||0),ok:(a.ok||0)+(b.ok||0),n:(a.n||0)+(b.n||0),dd:(a.dd||0)+(b.dd||0),ch:[...new Set([...(a.ch||[]),...(b.ch||[])])].sort(),crew:(a.crew||0)+(b.crew||0),miss:(a.miss||0)+(b.miss||0)};
 async function boxPull(){const c=boxCfg();if(!c||BOXBUSY||!navigator.onLine)return;BOXBUSY=true;
  try{const r=await boxApi(c,"/drop");
-  if(r.status==404){const j=await r.json().catch(()=>({}));if(j&&j.error=="not found"&&!c.lost){c.lost=1;boxSave(c);boxPending(null);boxUi();toast(tt("CrewLink link to redo","Collegamento CrewLink da rifare"),tt("Settings › CrewLink › Link again","Impostazioni › CrewLink › Ricollega"))}return}
+  if(r.status==404){const j=await r.json().catch(()=>({}));if(j&&j.error=="not found"&&!c.lost){c.lost=1;boxSave(c);boxPending(null);boxUi();toast(tt("CrewLink link to redo","Collegamento CrewLink da rifare"),tt("Settings › CrewLink › Link again","Impostazioni › CrewLink › Ricollega"),1)}return}
   if(!r.ok)return;const L=await r.json();if(!Array.isArray(L)||!L.length)return;
-  const done=[];let res=null,old=false;const w=boxPendingGet();
+  const done=[];let res=null,old=false,bv=0;const w=boxPendingGet();
   let nxt=[];
-  for(const x of L){try{const P=await boxOpen(c,x);if(P&&P.t=="bundle"&&!(P.bv>=CLB_V))old=true;res=boxSum(res,await clbApply(P));if(w&&P.rid==w.rid)boxPending(null);nxt=nxt.concat(boxNext(P))}catch(e){}done.push(x.n)}
+  for(const x of L){try{const P=await boxOpen(c,x);if(P&&P.t=="bundle"){bv=Math.max(bv,P.bv||1);if(!(P.bv>=CLB_V))old=true}res=boxSum(res,await clbApply(P));if(w&&P.rid==w.rid)boxPending(null);nxt=nxt.concat(boxNext(P))}catch(e){}done.push(x.n)}
   await boxApi(c,"/drop?n="+encodeURIComponent(done.join(",")),{method:"DELETE"}).catch(()=>{});
+  if(bv){const c2=boxCfg();if(c2&&c2.i==c.i&&!(c2.bk>0||c2.us>0)){c2.bk=bv;boxSave(c2)}}
   /* voli nuovi arrivati con il duty plan: la richiesta del loro equipaggio resta pronta per il prossimo giro su CrewLink */
   if(nxt.length&&res){try{const p=await boxPrep("next",()=>({fl:nxt}));const r2=await fetch(p.url,{method:"POST",headers:{"Content-Type":"text/plain"},body:p.body});if(r2.ok)res.next=nxt.length}catch(e){}}
   if(res){clbOld=old;clbDone(res)}else boxPending(null)}
@@ -2811,15 +2804,15 @@ addEventListener("online",()=>boxPoll());
 /* notifiche push (iOS 16.4+, Rotate sulla schermata Home) */
 async function boxNotify(c){try{
  if(!("Notification"in window)||!("serviceWorker"in navigator)||!("PushManager"in window)){toast(tt("Notifications need Rotate on the Home Screen","Le notifiche richiedono Rotate sulla schermata Home"),tt("iOS 16.4 or later","iOS 16.4 o successivo"));return}
- const perm=await Notification.requestPermission();if(perm!="granted"){toast(tt("Notifications not allowed","Notifiche non consentite"),tt("Allow them in Settings › Notifications › Rotate","Consentile in Impostazioni › Notifiche › Rotate"));return}
+ const perm=await Notification.requestPermission();if(perm!="granted"){toast(tt("Notifications not allowed","Notifiche non consentite"),tt("Allow them in Settings › Notifications › Rotate","Consentile in Impostazioni › Notifiche › Rotate"),1);return}
  const reg=await navigator.serviceWorker.ready,vk=(await(await fetch(c.b+"/vapid",{cache:"no-store"})).json()).key;
  let sub=await reg.pushManager.getSubscription();
  if(sub){const cur=sub.options&&sub.options.applicationServerKey?b64url(new Uint8Array(sub.options.applicationServerKey)):"";if(cur&&cur!=vk){await sub.unsubscribe();sub=null}}
  if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8of(vk)});
  let r=await boxApi(c,"/push",{method:"PUT",body:JSON.stringify(sub)});if(!r.ok)throw new Error("HTTP "+r.status);
- c.push=1;boxSave(c);r=await boxApi(c,"/push",{method:"POST",body:JSON.stringify({note:tt("Rotate notifications are on ✓","Notifiche di Rotate attive ✓")})});const j=await r.json().catch(()=>({}));
+ {const c2=boxCfg();if(c2&&c2.i==c.i){c2.push=1;boxSave(c2)}}r=await boxApi(c,"/push",{method:"POST",body:JSON.stringify({note:tt("Rotate notifications are on ✓","Notifiche di Rotate attive ✓")})});const j=await r.json().catch(()=>({}));
  toast(tt("Notifications on","Notifiche attive"),j.ok?tt("A test notification is on its way","Sta arrivando una notifica di prova"):tt("Test not delivered: ","Prova non consegnata: ")+j.status)}
- catch(e){toast(tt("Could not turn on notifications","Impossibile attivare le notifiche"),String(e&&e.message||e))}}
+ catch(e){toast(tt("Could not turn on notifications","Impossibile attivare le notifiche"),String(e&&e.message||e),1)}}
 const copyTxt=async(t,ok,sub)=>{try{await navigator.clipboard.writeText(t);toast(ok,sub)}catch(e){const a=$("#bxTx");if(a){a.hidden=false;a.value=t;a.select()}}};
 function copyLater(mk,ok,sub){if(CLB_SRC)return copyTxt(mk(),ok,sub);const pr=clbSrc().then(()=>mk());
  try{navigator.clipboard.write([new ClipboardItem({"text/plain":pr.then(t=>new Blob([t],{type:"text/plain"}))})]).then(()=>toast(ok,sub),()=>pr.then(t=>copyTxt(t,ok,sub)))}catch(e){pr.then(t=>copyTxt(t,ok,sub)).catch(()=>toast(tt("Could not prepare the bookmark","Segnalibro non preparato"),tt("Check the connection","Controlla la connessione")))}}
@@ -2827,22 +2820,51 @@ function copyLater(mk,ok,sub){if(CLB_SRC)return copyTxt(mk(),ok,sub);const pr=cl
 /* ===== Impostazioni › CrewLink: notifiche, collegamento Cloudflare, Userscripts ===== */
 const isStandalone=()=>!!(navigator.standalone||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches));
 function notifState(){if(!("Notification"in window)||!("serviceWorker"in navigator)||!("PushManager"in window))return"na";const c=boxCfg();if(Notification.permission=="denied")return"blocked";return Notification.permission=="granted"&&c&&c.push&&!c.lost?"on":"off"}
+/* passi della configurazione: rotella, Scarica e importa e Mostra equipaggio partono solo quando sono fatti, altrimenti portano qui.
+   Notifiche: contano solo se il telefono le supporta e non le hai bloccate; dopo un tentativo non bloccano più (un errore del server non deve chiudere la strada).
+   Segnalibro: copiato o script Userscripts salvato. I collegamenti fatti prima della v1.2.20 non ne hanno traccia: erano già in uso, il segnalibro c'è */
+const bkDone=c=>!!c&&!c.lost&&(c.bk===undefined||c.bk>0||c.us>0);
+function boxMissing(){const c=boxCfg(),m=[];if(notifState()=="off"&&!(c&&c.nq))m.push("notif");if(!c||c.lost)m.push(c?"relink":"link");if(!bkDone(c))m.push("bookmark");return m}
+const boxReady=()=>!boxMissing().length;
+var GATE=null;
+function boxNeedSetup(g){const m=boxMissing();if(!m.length)return false;GATE=Object.assign({from:PG},g);setFrom=PG;go("setcl");
+ toast(tt("First finish the CrewLink setup","Prima completa la configurazione CrewLink"),m.length==1?tt("1 step left, highlighted","Manca 1 passo, evidenziato"):tt(m.length+" steps left, highlighted","Mancano "+m.length+" passi, evidenziati"),1);
+ setTimeout(()=>boxFlash(m,1),80);return true}
+function boxFlash(m,scroll){const id={notif:"ntOn",link:"bxGo",relink:"bxRe",bookmark:"bxCp"},els=m.map(k=>document.getElementById(id[k])).filter(Boolean);if(!els.length)return;
+ if(scroll)try{els[0].scrollIntoView({block:"center",behavior:"smooth"})}catch(e){els[0].scrollIntoView()}
+ els.forEach(e=>{e.classList.remove("bxflash");void e.offsetWidth;e.classList.add("bxflash")})}
+/* dopo Copia o Salva script: si aggiorna l'elenco, ma non se è aperto il riquadro per copiare a mano */
+const setclSoon=()=>setTimeout(()=>{const t=$("#bxTx");if(PG=="setcl"&&(!t||t.hidden))setclRender()},600);
 /* notifiche: il permesso si chiede subito (iOS lo vuole dentro il tocco); se manca il collegamento, si crea */
 async function notifOn(){
  if(notifState()=="na"){toast(tt("Open Rotate from its Home Screen icon","Apri Rotate dalla sua icona sulla schermata Home"),tt("Notifications work only there (iOS 16.4 or later)","Le notifiche funzionano solo lì (iOS 16.4 o successivo)"));return}
  let perm="default";try{perm=await Notification.requestPermission()}catch(e){}
- if(perm!="granted"){setclRender();toast(tt("Notifications not allowed","Notifiche non consentite"),tt("iPhone Settings › Notifications › Rotate › Allow","Impostazioni iPhone › Notifiche › Rotate › Consenti notifiche"));return}
- let c=boxCfg();if(!c||c.lost){try{c=await boxLink(c&&c.b||BOX_DEF)}catch(e){toast(tt("Could not reach the Rotate server","Server Rotate non raggiungibile"),String(e&&e.message||e));setclRender();return}}
- await boxNotify(c,true);setclRender()}
+ if(perm!="granted"){setclRender();toast(tt("Notifications not allowed","Notifiche non consentite"),tt("iPhone Settings › Notifications › Rotate › Allow","Impostazioni iPhone › Notifiche › Rotate › Consenti notifiche"),1);return}
+ let c=boxCfg();if(!c||c.lost){try{c=await boxLink(c&&c.b||BOX_DEF)}catch(e){toast(tt("Could not reach the Rotate server","Server Rotate non raggiungibile"),String(e&&e.message||e),1);setclRender();return}}
+ /* da qui il passo conta come fatto anche se l'iscrizione non riesce: si riprova da questo pulsante */
+ c.nq=1;boxSave(c);const t=setTimeout(()=>{if(PG=="setcl")setclRender()},15000);
+ await boxNotify(c,true);clearTimeout(t);setclRender();boxUi()}
 /* script per Userscripts come file: Condividi › Salva in File, direttamente nella cartella di Userscripts */
 async function saveUserscript(c){if(!CLB_SRC){clbSrc().then(()=>toast(tt("Ready","Pronto"),tt("Tap Save script again","Tocca di nuovo Salva script"))).catch(()=>toast(tt("Check the connection","Controlla la connessione")));return}
  const t=boxUserscript(c);let f=null;try{f=new File([t],"Rotate.user.js",{type:"text/javascript"})}catch(e){}
- if(f&&navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f]});return}catch(e){if(e&&e.name=="AbortError")return}}
- copyTxt(t,tt("Script copied","Script copiato"),tt("Paste it into a new file Rotate.user.js in the Userscripts folder","Incollalo in un nuovo file Rotate.user.js nella cartella di Userscripts"))}
-function setclRender(){const X=$("#setclx");if(!X)return;const c=boxCfg(),lost=c&&c.lost,ns=notifState();
- const step=(n,t,body,btn)=>'<div class="bxst"><span class="bxn">'+n+'</span><div class="bxsb"><b>'+t+'</b>'+(body?'<p>'+body+'</p>':"")+(btn||"")+'</div></div>';
+ const saved=()=>{const c2=boxCfg();if(c2){c2.us=CLB_V;boxSave(c2)}if(GATE)GATE.cp="us";setclSoon()};
+ if(f&&navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f]});saved();return}catch(e){if(e&&e.name=="AbortError")return}}
+ saved();copyTxt(t,tt("Script copied","Script copiato"),tt("Paste it into a new file Rotate.user.js in the Userscripts folder","Incollalo in un nuovo file Rotate.user.js nella cartella di Userscripts"))}
+function setclRender(){const X=$("#setclx");if(!X)return;const c=boxCfg(),lost=c&&c.lost,ns=notifState(),mi=boxMissing(),bk=bkDone(c);
+ const step=(n,t,body,btn,ok)=>'<div class="bxst"><span class="bxn'+(ok?" ok":"")+'">'+(ok?"✓":n)+'</span><div class="bxsb"><b>'+t+'</b>'+(body?'<p>'+body+'</p>':"")+(btn||"")+'</div></div>';
  const badge=(k,t)=>'<span class="bxbadge '+k+'">'+t+'</span>';
  let h="";
+ /* riepilogo: cosa manca prima di poter scaricare (arrivando dalla rotella, da Scarica e importa o da Mostra equipaggio) */
+ if(mi.length||GATE){
+  const row=(k,st,t,v)=>st=="ok"||st=="skip"?'<div class="bxck '+st+'"><span class="bxci">'+(st=="ok"?"✓":"–")+'</span><span class="bxct">'+t+'</span><span class="bxcs">'+v+'</span></div>'
+   :'<button type="button" class="bxck" data-ck="'+k+'"><span class="bxci"></span><span class="bxct">'+t+'</span><span class="bxcs">'+v+' ›</span></button>';
+  const lk=!c?"link":lost?"relink":"";
+  h+='<div class="grp bxcard bxgate'+(mi.length?"":" ok")+'"><div class="bxhd"><b>'+(!mi.length?tt("All set ✓","Tutto pronto ✓"):GATE?tt("Before downloading from CrewLink","Prima di scaricare da CrewLink"):tt("Setup to finish","Configurazione da completare"))+'</b></div>'
+   +'<p class="bxlead">'+(!mi.length?tt("Tap Continue at the bottom of the screen.","Tocca Continua in fondo allo schermo."):tt("Do the highlighted steps below. Tap a line to go to its step.","Fai i passi evidenziati qui sotto. Tocca una riga per andare al suo passo."))+'</p><div class="bxckl">'
+   +row("notif",ns=="on"?"ok":mi.includes("notif")?"todo":"skip",tt("App notifications","Notifiche dell'app"),ns=="on"?tt("On","Attive"):mi.includes("notif")?tt("To turn on","Da attivare"):ns=="blocked"?tt("Blocked","Bloccate"):ns=="na"?tt("Not available here","Non disponibili qui"):tt("Off","Non attive"))
+   +row(lk||"link",lk?"todo":"ok",tt("Link to the server","Collegamento al server"),!c?tt("To do","Da fare"):lost?tt("To redo","Da rifare"):tt("Done","Fatto"))
+   +row(lk||"bookmark",bk?"ok":"todo",tt("Rotate bookmark","Segnalibro Rotate"),bk?(c.us>0&&!(c.bk>0)?tt("Script saved","Script salvato"):tt("Copied","Copiato")):tt("To copy","Da copiare"))
+   +'</div></div>'}
  /* 1. notifiche */
  h+='<div class="hd">'+tt("Notifications","Notifiche")+' <span class="bximp">'+tt("IMPORTANT","IMPORTANTE")+'</span></div><div class="grp bxcard">'
   +'<div class="bxhd"><b>'+tt("App notifications","Notifiche dell'app")+'</b>'+(ns=="on"?badge("on",tt("On","Attive")):ns=="blocked"?badge("warn",tt("Blocked","Bloccate")):ns=="na"?badge("off",tt("Not available here","Non disponibili qui")):badge("warn",tt("Off","Non attive")))+'</div>'
@@ -2862,8 +2884,8 @@ function setclRender(){const X=$("#setclx");if(!X)return;const c=boxCfg(),lost=c
  }else if(lost){
   h+='<p class="bxlead"><b>'+tt("The server no longer knows this link","Il server non riconosce più questo collegamento")+'</b> '+tt("(its storage was recreated). Link again, then copy the bookmark again (steps 2 and 3).","(lo spazio dati è stato ricreato). Ricollega, poi copia di nuovo il segnalibro (passi 2 e 3).")+'</p><button class="dpb" type="button" id="bxRe">'+tt("Link again","Ricollega")+'</button>';
  }else{
-  h+=step(1,tt("Linked ✓","Collegato ✓"),esc(c.b.replace(/^https:\/\//,"")))
-   +step(2,tt("Copy the bookmark","Copia il segnalibro"),tt("The Rotate bookmark contains all the code: copy it again when Rotate tells you it is out of date.","Il segnalibro Rotate contiene tutto il codice: ricopialo quando Rotate ti dice che è vecchio."),'<button class="dpb" type="button" id="bxCp">'+tt("Copy bookmark","Copia segnalibro")+'</button>')
+  h+=step(1,tt("Linked","Collegato"),esc(c.b.replace(/^https:\/\//,"")),"",1)
+   +step(2,tt("Copy the bookmark","Copia il segnalibro"),tt("The Rotate bookmark contains all the code: copy it again when Rotate tells you it is out of date.","Il segnalibro Rotate contiene tutto il codice: ricopialo quando Rotate ti dice che è vecchio."),'<button class="dpb'+(bk?" alt":"")+'" type="button" id="bxCp">'+(bk?tt("Copy it again","Copia di nuovo"):tt("Copy bookmark","Copia segnalibro"))+'</button>',bk)
    +step(3,tt("Put it in Safari","Mettilo in Safari"),
      '<b>'+tt("First time","La prima volta")+'</b><br>'+tt("1. On any page in Safari tap ⋯ › Add Bookmark › Save.","1. In Safari, su una pagina qualsiasi, tocca ⋯ › Aggiungi segnalibro › Salva.")+'<br>'+tt("2. Open Bookmarks › Edit and tap the new bookmark.","2. Apri Segnalibri › Modifica e tocca il nuovo segnalibro.")+'<br>'+tt("3. Name: <b>Rotate</b>. Address: delete everything and paste.","3. Nome: <b>Rotate</b>. Indirizzo: cancella tutto e incolla.")
      +'<br><br><b>'+tt("Already have it","Ce l'hai già")+'</b><br>'+tt("Bookmarks › Edit › Rotate › Address: delete everything and paste.","Segnalibri › Modifica › Rotate › Indirizzo: cancella tutto e incolla."))
@@ -2875,7 +2897,7 @@ function setclRender(){const X=$("#setclx");if(!X)return;const c=boxCfg(),lost=c
    +'<p class="ft">'+tt("If CrewLink asked for the login, after the login tap the bookmark: Rotate fetches its request and reloads CrewLink; then tap the bookmark again.","Se CrewLink ti ha chiesto il login, dopo il login tocca il segnalibro: Rotate recupera la sua richiesta e ricarica CrewLink; poi tocca di nuovo il segnalibro.")+'</p></div>';
  }
  h+='<details class="bxdet"><summary>'+tt("Advanced","Avanzate")+'</summary>'+(c?'<p class="ft">'+tt("Server: ","Server: ")+esc(c.b)+'</p><button class="clbsl" type="button" id="bxUn" style="color:var(--red)">'+tt("Unlink","Scollega")+'</button>':"")
-  +'<p class="ft">'+tt("Without server (with Paste): bookmarks that copy the data, to paste in Rotate.","Senza server (con Incolla): segnalibri che copiano i dati da incollare in Rotate.")+'</p><button class="dpb alt" type="button" id="clbCp">'+tt("Copy Rotate Roster","Copia Rotate Roster")+'</button><button class="dpb alt" type="button" id="clbCp2">'+tt("Copy Rotate Crew","Copia Rotate Crew")+'</button><textarea id="clbCode" rows="3" readonly hidden aria-label="Bookmark code"></textarea></details></div>';
+  +'<p class="ft">'+tt("Without server (with Paste): bookmarks that copy the data, to paste in Rotate.","Senza server (con Incolla): segnalibri che copiano i dati da incollare in Rotate.")+'</p><button class="dpb alt" type="button" id="clbCp">'+tt("Copy Rotate Roster","Copia Rotate Roster")+'</button><button class="dpb alt" type="button" id="clbCp2">'+tt("Copy Rotate Crew","Copia Rotate Crew")+'</button><button class="dpb alt" type="button" id="clbPs">'+tt("Paste from CrewLink","Incolla da CrewLink")+'</button><textarea id="clbCode" rows="3" readonly hidden aria-label="Bookmark code"></textarea></details></div>';
  /* 3. Userscripts */
  h+='<div class="hd">'+tt("Userscripts (optional)","Userscripts (facoltativo)")+'</div><div class="grp bxcard">'
   +'<div class="bxhd"><b>'+tt("Without touching the bookmark","Senza toccare il segnalibro")+'</b></div>'
@@ -2886,34 +2908,31 @@ function setclRender(){const X=$("#setclx");if(!X)return;const c=boxCfg(),lost=c
   +step(4,tt("Save the Rotate script","Salva lo script di Rotate"),tt("Tap the button, choose <b>Save to Files</b> and pick the folder of step 2.","Tocca il pulsante, scegli <b>Salva in File</b> e seleziona la cartella del passo 2."),c&&!lost?'<button class="dpb alt" type="button" id="bxUs">'+tt("Save script","Salva script")+'</button>':'<p class="ft">'+tt("Set up the link above first.","Prima configura il collegamento qui sopra.")+'</p>')
   +step(5,tt("Done","Fatto"),tt("From now on, when Rotate opens CrewLink, the download starts by itself after the login. If you update the link, save the script again.","Da ora, quando Rotate apre CrewLink, il download parte da solo dopo il login. Se ricolleghi, salva di nuovo lo script."))
   +'</div><textarea id="bxTx" rows="3" readonly hidden aria-label="Code"></textarea>';
- X.innerHTML=h;
+ const gok=!!(GATE&&!mi.length);
+ if(gok)h+='<div class="bxgo" role="status"><span><b>'+tt("All set ✓","Tutto pronto ✓")+'</b><br>'+(GATE.cp=="bk"?tt("Bookmark in Safari yet (step 3)?","Segnalibro già in Safari (passo 3)?"):GATE.cp=="us"?tt("Script in the Userscripts folder yet?","Script già nella cartella di Userscripts?"):esc(GATE.lbl||""))+'</span><button type="button" id="bxCont">'+tt("Continue","Continua")+'</button></div>';
+ X.innerHTML=h;X.classList.toggle("bxpad",gok);
  const on=(id,f)=>{const x=document.getElementById(id);if(x)x.onclick=f};
  on("ntOn",()=>{if(notifState()=="on"){boxNotify(boxCfg(),true)}else notifOn()});
- on("bxGo",async()=>{const b=$("#bxGo");b.disabled=true;try{await boxLink($("#bxSv").value);toast(tt("Linked","Collegato"),tt("Now copy the bookmark (step 2)","Ora copia il segnalibro (passo 2)"));setclRender();boxUi()}catch(e){b.disabled=false;toast(tt("Could not link","Collegamento non riuscito"),tt("Is the Cloudflare Worker set up? ","Il Worker Cloudflare è configurato? ")+String(e&&e.message||e))}});
- on("bxRe",async()=>{const b=$("#bxRe");b.disabled=true;try{await boxLink(c.b);toast(tt("Linked again","Ricollegato"),tt("Now copy the bookmark again (step 2)","Ora copia di nuovo il segnalibro (passo 2)"));setclRender();boxUi()}catch(e){b.disabled=false;toast(tt("Could not link","Collegamento non riuscito"),String(e&&e.message||e))}});
+ on("bxGo",async()=>{const b=$("#bxGo");b.disabled=true;try{await boxLink($("#bxSv").value);toast(tt("Linked","Collegato"),tt("Now copy the bookmark (step 2)","Ora copia il segnalibro (passo 2)"));setclRender();boxUi();boxFlash(["bookmark"])}catch(e){b.disabled=false;toast(tt("Could not link","Collegamento non riuscito"),tt("Is the Cloudflare Worker set up? ","Il Worker Cloudflare è configurato? ")+String(e&&e.message||e),1)}});
+ on("bxRe",async()=>{const b=$("#bxRe");b.disabled=true;try{await boxLink(c.b);toast(tt("Linked again","Ricollegato"),tt("Now copy the bookmark again (step 2)","Ora copia di nuovo il segnalibro (passo 2)"));setclRender();boxUi();boxFlash(["bookmark"])}catch(e){b.disabled=false;toast(tt("Could not link","Collegamento non riuscito"),String(e&&e.message||e),1)}});
  if(c&&!lost)clbSrc().catch(()=>{});
- on("bxCp",()=>copyLater(()=>boxBookmark(c),tt("Bookmark copied","Segnalibro copiato"),tt("Now step 3: put it in Safari","Ora il passo 3: mettilo in Safari")));
+ on("bxCp",()=>{copyLater(()=>boxBookmark(c),tt("Bookmark copied","Segnalibro copiato"),tt("Now step 3: put it in Safari","Ora il passo 3: mettilo in Safari"));const c2=boxCfg();if(c2&&c2.i==c.i&&!(c2.bk>=CLB_V)){c2.bk=CLB_V;boxSave(c2)}if(GATE)GATE.cp="bk";setclSoon()});
  on("bxUs",()=>saveUserscript(c));
+ X.querySelectorAll("[data-ck]").forEach(b=>b.onclick=()=>boxFlash([b.dataset.ck],1));
+ /* Continua: torna dove eri e fa partire la richiesta (cifrata in anticipo, così CrewLink si apre subito) */
+ if(gok){const g=GATE;if(!BOXPRE.has(g.key))boxPrep(g.key,g.rqf).catch(()=>{});
+  on("bxCont",()=>{GATE=null;setFrom=null;go(g.from||"home");boxGo(g.key,g.rqf,g.what)})}
  let un=0;on("bxUn",async()=>{if(!un){un=1;toast(tt("Tap Unlink again to confirm","Tocca di nuovo Scollega per confermare"));setTimeout(()=>un=0,4000);return}try{await boxApi(c,"",{method:"DELETE"})}catch(e){}boxSave(null);toast(tt("Unlinked","Scollegato"));setclRender();boxUi()});
- on("clbCp",()=>clbCopy("dp","Rotate Roster"));on("clbCp2",()=>clbCopy("crew","Rotate Crew"))}
-/* rotella senza collegamento: si sceglie se configurarlo o usare Incolla */
-function boxSheet(fallback){if(!fallback){setFrom=PG;go("setcl");return}
- let o=document.getElementById("clbS");if(o)o.remove();o=document.createElement("div");o.id="clbS";o.className="clbs";o.setAttribute("role","dialog");o.setAttribute("aria-modal","true");
- o.innerHTML='<div class="clbsp"><div class="bxhd"><b>'+tt("CrewLink link not set up","Collegamento CrewLink non configurato")+'</b></div><p class="bxlead">'+tt("With the link, duty plan and crew arrive in Rotate by themselves. You set it up once in Settings › CrewLink.","Con il collegamento, duty plan ed equipaggio arrivano in Rotate da soli. Si configura una volta in Impostazioni › CrewLink.")+'</p>'
-  +'<button class="dpb" type="button" id="bxSet">'+tt("Set up the link","Configura il collegamento")+'</button><button class="dpb alt" type="button" id="bxFb">'+tt("Continue with Paste","Continua con Incolla")+'</button><button class="clbsl" type="button" id="clbSx">'+tt("Close","Chiudi")+'</button></div>';
- document.body.appendChild(o);const close=()=>o.remove();o.onclick=e=>{if(e.target==o)close()};
- $("#clbSx").onclick=close;$("#bxSet").onclick=()=>{close();setFrom=PG;go("setcl")};$("#bxFb").onclick=()=>{close();fallback()}}
-function boxUi(){const c=boxCfg();if(PG=="setcl")try{setclRender()}catch(e){}
+ on("clbCp",()=>clbCopy("dp","Rotate Roster"));on("clbCp2",()=>clbCopy("crew","Rotate Crew"));on("clbPs",()=>clbPaste())}
+function boxUi(){const ok=boxReady();if(PG=="setcl")try{setclRender()}catch(e){}
  const sp=$("#dpI .dpi span"),g=$("#dpGo span");
- if(sp)sp.textContent=c?tt("Rotate opens CrewLink: log in if asked and tap the Rotate bookmark. The duty plan of the period and the crew of its flights arrive in Rotate by themselves.","Rotate apre CrewLink: fai il login se richiesto e tocca il segnalibro Rotate. Il duty plan del periodo e l'equipaggio dei suoi voli arrivano in Rotate da soli."):"Opens your individual duty plan for the selected period in CrewLink, in Safari. Save the PDF (Share › Save to Files), then import it in the Import tab.";
- if(g)g.textContent=c?tt("Download and import","Scarica e importa"):"Download duty plan"}
+ if(sp)sp.textContent=ok?tt("Rotate opens CrewLink: log in if asked and tap the Rotate bookmark. The duty plan of the period and the crew of its flights arrive in Rotate by themselves.","Rotate apre CrewLink: fai il login se richiesto e tocca il segnalibro Rotate. Il duty plan del periodo e l'equipaggio dei suoi voli arrivano in Rotate da soli.")
+  :tt("Rotate downloads from CrewLink the duty plan of the period and the crew of its flights, by itself. The first time it takes you to Settings › CrewLink to finish the setup.","Rotate scarica da CrewLink il duty plan del periodo e l'equipaggio dei suoi voli, da solo. La prima volta ti porta in Impostazioni › CrewLink per completare la configurazione.");
+ if(g)g.textContent=tt("Download and import","Scarica e importa")}
 boxBar();setTimeout(boxPoll,1200);
-const dpUrl=(a,b)=>"https://crewlink.ita-airways.com/crewlink/clApp?"+new URLSearchParams({crewlinkService:"individualDutyPlan",crewlinkOperation:"makeReport",buddyName:"",beginDate:dpCL(dpIso(a)),endDate:dpCL(dpIso(b))});
 /* rotella del Roster: solo il mese visualizzato (duty plan + equipaggio dei suoi voli) */
-function parseOld(){const y=view.getFullYear(),m=view.getMonth();clbStart();clbOpen(dpUrl(new Date(y,m,1),new Date(y,m+1,0))+"#rotate="+y+"-"+p2(m+1));
- toast(tt("Duty plan of ","Duty plan di ")+view.toLocaleDateString(LOC(),{month:"long",year:"numeric"}),tt("On the PDF tap the Rotate Roster bookmark, then come back and tap Paste","Sul PDF tocca il segnalibro Rotate Roster, poi torna e tocca Incolla"))}
-$("#parseB").addEventListener("pointerdown",()=>{if(boxCfg())boxPrep(rosterKey(),rosterReq)});
-$("#parseB").onclick=()=>{if(boxCfg()){boxGo(rosterKey(),rosterReq,"dp");return}boxSheet(parseOld)};
+$("#parseB").addEventListener("pointerdown",()=>{if(boxReady())boxPrep(rosterKey(),rosterReq)});
+$("#parseB").onclick=()=>{if(boxNeedSetup({key:rosterKey(),rqf:rosterReq,what:"dp",lbl:tt("Duty plan of ","Duty plan di ")+view.toLocaleDateString(LOC(),{month:"long",year:"numeric"})}))return;boxGo(rosterKey(),rosterReq,"dp")};
 </script>
 <script>
 // offline (PWA): only on the real website, not inside Claude's preview

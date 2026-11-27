@@ -39,7 +39,9 @@ Quando questo file cambia: Worker `rotate-box` › **Edit code** › cancella tu
 1. **Impostazioni › CrewLink › Collega**.
 2. **Copia segnalibro**: in Safari aggiungi un segnalibro a una pagina qualsiasi, poi modificalo con nome `Rotate` e come indirizzo il testo copiato. Il segnalibro contiene tutto il codice: quando Rotate avvisa che è vecchio, ricopialo. I vecchi segnalibri *Rotate Roster* e *Rotate Crew* si possono cancellare.
 3. **Attiva le notifiche** (Rotate deve essere installato sulla schermata Home, iOS 16.4 o successivo).
-4. Facoltativo: **Userscripts** (app gratuita dall'App Store) per non toccare nemmeno il segnalibro: *Copia script* e incollalo in un nuovo JavaScript di Userscripts.
+4. Facoltativo: **Userscripts** (app gratuita dall'App Store) per non toccare nemmeno il segnalibro: *Salva script* nella cartella di Userscripts (al posto del segnalibro).
+
+Finché manca un passo (notifiche, collegamento, segnalibro o script), la rotella, *Scarica e importa* e *Mostra equipaggio* portano in **Impostazioni › CrewLink**: in cima c'è l'elenco di cosa manca e il passo da fare è evidenziato. Quando è tutto pronto, **Continua** fa partire il download chiesto. Le notifiche non bloccano se le hai rifiutate, se il telefono non le supporta o se l'attivazione non è riuscita: si riprovano dallo stesso pulsante.
 
 ## Uso
 
