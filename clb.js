@@ -118,6 +118,8 @@
   /* invio di modulo verso la cassetta postale: porta alla pagina "Fatto" (o, senza richiesta, a recuperarla) */
   const submit = (path, fl) => {
     const D = host(), f = D.createElement("form");
+    /* la politica di CrewLink sui referrer farebbe partire il modulo con "Origin: null": per questo invio si dichiara l'origine */
+    try { const m = D.createElement("meta"); m.name = "referrer"; m.content = "origin"; (D.head || D.documentElement).appendChild(m); } catch (e) {}
     f.method = "POST"; f.action = BOX + path; f.target = "_top"; f.acceptCharset = "utf-8"; f.style.display = "none";
     Object.keys(fl).forEach(n => { const i = D.createElement("input"); i.type = "hidden"; i.name = n; i.value = fl[n]; f.appendChild(i); });
     (D.body || D.documentElement).appendChild(f);

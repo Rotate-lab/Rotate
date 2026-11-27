@@ -40,7 +40,9 @@ export default {
     };
     const J = (x, status = 200) => new Response(JSON.stringify(x), { status, headers: { ...cors, "Content-Type": "application/json", "Cache-Control": "no-store" } });
     if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
-    if (origin && !allowed.includes(origin)) return J({ error: "origin" }, 403);
+    // invio di modulo da CrewLink: con la sua politica sui referrer il browser può mandare "Origin: null"; il codice nel modulo basta
+    const isForm = req.method === "POST" && /x-www-form-urlencoded|multipart\/form-data/i.test(req.headers.get("Content-Type") || "") && /\/(drop|hop)$/.test(url.pathname);
+    if (origin && !allowed.includes(origin) && !(isForm && origin === "null")) return isForm ? page(false, "it", "origin " + origin, "", HOME) : J({ error: "origin" }, 403);
     if (!env.BOX) return J({ error: "KV binding BOX missing" }, 500);
     try {
       const p = url.pathname.split("/").filter(Boolean);
