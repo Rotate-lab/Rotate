@@ -47,7 +47,8 @@ Quando questo file cambia: Worker `rotate-box` › **Edit code** › cancella tu
 - **Duty plan › Individuale › Scarica e importa**: periodo scelto + equipaggio dei suoi voli.
 - **Roster › giorno › Mostra equipaggio**: equipaggio di quel volo.
 
-Rotate apre CrewLink: tocca il segnalibro **Rotate**. Quando compare la pagina *✓ Fatto*, torna a Rotate (◀ Rotate in alto a sinistra) o tocca la notifica: i dati sono già importati.
+Rotate apre CrewLink: tocca il segnalibro **Rotate** e aspetta (al centro dello schermo compare l'avanzamento). Sulla pagina verde **TORNA A ROTATE** tocca ◀ Rotate in alto a sinistra, o la notifica: i dati sono già importati.
+Se il server non riconosce più il segnalibro (per esempio dopo aver ricreato lo spazio dati), compare una pagina arancione: in Rotate tocca **Ricollega** e ricopia il segnalibro.
 Se CrewLink chiede il login, l'indirizzo con la richiesta si perde: dopo il login tocca il segnalibro, Rotate recupera la richiesta dal Worker e ricarica CrewLink; poi tocca di nuovo il segnalibro.
 Se il duty plan contiene voli nuovi, Rotate lascia pronta la richiesta del loro equipaggio per il giro successivo (con Userscripts parte da sola alla prossima apertura di CrewLink).
 
