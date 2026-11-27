@@ -549,8 +549,8 @@ a.clht{display:block;text-decoration:none;color:#fff}.clht b{display:inline-flex
 
 <div id="brief" role="dialog" aria-modal="true" aria-label="Flight briefing" hidden></div>
 <script>
-const VER="v1.2.15";
-const BUILD="202611271200";
+const VER="v1.2.16";
+const BUILD="202611271400";
 let THEME="auto";try{THEME=localStorage.getItem("rot_theme")||"auto"}catch(e){}
 function themeApply(){const r=document.documentElement;if(THEME=="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",THEME);try{bgColors();bgDraw(performance.now())}catch(e){}}
 themeApply();
@@ -2442,6 +2442,7 @@ function drUi(){const m=loadMeta(),n=(m.name||"").trim(),ini=n?n.split(/\s+/).ma
 
 /* ===== Changelog ===== */
 const CHLOG=[
+ ["v1.2.16","27/11/2026",["CrewLink link fixed: CrewLink does not allow scripts or requests towards other sites, so the Rotate bookmark now contains all its code, the request of Rotate travels in the CrewLink address and the data leave with a form that ends on the “✓ Done” page. Nothing is blocked any more.","Create the Rotate bookmark again: Duty plan › CrewLink link › Copy bookmark. The Cloudflare Worker code must be updated too (worker/LEGGIMI.md).","If CrewLink asks for the login, tap the bookmark after the login: Rotate fetches its request and reloads CrewLink, then tap the bookmark again."],["Collegamento CrewLink corretto: CrewLink non permette script o richieste verso altri siti, quindi il segnalibro Rotate ora contiene tutto il suo codice, la richiesta di Rotate viaggia nell'indirizzo di CrewLink e i dati partono con un invio di modulo che finisce sulla pagina “✓ Fatto”. Niente viene più bloccato.","Ricrea il segnalibro Rotate: Duty plan › Collegamento CrewLink › Copia segnalibro. Va aggiornato anche il codice del Worker su Cloudflare (worker/LEGGIMI.md).","Se CrewLink chiede il login, tocca il segnalibro dopo il login: Rotate recupera la richiesta e ricarica CrewLink, poi tocca di nuovo il segnalibro."]],
  ["v1.2.15","27/11/2026",["CrewLink link through Cloudflare: duty plan and crew arrive in Rotate by themselves, without Paste. Set it up once in Duty plan › CrewLink link.","Roster › wheel: duty plan of the month on screen plus the crew of its flights, in one go. Show crew and Duty plan › Download work the same way.","Notifications: Rotate tells you when the data are ready; tap it to open Rotate already updated.","Optional Userscripts app: CrewLink sends the data by itself after the login, without the bookmark.","Duty plan is back to Individual / History / Import. A re-imported duty plan keeps the crew lists already downloaded."],["Collegamento CrewLink tramite Cloudflare: duty plan ed equipaggio arrivano in Rotate da soli, senza Incolla. Si configura una volta in Duty plan › Collegamento CrewLink.","Roster › rotella: duty plan del mese visualizzato più l'equipaggio dei suoi voli, in un solo giro. Mostra equipaggio e Duty plan › Scarica funzionano allo stesso modo.","Notifiche: Rotate ti avvisa quando i dati sono pronti; toccandola si apre Rotate già aggiornato.","App Userscripts facoltativa: CrewLink manda i dati da solo dopo il login, senza segnalibro.","Duty plan torna Individuale / Storico / Import. Un duty plan reimportato conserva le liste equipaggio già scaricate."]],
  ["v1.2.14","26/11/2026",["Two bookmarks instead of one: Rotate Roster (duty plan) and Rotate Crew (crew list). Create them from Duty plan › Reload › Set up.","Crew list: the whole crew is read, cabin crew included (SE, ST…); before only some ranks were kept. Tap Rotate Crew directly on the Show Crew page with the list on screen, or after Show crew in Rotate. Tap Update under a flight to replace an incomplete list.","Crew names are shown as SURNAME Name, as in the CrewLink report."],["Due segnalibri invece di uno: Rotate Roster (duty plan) e Rotate Crew (lista equipaggio). Si creano da Duty plan › Ricarica › Configura.","Lista equipaggio: viene letto tutto l'equipaggio, cabina compresa (SE, ST…); prima alcuni ruoli venivano scartati. Tocca Rotate Crew direttamente sulla pagina Show Crew con la lista a schermo, oppure dopo Mostra equipaggio in Rotate. Tocca Aggiorna sotto un volo per sostituire una lista incompleta.","I nomi dell'equipaggio sono mostrati come COGNOME Nome, come nel report di CrewLink."]],
  ["v1.2.13","26/11/2026",["Roster: the crew list opens and closes from the same button (Show crew / Hide crew) and is closed every time you open the day.","The paste box no longer zooms the screen and does not open the keyboard; the In-flight rest menus no longer zoom either."],["Roster: la lista equipaggio si apre e si chiude dallo stesso pulsante (Mostra / Nascondi equipaggio) ed è chiusa ogni volta che apri il giorno.","Il riquadro per incollare non ingrandisce più lo schermo e non apre la tastiera; anche i menu dei Riposi in volo non ingrandiscono più."]],
@@ -2727,7 +2728,9 @@ clbBar();crewPurge();
    Il segnalibro "Rotate" (clb.js) in CrewLink la esegue e lascia il risultato cifrato; Rotate lo ritira e lo importa da solo.
    Chiave e codici restano su questo telefono (rot_box), mai nel backup. */
 const BOX_DEF="https://rotate-box.locaoneshot.workers.dev";
-const CLB_JS=location.protocol=="https:"&&!/claude|anthropic/.test(location.hostname)?new URL("clb.js",location.href).href:"https://rotate-lab.github.io/rotate/clb.js";
+/* il segnalibro contiene tutto il codice di clb.js: la CSP di CrewLink non permette di caricare script da altri siti */
+const CLB_URL=new URL("clb.js",location.href).href,CLB_V=7;var CLB_SRC=null;
+function clbSrc(){if(CLB_SRC)return Promise.resolve(CLB_SRC);return fetch(CLB_URL,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.text()}).then(t=>{let m=t.replace(/\/\*[\s\S]*?\*\//g,"").replace(/^\s+/gm,"").replace(/\n{2,}/g,"\n");try{new Function(m)}catch(e){m=t}CLB_SRC=m;return m})}
 const b64std=u=>{let s="";for(let i=0;i<u.length;i+=32768)s+=String.fromCharCode.apply(null,u.subarray(i,i+32768));return btoa(s)};
 const b64url=u=>b64std(u).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
 const u8of=s=>{s=String(s).replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";return Uint8Array.from(atob(s),c=>c.charCodeAt(0))};
@@ -2745,8 +2748,8 @@ async function boxLink(server){const b=String(server||BOX_DEF).trim().replace(/\
  if(r.status!=201)throw new Error("HTTP "+r.status);boxSave(c);return c}
 /* configurazione per il segnalibro / Userscripts: indirizzo, cassetta, codice di scrittura, chiave */
 const boxConf=(c,a)=>JSON.stringify({b:c.b,i:c.i,w:c.w,k:c.k,l:LANG,a:a?1:0});
-const boxBookmark=c=>"javascript:"+encodeURIComponent("(function(){window.__rotate="+boxConf(c)+";var s=document.createElement('script');s.charset='utf-8';s.src='"+CLB_JS+"?v='+Date.now();s.onerror=function(){alert('Rotate: script non caricato / not loaded')};(document.head||document.documentElement).appendChild(s)})()");
-const boxUserscript=c=>["// ==UserScript==","// @name         Rotate · CrewLink","// @description  Duty plan and crew from CrewLink to Rotate","// @match        https://crewlink.ita-airways.com/*","// @run-at       document-end","// @inject-into  page","// @noframes","// ==/UserScript==","window.__rotate="+boxConf(c,1)+";","(function(){var s=document.createElement('script');s.charset='utf-8';s.src='"+CLB_JS+"?v='+Date.now();(document.head||document.documentElement).appendChild(s)})();"].join("\n");
+const boxBookmark=c=>"javascript:"+encodeURIComponent("window.__rotate="+boxConf(c)+";"+CLB_SRC);
+const boxUserscript=c=>["// ==UserScript==","// @name         Rotate · CrewLink","// @description  Duty plan and crew from CrewLink to Rotate","// @match        https://crewlink.ita-airways.com/*","// @run-at       document-end","// @inject-into  page","// @noframes","// ==/UserScript==","window.__rotate="+boxConf(c,1)+";",CLB_SRC].join("\n");
 
 /* richieste: duty plan di un periodo + equipaggio dei suoi voli (data di partenza UTC, come in Show Crew) */
 function crewList(a,b){const out=[],lim=dpIso(new Date(Date.now()-30*864e5));
@@ -2758,16 +2761,17 @@ const rosterReq=()=>{const y=view.getFullYear(),m=view.getMonth();return perReq(
 const crewReq=(k,fn)=>{const q=crewQ(k,fn);if(!q)return{fl:[]};const[a,n,d,ap]=q.split("|");return{fl:[{a,n,d,ap,k:k+"|"+fn}]}};
 /* la richiesta si cifra prima del tocco (al rendering e al dito sul pulsante) e parte con sendBeacon nello stesso istante in cui si apre
    CrewLink: iOS può mettere in pausa Rotate appena si apre Safari, sendBeacon consegna comunque */
-var BOXPRE=new Map(),BOXSENT=null;
+var BOXPRE=new Map();
 async function boxPrep(key,rqf){const c=boxCfg();if(!c)return null;const rq=rqf();rq.v=1;rq.id=rnd(9);rq.at=Date.now();rq.l=LANG;
- const p={rid:rq.id,at:Date.now(),url:c.b+"/box/"+c.i+"/req",body:JSON.stringify(Object.assign({t:c.r},await boxSeal(c,rq)))};BOXPRE.set(key,p);return p}
+ const sl=await boxSeal(c,rq),uu=x=>x.replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+ const p={rid:rq.id,at:Date.now(),url:c.b+"/box/"+c.i+"/req",body:JSON.stringify(Object.assign({t:c.r},sl)),h:"v1."+uu(sl.iv)+"."+uu(sl.ct)};BOXPRE.set(key,p);return p}
 function boxPrepSoon(){clearTimeout(window.__bps);window.__bps=setTimeout(()=>{try{if(PG=="roster"&&boxCfg())boxPrep(rosterKey(),rosterReq)}catch(e){}},400)}
+/* la richiesta viaggia nell'indirizzo di CrewLink (#rotate-req=…) e, per il caso del login, anche sulla cassetta (sendBeacon) */
 function boxGo(key,rqf,what){const c=boxCfg();if(!c)return false;
- if(BOXSENT&&BOXSENT.key==key&&Date.now()-BOXSENT.at<10*6e4){const s=BOXSENT;BOXSENT=null;boxPending(s.rid,what);clbOpen(CL_HOME);return true}
  const p=BOXPRE.get(key);
- if(p&&Date.now()-p.at<10*6e4&&navigator.sendBeacon&&navigator.sendBeacon(p.url,new Blob([p.body],{type:"text/plain"}))){BOXPRE.delete(key);boxPending(p.rid,what);clbOpen(CL_HOME);return true}
+ if(p&&Date.now()-p.at<10*6e4){try{navigator.sendBeacon&&navigator.sendBeacon(p.url,new Blob([p.body],{type:"text/plain"}))}catch(e){}BOXPRE.delete(key);boxPending(p.rid,what);clbOpen(CL_HOME+"#rotate-req="+p.h);return true}
  toast(tt("Preparing the request…","Preparo la richiesta…"));
- boxPrep(key,rqf).then(p2=>fetch(p2.url,{method:"POST",headers:{"Content-Type":"text/plain"},body:p2.body}).then(r=>{if(!r.ok)throw 0;BOXPRE.delete(key);BOXSENT={key,rid:p2.rid,at:Date.now()};toast(tt("Ready","Pronto"),tt("Tap again to open CrewLink","Tocca di nuovo per aprire CrewLink"))})).catch(()=>toast(tt("Rotate server not reachable","Server Rotate non raggiungibile"),tt("Check the connection and try again","Controlla la connessione e riprova")));
+ boxPrep(key,rqf).then(p2=>{fetch(p2.url,{method:"POST",headers:{"Content-Type":"text/plain"},body:p2.body}).catch(()=>{});toast(tt("Ready","Pronto"),tt("Tap again to open CrewLink","Tocca di nuovo per aprire CrewLink"))}).catch(()=>toast(tt("Could not prepare the request","Richiesta non preparata")));
  return true}
 
 /* attesa: barra in basso finché i dati non arrivano */
@@ -2783,13 +2787,13 @@ function boxNext(P){if(!P||P.t!="bundle"||!Array.isArray(P.dp)||!P.dp.length||!A
 const boxSum=(a,b)=>!a?b:!b?a:{next:(a.next||0)+(b.next||0),ok:(a.ok||0)+(b.ok||0),n:(a.n||0)+(b.n||0),dd:(a.dd||0)+(b.dd||0),ch:[...new Set([...(a.ch||[]),...(b.ch||[])])].sort(),crew:(a.crew||0)+(b.crew||0),miss:(a.miss||0)+(b.miss||0)};
 async function boxPull(){const c=boxCfg();if(!c||BOXBUSY||!navigator.onLine)return;BOXBUSY=true;
  try{const r=await boxApi(c,"/drop");if(!r.ok)return;const L=await r.json();if(!Array.isArray(L)||!L.length)return;
-  const done=[];let res=null;const w=boxPendingGet();
+  const done=[];let res=null,old=false;const w=boxPendingGet();
   let nxt=[];
-  for(const x of L){try{const P=await boxOpen(c,x);res=boxSum(res,await clbApply(P));if(w&&P.rid==w.rid)boxPending(null);nxt=nxt.concat(boxNext(P))}catch(e){}done.push(x.n)}
+  for(const x of L){try{const P=await boxOpen(c,x);if(P&&P.t=="bundle"&&!(P.bv>=CLB_V))old=true;res=boxSum(res,await clbApply(P));if(w&&P.rid==w.rid)boxPending(null);nxt=nxt.concat(boxNext(P))}catch(e){}done.push(x.n)}
   await boxApi(c,"/drop?n="+encodeURIComponent(done.join(",")),{method:"DELETE"}).catch(()=>{});
   /* voli nuovi arrivati con il duty plan: la richiesta del loro equipaggio resta pronta per il prossimo giro su CrewLink */
   if(nxt.length&&res){try{const p=await boxPrep("next",()=>({fl:nxt}));const r2=await fetch(p.url,{method:"POST",headers:{"Content-Type":"text/plain"},body:p.body});if(r2.ok)res.next=nxt.length}catch(e){}}
-  if(res){clbOld=false;clbDone(res)}else boxPending(null)}
+  if(res){clbOld=old;clbDone(res)}else boxPending(null)}
  catch(e){}finally{BOXBUSY=false}}
 function boxPoll(){clearTimeout(BOXT);boxBar();if(!boxCfg()||document.hidden)return;boxPull();if(boxPendingGet())BOXT=setTimeout(boxPoll,5000)}
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)boxPoll()});
@@ -2807,12 +2811,14 @@ async function boxNotify(c){try{
  toast(tt("Notifications on","Notifiche attive"),j.ok?tt("A test notification is on its way","Sta arrivando una notifica di prova"):tt("Test not delivered: ","Prova non consegnata: ")+j.status)}
  catch(e){toast(tt("Could not turn on notifications","Impossibile attivare le notifiche"),String(e&&e.message||e))}}
 const copyTxt=async(t,ok,sub)=>{try{await navigator.clipboard.writeText(t);toast(ok,sub)}catch(e){const a=$("#bxTx");if(a){a.hidden=false;a.value=t;a.select()}}};
+function copyLater(mk,ok,sub){if(CLB_SRC)return copyTxt(mk(),ok,sub);const pr=clbSrc().then(()=>mk());
+ try{navigator.clipboard.write([new ClipboardItem({"text/plain":pr.then(t=>new Blob([t],{type:"text/plain"}))})]).then(()=>toast(ok,sub),()=>pr.then(t=>copyTxt(t,ok,sub)))}catch(e){pr.then(t=>copyTxt(t,ok,sub)).catch(()=>toast(tt("Could not prepare the bookmark","Segnalibro non preparato"),tt("Check the connection","Controlla la connessione")))}}
 /* foglio "Collegamento CrewLink" */
 function boxSheet(fallback){let o=document.getElementById("clbS");if(o)o.remove();o=document.createElement("div");o.id="clbS";o.className="clbs";o.setAttribute("role","dialog");o.setAttribute("aria-modal","true");
  const c=boxCfg(),np=c&&c.push&&"Notification"in window&&Notification.permission=="granted";
  o.innerHTML='<div class="clbsp"><b>'+tt("CrewLink link","Collegamento CrewLink")+'</b>'+(c
   ?'<p>'+tt("Active. The wheel in Roster, Show crew and Download in Duty plan open CrewLink: log in if asked and tap the Rotate bookmark. Duty plan and crew arrive in Rotate by themselves.","Attivo. La rotella nel Roster, Mostra equipaggio e Scarica in Duty plan aprono CrewLink: fai il login se richiesto e tocca il segnalibro Rotate. Duty plan ed equipaggio arrivano in Rotate da soli.")+'</p>'
-   +'<ol><li>'+tt("Tap Copy bookmark.","Tocca Copia segnalibro.")+'</li><li>'+tt("In Safari bookmark any page (Share › Add Bookmark), then edit it: name Rotate, address: paste.","In Safari aggiungi un segnalibro a una pagina qualsiasi (Condividi › Aggiungi segnalibro), poi modificalo: nome Rotate, indirizzo: incolla.")+'</li><li>'+tt("You can delete the old Rotate Roster and Rotate Crew bookmarks.","Puoi cancellare i vecchi segnalibri Rotate Roster e Rotate Crew.")+'</li></ol>'
+   +'<ol><li>'+tt("Tap Copy bookmark.","Tocca Copia segnalibro.")+'</li><li>'+tt("In Safari bookmark any page (Share › Add Bookmark), then edit it: name Rotate, address: paste.","In Safari aggiungi un segnalibro a una pagina qualsiasi (Condividi › Aggiungi segnalibro), poi modificalo: nome Rotate, indirizzo: incolla.")+'</li><li>'+tt("If you already have a Rotate bookmark, replace its address: the bookmark contains all the code, so create it again when Rotate asks you to. You can delete the old Rotate Roster and Rotate Crew bookmarks.","Se hai già un segnalibro Rotate, sostituisci il suo indirizzo: il segnalibro contiene tutto il codice, quindi va ricreato quando Rotate te lo chiede. Puoi cancellare i vecchi segnalibri Rotate Roster e Rotate Crew.")+'</li></ol>'
    +'<button class="dpb" type="button" id="bxCp">'+tt("Copy bookmark","Copia segnalibro")+'</button>'
    +'<button class="dpb alt" type="button" id="bxPu">'+(np?tt("Notifications on ✓ · send a test","Notifiche attive ✓ · prova"):tt("Turn on notifications","Attiva le notifiche"))+'</button>'
    +'<details><summary>'+tt("Automatic, without the bookmark (Userscripts)","Automatico, senza segnalibro (Userscripts)")+'</summary><ol><li>'+tt("Install the free Userscripts app from the App Store and turn it on in Settings › Safari › Extensions, allowing crewlink.ita-airways.com.","Installa l'app gratuita Userscripts dall'App Store e attivala in Impostazioni › Safari › Estensioni, consentendo crewlink.ita-airways.com.")+'</li><li>'+tt("Tap Copy script, create a new JavaScript in Userscripts, paste and save.","Tocca Copia script, crea un nuovo JavaScript in Userscripts, incolla e salva.")+'</li><li>'+tt("From then on CrewLink sends the data by itself after the login.","Da quel momento CrewLink manda i dati da solo dopo il login.")+'</li></ol><button class="dpb alt" type="button" id="bxUs">'+tt("Copy script","Copia script")+'</button></details>'
@@ -2827,8 +2833,9 @@ function boxSheet(fallback){let o=document.getElementById("clbS");if(o)o.remove(
  o.onclick=e=>{if(e.target==o)close()};on("clbSx",close);
  on("bxGo",async()=>{const b=$("#bxGo");b.disabled=true;try{const c2=await boxLink($("#bxSv").value);toast(tt("Linked","Collegato"),tt("Now copy the bookmark","Ora copia il segnalibro"));boxSheet();boxUi()}catch(e){b.disabled=false;toast(tt("Could not link","Collegamento non riuscito"),tt("Is the Cloudflare Worker set up? ","Il Worker Cloudflare è configurato? ")+String(e&&e.message||e))}});
  on("bxFb",()=>{close();fallback()});
- on("bxCp",()=>copyTxt(boxBookmark(c),tt("Bookmark copied","Segnalibro copiato"),tt("Paste it as the address of the Rotate bookmark in Safari","Incollalo come indirizzo del segnalibro Rotate in Safari")));
- on("bxUs",()=>copyTxt(boxUserscript(c),tt("Script copied","Script copiato"),tt("Paste it in a new JavaScript in Userscripts","Incollalo in un nuovo JavaScript in Userscripts")));
+ if(c)clbSrc().catch(()=>{});
+ on("bxCp",()=>copyLater(()=>boxBookmark(c),tt("Bookmark copied","Segnalibro copiato"),tt("Paste it as the address of the Rotate bookmark in Safari","Incollalo come indirizzo del segnalibro Rotate in Safari")));
+ on("bxUs",()=>copyLater(()=>boxUserscript(c),tt("Script copied","Script copiato"),tt("Paste it in a new JavaScript in Userscripts","Incollalo in un nuovo JavaScript in Userscripts")));
  on("bxPu",()=>{boxNotify(c).then(()=>{if(document.getElementById("clbS"))boxSheet()})});
  let un=0;on("bxUn",async()=>{if(!un){un=1;toast(tt("Tap Unlink again to confirm","Tocca di nuovo Scollega per confermare"));setTimeout(()=>un=0,4000);return}try{await boxApi(c,"",{method:"DELETE"})}catch(e){}boxSave(null);toast(tt("Unlinked","Scollegato"));boxSheet();boxUi()});
  on("clbCp",()=>clbCopy("dp","Rotate Roster"));on("clbCp2",()=>clbCopy("crew","Rotate Crew"))}

@@ -61,17 +61,36 @@ export default {
       if (!ID.test(id || "")) return J({ error: "not found" }, 404);
       const m = await env.BOX.get("m:" + id, { type: "json" });
       if (!m) return J({ error: "not found" }, 404);
-      let t = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, ""), body = null;
+      let t = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, ""), body = null, form = null;
+      const ctype = req.headers.get("Content-Type") || "";
+      // da CrewLink i dati arrivano con un invio di modulo (la CSP di CrewLink blocca fetch verso altri siti): il codice è nel modulo
+      if (!t && req.method === "POST" && (p[2] === "drop" || p[2] === "hop") && /x-www-form-urlencoded|multipart\/form-data/i.test(ctype)) {
+        form = await req.formData();
+        t = String(form.get("t") || "");
+      }
       // la richiesta può arrivare con navigator.sendBeacon (niente intestazioni): il codice è nel corpo
-      if (!t && req.method === "POST" && p[2] === "req") {
+      else if (!t && req.method === "POST" && p[2] === "req") {
         const x = await req.text();
         if (x.length > MAX_REQ) return J({ error: "too large" }, 413);
         try { body = JSON.parse(x); } catch (e) { return J({ error: "bad json" }, 400); }
         t = String((body && body.t) || "");
       }
       const h = TOK.test(t) ? await sha(t) : "", R = !!h && h === m.r, W = !!h && h === m.w;
-      if (!R && !W) return J({ error: "unauthorized" }, 401);
+      if (!R && !W) return form ? page(false, form.get("l"), "401", "", HOME) : J({ error: "unauthorized" }, 401);
       const what = p[2] || "";
+      const back = form && /^https:\/\/crewlink\.ita-airways\.com\//.test(String(form.get("back") || "")) ? String(form.get("back")) : HOME;
+
+      // richiesta persa (es. dopo il login): torna su CrewLink con la richiesta cifrata nell'indirizzo
+      if (what === "hop" && req.method === "POST") {
+        const q = await env.BOX.get("q:" + id);
+        let frag = "none";
+        if (q) { try { const x = JSON.parse(q); frag = "v1." + b64u.to(b64u.from(x.iv)) + "." + b64u.to(b64u.from(x.ct)); } catch (e) {} }
+        const to = back + "#rotate-req=" + frag, it = String(form.get("l") || "it") !== "en";
+        // pagina che torna subito a CrewLink (con il link di riserva): più affidabile di un reindirizzamento con "#"
+        return new Response('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0;url=' + escH(to) + '"><title>Rotate</title>'
+          + '<style>body{margin:0;padding:56px 24px;font:17px/1.5 -apple-system,system-ui,sans-serif;background:#111;color:#fff}a{color:#fff;font-weight:700}</style></head><body><p>' + (it ? "Rotate: richiesta recuperata. Torno a CrewLink…" : "Rotate: request found. Back to CrewLink…") + '</p><p><a href="' + escH(to) + '">' + (it ? "Continua" : "Continue") + '</a></p>'
+          + '<script>location.replace(' + JSON.stringify(to).replace(/</g, "\\u003c") + ')</script></body></html>', { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
+      }
 
       // richiesta dell'app (cosa scaricare): la scrive l'app, la leggono app e segnalibro
       if (what === "req") {
@@ -88,10 +107,15 @@ export default {
       // consegne: le lascia il segnalibro, le ritira (e cancella) solo l'app
       if (what === "drop") {
         if (req.method === "POST" && W) {
-          const x = await req.text();
-          if (x.length > MAX_DROP) return J({ error: "too large" }, 413);
-          let d; try { d = JSON.parse(x); } catch (e) { return J({ error: "bad json" }, 400); }
-          if (typeof d.iv !== "string" || typeof d.ct !== "string") return J({ error: "bad request" }, 400);
+          let d;
+          if (form) d = { iv: String(form.get("iv") || ""), ct: String(form.get("ct") || ""), note: String(form.get("note") || "") };
+          else {
+            const x = await req.text();
+            if (x.length > MAX_DROP) return J({ error: "too large" }, 413);
+            try { d = JSON.parse(x); } catch (e) { return J({ error: "bad json" }, 400); }
+          }
+          if (typeof d.iv !== "string" || typeof d.ct !== "string" || !d.iv || !d.ct) return form ? page(false, form.get("l"), "400", "", back) : J({ error: "bad request" }, 400);
+          if (d.ct.length > MAX_DROP) return form ? page(false, form.get("l"), "413", "", back) : J({ error: "too large" }, 413);
           const L = (await env.BOX.get("d:" + id, { type: "json" })) || [];
           const it = { n: crypto.randomUUID(), at: Date.now(), iv: d.iv, ct: d.ct };
           L.push(it);
@@ -102,6 +126,7 @@ export default {
             push = await sendPush(env, m.push, { title: "Rotate", body: String(d.note || "").slice(0, 160) || "CrewLink ✓", tag: "rotate-clb" }).catch(() => "error");
             if (push === 404 || push === 410) { delete m.push; await env.BOX.put("m:" + id, JSON.stringify(m), { expirationTtl: BOX_TTL }); }
           }
+          if (form) return page(true, form.get("l"), "", d.note, back);
           return J({ ok: true, n: it.n, push });
         }
         if (req.method === "GET" && R) return J((await env.BOX.get("d:" + id, { type: "json" })) || []);
@@ -138,6 +163,21 @@ export default {
     }
   },
 };
+
+/* ---------- pagina mostrata dopo l'invio da CrewLink ---------- */
+const HOME = "https://crewlink.ita-airways.com/crewlink/clApp?crewlinkService=crewlinkForCrew&crewlinkOperation=loadMainFrameSet";
+const escH = s => String(s || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+function page(ok, lang, code, note, back) {
+  const it = String(lang || "it") !== "en", T = (e, i) => (it ? i : e);
+  const title = ok ? T("Done", "Fatto") : T("Not sent", "Non inviato");
+  const lines = ok
+    ? [escH(note), T("Go back to Rotate: tap <b>◀ Rotate</b> at the top left, or the notification. The data are imported by themselves.", "Torna a Rotate: tocca <b>◀ Rotate</b> in alto a sinistra, oppure la notifica. I dati si importano da soli.")]
+    : [T("Rotate could not receive the data (" + escH(code) + "). Go back to CrewLink and try again; if it happens again, create the Rotate bookmark again from the app.", "Rotate non ha ricevuto i dati (" + escH(code) + "). Torna a CrewLink e riprova; se succede ancora, ricrea il segnalibro Rotate dall'app.")];
+  const h = '<!doctype html><html lang="' + (it ? "it" : "en") + '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Rotate · ' + title + '</title>'
+    + '<style>body{margin:0;padding:56px 24px;font:17px/1.5 -apple-system,system-ui,sans-serif;background:' + (ok ? "#0a6b34" : "#a3221a") + ';color:#fff}h1{font-size:30px;margin:0 0 16px}p{margin:0 0 16px}a{color:#fff;font-weight:600}</style></head>'
+    + '<body><h1>' + (ok ? "✓ " : "") + title + '</h1>' + lines.filter(Boolean).map(x => "<p>" + x + "</p>").join("") + '<p><a href="' + escH(back || HOME) + '">' + T("Back to CrewLink", "Torna a CrewLink") + "</a></p></body></html>";
+  return new Response(h, { status: ok ? 200 : 400, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
+}
 
 /* ---------- Web Push (RFC 8030 / 8291 / 8292) senza librerie ---------- */
 function pushHostOk(u) { try { const h = new URL(u).hostname; return PUSH_HOSTS.some(x => h === x || h.endsWith("." + x)); } catch (e) { return false; } }
