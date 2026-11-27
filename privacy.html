@@ -4,10 +4,14 @@
 <style>body{font:16px/1.55 -apple-system,system-ui,sans-serif;max-width:680px;margin:0 auto;padding:24px 16px;color:#1c1c1e}h1{font-size:26px}h2{font-size:18px;margin-top:28px}@media(prefers-color-scheme:dark){body{background:#000;color:#eee}a{color:#6cb6ff}}</style></head>
 <body>
 <h1>Rotate – Privacy Policy</h1>
-<p>Last updated: November 2026</p>
+<p>Last updated: 27 November 2026</p>
 <p>Rotate is a free web app to view an airline duty plan and keep an electronic logbook. It is not an official app of any airline.</p>
 <h2>Data stored in the app</h2>
-<p>Your duty plans, logbook entries, settings, name and crew ID are stored only in your browser on your own device (local storage). The developer has no server and does not receive, collect or see this data. PDF files you import are read on your device and are not uploaded anywhere.</p>
+<p>Your duty plans, logbook entries, settings, name and crew ID are stored only in your browser on your own device (local storage). PDF files you import are read on your device. The developer does not receive, collect or see this data.</p>
+<h2>Rotate servers (Cloudflare Workers)</h2>
+<p><b>Weather.</b> To show METAR and TAF, Rotate sends only the ICAO codes of the airports (for example LIRF) to the Rotate weather server, which asks aviationweather.gov. No personal data is sent.</p>
+<p><b>CrewLink link (optional).</b> If you turn it on, duty plan and crew lists travel from CrewLink to Rotate through a Rotate “mailbox” server. They are encrypted on your phone with a key that exists only on your phone (in the app and in your Rotate bookmark): the server and Cloudflare cannot read them. They are deleted as soon as Rotate imports them, and in any case after 24 hours. Your CrewLink password is never read, sent or stored. If you turn on notifications, the server keeps your device's push address to tell you when the data are ready; the notification contains no personal data. You can unlink at any time (Duty plan › CrewLink link › Advanced › Unlink): the mailbox is deleted.</p>
+<p><b>Crew lists.</b> Rank and name of the crew of your flights stay only on your device, are never included in the Google Drive backup and are deleted 30 days after the flight.</p>
 <h2>Google Drive backup (optional)</h2>
 <p>If you choose “Connect Google Drive”, Rotate asks for one permission: access to its own hidden application-data folder in your Google Drive (<code>drive.appdata</code>). Rotate can read and write only that folder, never your other files. The backup file is created and stays in your own Drive. It is sent directly from your browser to Google; the developer cannot access it. You can disconnect at any time and delete the backup from your Google Account settings (Security → Third-party apps and services).</p>
 <h2>Use of Google user data</h2>
