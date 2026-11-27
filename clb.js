@@ -10,7 +10,7 @@
  */
 (() => {
   "use strict";
-  const C = window.__rotate || {}, H = "crewlink.ita-airways.com", AUTO = !!C.a, BV = 7;
+  const C = window.__rotate || {}, H = "crewlink.ita-airways.com", AUTO = !!C.a, BV = 8;
   let IT = /^it/i.test(C.l || navigator.language || "");
   const T = (e, i) => (IT ? i : e);
   if (window.__rotateRun) return;
@@ -107,12 +107,42 @@
   }
   const retry = async (fn, n = 2) => { for (let i = 0; ; i++) { try { return await fn(); } catch (e) { if (e.message === "login" || i >= n) throw e; await sleep(900); } } };
 
-  /* riquadro in basso */
+  /* riquadro grande al centro: CrewLink è una pagina da computer rimpicciolita sull'iPhone, quindi le misure sono in vw del frame */
   let o = null;
   const ui = {
-    box() { if (!o || !o.isConnected) { const D = host(); o = D.createElement("div"); o.style.cssText = "position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483647;background:#111;color:#fff;font:15px/1.4 -apple-system,system-ui,sans-serif;padding:14px 16px;border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.35)"; (D.body || D.documentElement).appendChild(o); } return o; },
-    msg(t, s, bg) { const b = this.box(), D = b.ownerDocument; b.textContent = ""; b.style.background = bg || "#111"; const h = D.createElement("b"); h.textContent = t; b.appendChild(h); if (s) { const p = D.createElement("div"); p.style.cssText = "opacity:.8;font-size:13px;margin-top:3px"; p.textContent = s; b.appendChild(p); } },
-    done(ok, t, s, ms) { this.msg(t, s, ok ? "#0a6b34" : "#a3221a"); const b = o; setTimeout(() => { if (b) b.remove(); }, ms || 15000); },
+    box() {
+      if (!o || !o.isConnected) {
+        const D = host();
+        o = D.createElement("div");
+        o.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);font-family:-apple-system,system-ui,sans-serif";
+        (D.body || D.documentElement).appendChild(o);
+      }
+      return o;
+    },
+    msg(t, s, p, bg) {
+      const b = this.box(), D = b.ownerDocument, c = D.createElement("div");
+      b.textContent = "";
+      c.style.cssText = "width:88vw;box-sizing:border-box;background:" + (bg || "#111") + ";color:#fff;border-radius:3vw;padding:5.5vw 5.5vw 5vw;box-shadow:0 2vw 8vw rgba(0,0,0,.45)";
+      const h = D.createElement("div");
+      h.style.cssText = "font-size:max(24px,6.6vw);font-weight:800;line-height:1.15";
+      h.textContent = t;
+      c.appendChild(h);
+      if (p != null) {
+        const tr = D.createElement("div"), fl = D.createElement("div");
+        tr.style.cssText = "margin-top:3.2vw;height:max(12px,2.6vw);border-radius:2vw;background:rgba(255,255,255,.22);overflow:hidden";
+        fl.style.cssText = "height:100%;border-radius:2vw;background:#fff;width:" + Math.round(Math.max(0.05, Math.min(1, p)) * 100) + "%";
+        tr.appendChild(fl);
+        c.appendChild(tr);
+      }
+      (Array.isArray(s) ? s : [s]).filter(Boolean).forEach((x, i) => {
+        const q = D.createElement("div");
+        q.style.cssText = "margin-top:" + (i ? "1.6vw" : "3vw") + ";font-size:max(16px," + (i ? "3.6vw" : "4.4vw") + ");line-height:1.3;opacity:" + (i ? ".8" : ".95");
+        q.textContent = x;
+        c.appendChild(q);
+      });
+      b.appendChild(c);
+    },
+    done(ok, t, s, ms) { this.msg(t, s, null, ok ? "#0a6b34" : "#a3221a"); const b = o; setTimeout(() => { if (b) b.remove(); }, ms || 15000); },
   };
 
   /* invio di modulo verso la cassetta postale: porta alla pagina "Fatto" (o, senza richiesta, a recuperarla) */
@@ -145,18 +175,18 @@
     if (!rq) { const t = new Date(); rq = { id: "", dp: [0, 1].map(i => ({ b: cl(new Date(t.getFullYear(), t.getMonth() + i, 1)), e: cl(new Date(t.getFullYear(), t.getMonth() + i + 1, 0)) })), fl: [] }; }
     const dps = Array.isArray(rq.dp) ? rq.dp.slice(0, 3) : [], fl = Array.isArray(rq.fl) ? rq.fl.slice(0, 80) : [];
     const out = { v: 1, bv: BV, t: "bundle", rid: rq.id || "", at: Date.now(), dp: dps.map(p => ({ b: p.b, e: p.e })), asked: fl.map(f => f.k || ""), files: [], crew: { items: [] }, miss: [] };
-    const sub = T("Keep Safari open until it is done", "Non chiudere Safari finché non ha finito");
+    const keep = T("Keep Safari open until it is done", "Non chiudere Safari finché non ha finito"), tot = dps.length + fl.length + 1;
 
     /* 2. duty plan */
     for (const p of dps) {
-      step = "duty plan"; ui.msg("Rotate · duty plan " + (p.lbl || p.b + "–" + p.e) + "…", sub);
+      step = "duty plan"; ui.msg(T("Downloading the duty plan", "Scarico il duty plan"), [p.lbl || p.b + " – " + p.e, keep], (dps.indexOf(p) + 0.5) / tot);
       try { out.files.push({ n: p.b + "-" + p.e + ".pdf", b64: u8b64(new Uint8Array(await retry(() => dutyPlan(p)))) }); }
       catch (e) { if (e.message === "login") throw e; if (dps.length === 1 && !fl.length) throw e; }
     }
     /* 3. equipaggio, un volo alla volta */
     for (let i = 0; i < fl.length; i++) {
       const f = fl[i]; step = T("crew ", "equipaggio ") + f.a + f.n;
-      ui.msg(T("Rotate · crew ", "Rotate · equipaggio ") + (i + 1) + "/" + fl.length + " · " + f.a + " " + f.n + " " + f.d, sub);
+      ui.msg(T("Crew ", "Equipaggio ") + (i + 1) + T(" of ", " di ") + fl.length, [f.a + " " + f.n + " · " + f.d, keep], (dps.length + i + 0.5) / tot);
       try { const it = await retry(() => crewFor(f)); if (it) out.crew.items.push(it); else out.miss.push(f.k || f.a + f.n); }
       catch (e) { if (e.message === "login") throw e; out.miss.push(f.k || f.a + f.n); }
     }
@@ -165,12 +195,12 @@
     step = T("sending", "invio");
     const nc = out.crew.items.length;
     const what = [out.files.length ? "duty plan" + (dps.length === 1 && dps[0].lbl ? " " + dps[0].lbl : "") : "", nc ? T("crew of " + nc + (nc > 1 ? " flights" : " flight"), "equipaggio di " + nc + (nc > 1 ? " voli" : " volo")) : ""].filter(Boolean).join(" · ");
-    ui.msg(T("Rotate · sending to Rotate…", "Rotate · invio a Rotate…"), what);
+    ui.msg(T("Sending to Rotate…", "Invio a Rotate…"), [what, keep], 0.97);
 
     /* 4. consegna cifrata con un invio di modulo */
     const s = await seal(out);
     try { sessionStorage.removeItem("rotate-req"); sessionStorage.setItem("rotate-done", raw); } catch (e) {}
-    submit("/drop", { t: C.w, iv: s.iv, ct: s.ct, l: IT ? "it" : "en", back: HOME, miss: String(out.miss.length), note: T("Ready: ", "Pronti: ") + what + T(". Tap to open Rotate.", ". Tocca per aprire Rotate.") });
+    submit("/drop", { t: C.w, iv: s.iv, ct: s.ct, l: IT ? "it" : "en", back: HOME, miss: String(out.miss.length), w: what, note: T("Ready: ", "Pronti: ") + what + T(". Tap to open Rotate.", ". Tocca per aprire Rotate.") });
   }
 
   run().catch(e => {
