@@ -1,25 +1,76 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Rotate – Privacy Policy</title>
-<style>body{font:16px/1.55 -apple-system,system-ui,sans-serif;max-width:680px;margin:0 auto;padding:24px 16px;color:#1c1c1e}h1{font-size:26px}h2{font-size:18px;margin-top:28px}@media(prefers-color-scheme:dark){body{background:#000;color:#eee}a{color:#6cb6ff}}</style></head>
+<style>body{font:16px/1.55 -apple-system,system-ui,sans-serif;max-width:680px;margin:0 auto;padding:24px 16px;color:#1c1c1e;background:#fff}h1{font-size:26px}h2{font-size:18px;margin-top:28px}hr{border:0;border-top:1px solid #ddd;margin:40px 0}nav a{margin-right:14px}@media(prefers-color-scheme:dark){body{background:#000;color:#eee}a{color:#6cb6ff}hr{border-top-color:#333}}</style></head>
 <body>
+<nav><a href="#en">English</a><a href="#it">Italiano</a></nav>
+<section id="en" lang="en">
 <h1>Rotate – Privacy Policy</h1>
-<p>Last updated: 27 November 2026</p>
-<p>Rotate is a free web app to view an airline duty plan and keep an electronic logbook. It is not an official app of any airline.</p>
+<p>Last updated: 28 November 2026</p>
+<p>Rotate is a free web app for airline pilots: duty plan, logbook, flight briefing and a few utilities. It is not an official app of any airline.</p>
+
 <h2>Data stored in the app</h2>
-<p>Your duty plans, logbook entries, settings, name and crew ID are stored only in your browser on your own device (local storage). PDF files you import are read on your device. The developer does not receive, collect or see this data.</p>
+<p>Your duty plans, logbook entries, simulator sessions and signatures, settings, name, crew ID and payslip settings are stored only in your browser, on your own device. PDF files you import (duty plan, OFP) are read on your device and are not uploaded anywhere. The developer does not receive, collect or see this data.</p>
+<p><b>Flight plan (OFP).</b> When you import the LIDO briefing PDF, Rotate reads it on your phone and keeps only what the briefing needs: flight data (times, fuel, weights, route, airports), NOTAM, weather and the chart images. Pages with crew names or passport details are not kept. The OFP stays only on the device, is never included in a backup and is deleted 2 days after the flight, or earlier when you tap Delete.</p>
+<p><b>Crew lists.</b> Rank and name of the crew of your flights stay only on your device, are never included in a backup and are deleted 30 days after the flight.</p>
+
 <h2>Rotate servers (Cloudflare Workers)</h2>
 <p><b>Weather.</b> To show METAR and TAF, Rotate sends only the ICAO codes of the airports (for example LIRF) to the Rotate weather server, which asks aviationweather.gov. No personal data is sent.</p>
-<p><b>CrewLink link (optional).</b> If you turn it on, duty plan and crew lists travel from CrewLink to Rotate through a Rotate “mailbox” server. They are encrypted on your phone with a key that exists only on your phone (in the app and in your Rotate bookmark): the server and Cloudflare cannot read them. They are deleted as soon as Rotate imports them, and in any case after 24 hours. Your CrewLink password is never read, sent or stored. If you turn on notifications, the server keeps your device's push address to tell you when the data are ready; the notification contains no personal data. You can unlink at any time (Duty plan › CrewLink link › Advanced › Unlink): the mailbox is deleted.</p>
-<p><b>Crew lists.</b> Rank and name of the crew of your flights stay only on your device, are never included in the Google Drive backup and are deleted 30 days after the flight.</p>
-<h2>Google Drive backup (optional)</h2>
-<p>If you choose “Connect Google Drive”, Rotate asks for one permission: access to its own hidden application-data folder in your Google Drive (<code>drive.appdata</code>). Rotate can read and write only that folder, never your other files. The backup file is created and stays in your own Drive. It is sent directly from your browser to Google; the developer cannot access it. You can disconnect at any time and delete the backup from your Google Account settings (Security → Third-party apps and services).</p>
+<p><b>CrewLink link (optional).</b> If you turn it on, duty plan and crew lists travel from CrewLink to Rotate through a Rotate “mailbox” server. They are encrypted on your phone with a key that exists only on your phone (in the app and in your Rotate bookmark): the server and Cloudflare cannot read them. They are deleted as soon as Rotate imports them, and in any case after 24 hours. Your CrewLink password is never read, sent or stored. If you turn on notifications, the server keeps your device's push address to tell you when the data are ready; the notification contains no personal data. You can unlink at any time in Settings › CrewLink › Advanced › Unlink: the mailbox is deleted.</p>
+
+<h2>Other services the app contacts</h2>
+<p><b>When the page loads:</b> the PDF libraries pdf.js (cdnjs.cloudflare.com) and pdf-lib (cdn.jsdelivr.net) and the Google Fonts typefaces (fonts.googleapis.com, fonts.gstatic.com). These providers may see your IP address.</p>
+<p><b>FAA.</b> For flights to or from the United States, the briefing asks the FAA (nasstatus.faa.gov) directly for delays, ground stops and closures. Only the public status list is requested; the FAA may see your IP address.</p>
+<p><b>SkyVector.</b> Only if you tap the SkyVector button in the route map: the route of the flight is sent to skyvector.com in the link.</p>
+<p><b>Links you tap</b> (CrewLink, LIDO, SharePoint, ADP, aviationweather.gov, Wikimedia Commons for the photo credits, PayPal and Revolut for donations) open those sites, under their own privacy policies. The destination photos are inside the app and do not contact Wikimedia.</p>
+
+<h2>Backups (optional)</h2>
+<p><b>Backup on file.</b> “Export backup” creates a file on your phone with duties, logbook and settings; you choose where to save it (for example Files or iCloud Drive). It does not contain crew lists or OFP.</p>
+<p><b>Google Drive.</b> If you choose “Connect Google Drive”, Rotate asks for one permission: access to its own hidden application-data folder in your Google Drive (<code>drive.appdata</code>). Rotate can read and write only that folder, never your other files. The backup file is created and stays in your own Drive; it does not contain crew lists or OFP. It is sent directly from your browser to Google; the developer cannot access it. You can disconnect at any time and delete the backup from your Google Account settings (Security → Third-party apps and services).</p>
+
 <h2>Use of Google user data</h2>
 <p>Rotate's use of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements. Data is used only to save and restore your backup. It is not shared, sold or used for advertising.</p>
-<h2>Third-party libraries</h2>
-<p>The app loads PDF libraries (pdf.js, pdf-lib) from public CDNs. Those providers may see your IP address when the page loads.</p>
+
 <h2>Deleting your data</h2>
-<p>Use “Delete all data” in the app to erase everything stored on the device, and delete the backup from your Google Drive if you created one.</p>
+<p>Use “Delete all data” in Backup to erase everything stored on the device. Delete the backup from your Google Drive and any exported backup file if you created them.</p>
+
 <h2>Contact</h2>
 <p>Questions: open an issue at <a href="https://github.com/Rotate-lab/rotate/issues">github.com/Rotate-lab/rotate/issues</a>.</p>
+</section>
+
+<hr>
+
+<section id="it" lang="it">
+<h1>Rotate – Informativa sulla privacy</h1>
+<p>Ultimo aggiornamento: 28 novembre 2026</p>
+<p>Rotate è una web app gratuita per piloti di linea: duty plan, logbook, briefing del volo e alcune utility. Non è un'app ufficiale di nessuna compagnia aerea.</p>
+
+<h2>Dati salvati nell'app</h2>
+<p>Duty plan, voli del logbook, sessioni al simulatore e firme, impostazioni, nome, crew ID e dati della busta paga restano solo nel browser, sul tuo dispositivo. I PDF che importi (duty plan, OFP) vengono letti sul dispositivo e non vengono caricati da nessuna parte. Lo sviluppatore non riceve, non raccoglie e non vede questi dati.</p>
+<p><b>Piano di volo (OFP).</b> Quando importi il PDF del briefing LIDO, Rotate lo legge sul telefono e tiene solo quello che serve al briefing: dati del volo (orari, carburante, pesi, rotta, aeroporti), NOTAM, meteo e le immagini delle carte. Le pagine con nomi dell'equipaggio o dati del passaporto non vengono conservate. L'OFP resta solo sul dispositivo, non entra mai in un backup e viene cancellato 2 giorni dopo il volo, o prima se tocchi Elimina.</p>
+<p><b>Equipaggi.</b> Grado e nome dell'equipaggio dei tuoi voli restano solo sul dispositivo, non entrano mai in un backup e vengono cancellati 30 giorni dopo il volo.</p>
+
+<h2>Server di Rotate (Cloudflare Workers)</h2>
+<p><b>Meteo.</b> Per mostrare METAR e TAF, Rotate manda al server meteo di Rotate solo i codici ICAO degli aeroporti (per esempio LIRF); il server li chiede ad aviationweather.gov. Nessun dato personale viene inviato.</p>
+<p><b>Collegamento CrewLink (facoltativo).</b> Se lo attivi, duty plan ed equipaggi passano da CrewLink a Rotate attraverso una “cassetta postale” di Rotate. Sono cifrati sul telefono con una chiave che esiste solo sul telefono (nell'app e nel segnalibro Rotate): né il server né Cloudflare possono leggerli. Vengono cancellati appena Rotate li importa, e comunque dopo 24 ore. La password di CrewLink non viene mai letta, inviata o salvata. Se attivi le notifiche, il server conserva l'indirizzo push del dispositivo per avvisarti quando i dati sono pronti; la notifica non contiene dati personali. Puoi scollegarti quando vuoi da Impostazioni › CrewLink › Avanzate › Scollega: la cassetta viene cancellata.</p>
+
+<h2>Altri servizi che l'app contatta</h2>
+<p><b>All'apertura della pagina:</b> le librerie PDF pdf.js (cdnjs.cloudflare.com) e pdf-lib (cdn.jsdelivr.net) e i caratteri di Google Fonts (fonts.googleapis.com, fonts.gstatic.com). Questi fornitori possono vedere il tuo indirizzo IP.</p>
+<p><b>FAA.</b> Per i voli da o per gli Stati Uniti, il briefing chiede direttamente alla FAA (nasstatus.faa.gov) ritardi, ground stop e chiusure. Viene richiesto solo l'elenco pubblico; la FAA può vedere il tuo indirizzo IP.</p>
+<p><b>SkyVector.</b> Solo se tocchi il pulsante SkyVector nella mappa della rotta: la rotta del volo viene mandata a skyvector.com nel link.</p>
+<p><b>I link che tocchi</b> (CrewLink, LIDO, SharePoint, ADP, aviationweather.gov, Wikimedia Commons per i crediti delle foto, PayPal e Revolut per le donazioni) aprono quei siti, con le loro informative. Le foto delle destinazioni sono dentro l'app e non contattano Wikimedia.</p>
+
+<h2>Backup (facoltativi)</h2>
+<p><b>Backup su file.</b> “Esporta backup” crea sul telefono un file con turni, logbook e impostazioni; scegli tu dove salvarlo (per esempio File o iCloud Drive). Non contiene equipaggi né OFP.</p>
+<p><b>Google Drive.</b> Se scegli “Collega Google Drive”, Rotate chiede un solo permesso: l'accesso alla sua cartella nascosta dei dati dell'app nel tuo Google Drive (<code>drive.appdata</code>). Rotate può leggere e scrivere solo quella cartella, mai gli altri file. Il backup viene creato e resta nel tuo Drive; non contiene equipaggi né OFP. Va direttamente dal browser a Google; lo sviluppatore non può accedervi. Puoi scollegarti quando vuoi e cancellare il backup dalle impostazioni dell'account Google (Sicurezza → App e servizi di terze parti).</p>
+
+<h2>Uso dei dati utente Google</h2>
+<p>L'uso da parte di Rotate delle informazioni ricevute dalle API di Google rispetta le Google API Services User Data Policy, inclusi i requisiti di Limited Use. I dati servono solo a salvare e ripristinare il backup. Non vengono condivisi, venduti o usati per pubblicità.</p>
+
+<h2>Cancellare i dati</h2>
+<p>Usa “Cancella tutti i dati” in Backup per cancellare tutto quello che è salvato sul dispositivo. Cancella anche il backup su Google Drive e gli eventuali file di backup esportati, se li hai creati.</p>
+
+<h2>Contatti</h2>
+<p>Domande: apri una issue su <a href="https://github.com/Rotate-lab/rotate/issues">github.com/Rotate-lab/rotate/issues</a>.</p>
+</section>
 </body></html>
