@@ -1,8 +1,11 @@
 // Rotate · service worker (offline)
 // - pagina: prima la rete (così gli aggiornamenti arrivano subito), senza rete la copia salvata
 // - librerie e caratteri: copia salvata, aggiornata in background
+// - foto delle destinazioni, mappa della rotta e globo: in una cache a parte che gli aggiornamenti non cancellano
 // - meteo, Google Drive, portali: sempre e solo dalla rete (mai in cache)
-const CACHE = "rotate-v1.2.32"; // keep equal to VER in index.html
+const CACHE = "rotate-v1.2.33"; // keep equal to VER in index.html
+const IMG = "rotate-img-1";     // immagini e dati di mappa: restano tra una versione e l'altra
+const WARM = ["./img/map/terrain.webp?v=1", "./img/map/world.json?v=1", "./img/earth-night.webp?v=1"];
 const CORE = ["./", "./manifest.json", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 const LIBS = [
   "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js",
@@ -18,13 +21,16 @@ self.addEventListener("install", e => {
     await c.addAll(CORE);
     // le librerie esterne non devono bloccare l'installazione se una CDN non risponde
     await Promise.allSettled(LIBS.map(u => c.add(new Request(u, { mode: "cors" }))));
+    // mappa della rotta e globo pronti anche offline, scaricati una volta sola
+    const im = await caches.open(IMG);
+    await Promise.allSettled(WARM.map(async u => { if (!(await im.match(u))) await im.add(u); }));
     self.skipWaiting();
   })());
 });
 
 self.addEventListener("activate", e => {
   e.waitUntil((async () => {
-    for (const k of await caches.keys()) if (k !== CACHE) await caches.delete(k);
+    for (const k of await caches.keys()) if (k !== CACHE && k !== IMG) await caches.delete(k);
     await self.clients.claim();
   })());
 });
@@ -44,8 +50,8 @@ async function networkFirst(req) {
   }
 }
 
-async function staleWhileRevalidate(req, ev) {
-  const c = await caches.open(CACHE);
+async function staleWhileRevalidate(req, ev, name = CACHE) {
+  const c = await caches.open(name);
   const hit = await c.match(req);
   // solo risposte valide e leggibili: una risposta opaca potrebbe essere una pagina di errore della CDN
   const net = fetch(req).then(async res => { if (res && res.ok) { try { await c.put(req, res.clone()); } catch (_) {} } return res; }).catch(() => null);
@@ -58,7 +64,9 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (req.mode === "navigate" && url.origin === location.origin) return e.respondWith(networkFirst(req));
-  // immagini e dati dell'app (anche le foto delle destinazioni, salvate alla prima visualizzazione)
+  // foto delle destinazioni, mappa e globo (salvati alla prima visualizzazione, non si perdono con gli aggiornamenti)
+  if (url.origin === location.origin && /\/img\//.test(url.pathname)) return e.respondWith(staleWhileRevalidate(req, e, IMG));
+  // icone e manifest dell'app
   if (url.origin === location.origin && /\.(png|json|svg|ico|webp|jpg)$/.test(url.pathname)) return e.respondWith(staleWhileRevalidate(req, e));
   if (STATIC_HOSTS.includes(url.hostname)) return e.respondWith(staleWhileRevalidate(req, e));
   // tutto il resto (meteo, Google, portali) passa direttamente alla rete
