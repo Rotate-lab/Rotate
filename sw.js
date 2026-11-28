@@ -2,7 +2,7 @@
 // - pagina: prima la rete (così gli aggiornamenti arrivano subito), senza rete la copia salvata
 // - librerie e caratteri: copia salvata, aggiornata in background
 // - meteo, Google Drive, portali: sempre e solo dalla rete (mai in cache)
-const CACHE = "rotate-v1.2.30"; // keep equal to VER in index.html
+const CACHE = "rotate-v1.2.31"; // keep equal to VER in index.html
 const CORE = ["./", "./manifest.json", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 const LIBS = [
   "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js",
